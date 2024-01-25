@@ -20,6 +20,9 @@ namespace AssCS
         public string Text { get; set; }
         public List<int> LinkedExtradatas { get; set; }
 
+        public double Cps => (End - Start).TotalSeconds / GetStrippedText().Length;
+        public int MaxLineWidth => GetStrippedText().Split("\\N").Select(l => l.Length).Max();
+
         public void FromAss(string data)
         {
             var eventRegex = @"^(Comment|Dialogue):\ (\d+),(\d+:\d+:\d+.\d+),(\d+:\d+:\d+.\d+),([^,]*),([^,]*),(-?\d+),(-?\d+),(-?\d+),([^,]*),(.*)";
@@ -202,6 +205,11 @@ namespace AssCS
             Effect = "";
             Text = "";
             LinkedExtradatas = new List<int>();
+        }
+
+        public Event(int id, string data) : this(id)
+        {
+            FromAss(data);
         }
     }
 }

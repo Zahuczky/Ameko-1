@@ -38,6 +38,11 @@ namespace AssCS
             get => localTime.Milliseconds;
         }
 
+        public double TotalSeconds
+        {
+            get => localTime.TotalSeconds;
+        }
+
         public string AsAss()
         {
             return $"{Hours}:{Minutes:2}:{Seconds:2}.{Centiseconds:2}";
@@ -76,6 +81,17 @@ namespace AssCS
                 millis += Convert.ToInt64(splits[i]) * multiplier[i];
             }
             return FromMillis(millis);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Time time &&
+                   localTime.Equals(time.localTime);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(localTime);
         }
 
         public static Time operator +(Time a, Time b)

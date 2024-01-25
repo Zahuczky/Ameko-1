@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AssCS
 {
@@ -28,6 +29,39 @@ namespace AssCS
         public int Alignment { get; set; }
         public Margins Margins { get; set; }
         int Encoding { get; set; }
+
+        public void FromAss(string data)
+        {
+            var styleRegex = @"Style:\ ([^,]*),([^,]*),([\d.]+),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)";
+            var match = Regex.Match(data, styleRegex);
+            if (!match.Success) throw new ArgumentException($"Style {data} is invalid or malformed.");
+
+            Name = match.Groups[1].Value;
+            Font = match.Groups[2].Value;
+            FontSize = Convert.ToDouble(match.Groups[3].Value);
+            Primary = new Color(match.Groups[4].Value);
+            Secondary = new Color(match.Groups[5].Value);
+            Outline = new Color(match.Groups[6].Value);
+            Shadow = new Color(match.Groups[7].Value);
+            Bold = Convert.ToInt32(match.Groups[8].Value) != 0;
+            Italic = Convert.ToInt32(match.Groups[9].Value) != 0;
+            Underline = Convert.ToInt32(match.Groups[10].Value) != 0;
+            Strikeout = Convert.ToInt32(match.Groups[11].Value) != 0;
+            ScaleX = Convert.ToDouble(match.Groups[12].Value);
+            ScaleY = Convert.ToDouble(match.Groups[13].Value);
+            Spacing = Convert.ToDouble(match.Groups[14].Value);
+            Angle = Convert.ToDouble(match.Groups[15].Value);
+            BorderStyle = Convert.ToInt32(match.Groups[16].Value);
+            BorderThickness = Convert.ToDouble(match.Groups[17].Value);
+            ShadowDistance = Convert.ToDouble(match.Groups[18].Value);
+            Alignment = Convert.ToInt32(match.Groups[19].Value);
+            Margins = new Margins(
+                    Convert.ToInt32(match.Groups[20].Value),
+                    Convert.ToInt32(match.Groups[21].Value),
+                    Convert.ToInt32(match.Groups[22].Value)
+                );
+            Encoding = Convert.ToInt32(match.Groups[23].Value);
+        }
 
         public string AsAss()
         {
@@ -91,6 +125,11 @@ namespace AssCS
             Alignment = 2;
             Margins = new Margins(0, 0, 0);
             Encoding = 1;
+        }
+
+        public Style(int id, string data) : this(id)
+        {
+            FromAss(data);
         }
     }
 
