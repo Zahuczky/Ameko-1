@@ -12,6 +12,7 @@ namespace AssCS
         public AttachmentManager AttachmentManager { get; }
         public ExtradataManager ExtradataManager { get; }
         public PropertiesManager PropertiesManager { get; }
+        public HistoryManager HistoryManager { get; }
 
         public void LoadDefault()
         {
@@ -28,6 +29,7 @@ namespace AssCS
             AttachmentManager = new AttachmentManager(source);
             ExtradataManager = new ExtradataManager(source);
             PropertiesManager = new PropertiesManager(source);
+            HistoryManager = new HistoryManager();
         }
 
         public File()
@@ -38,6 +40,7 @@ namespace AssCS
             AttachmentManager = new AttachmentManager();
             ExtradataManager = new ExtradataManager();
             PropertiesManager = new PropertiesManager();
+            HistoryManager = new HistoryManager();
         }
     }
 }

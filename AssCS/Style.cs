@@ -4,8 +4,9 @@ using System.Text;
 
 namespace AssCS
 {
-    public class Style : AssComponent
+    public class Style : AssComponent, ICommitable
     {
+        public int Id { get; }
         public string Name { get; set; }
         public string Font {  get; set; }
         public double FontSize { get; set; }
@@ -40,8 +41,9 @@ namespace AssCS
 
         public string? AsOverride() => null;
 
-        public Style (Style s)
+        public Style (int id, Style s)
         {
+            Id = id;
             Name = s.Name;
             Font = s.Font;
             FontSize = s.FontSize;
@@ -65,8 +67,9 @@ namespace AssCS
             Encoding = s.Encoding;
         }
 
-        public Style()
+        public Style(int id)
         {
+            Id = id;
             Name = "Default";
             Font = "Arial";
             FontSize = 48.0;

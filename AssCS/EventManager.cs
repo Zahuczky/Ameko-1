@@ -11,10 +11,23 @@ namespace AssCS
         private int _id = 0;
         public int NextId => _id++;
 
+        public int Set(int id, Event e)
+        {
+            events[id] = e;
+            return e.Id;
+        }
+
         public int Set(Event e)
         {
             events[e.Id] = e;
             return e.Id;
+        }
+
+        public int Set(Commit<Event> commit)
+        {
+            var committedEvent = commit.Snapshot;
+            events[committedEvent.Id] = committedEvent;
+            return committedEvent.Id;
         }
 
         public Event? Get(int id)

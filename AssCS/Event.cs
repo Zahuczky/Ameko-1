@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace AssCS
 {
-    public class Event : AssComponent
+    public class Event : AssComponent, ICommitable
     {
         public int Id { get; }
         public bool Comment { get; set; }
