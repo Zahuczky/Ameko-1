@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace AssCS
 {
-    public class Event : AssComponent, ICommitable
+    public class Event : IAssComponent, ICommitable
     {
         public int Id { get; }
         public bool Comment { get; set; }
@@ -53,7 +53,7 @@ namespace AssCS
 
             for (int i = 1; i < match.Groups.Count; i++)
             {
-                var rawId = match.Groups[i].Value.Substring(1); // =123 → 123
+                var rawId = match.Groups[i].Value[1..]; // =123 → 123
                 var id = Convert.ToInt32(rawId);
                 LinkedExtradatas.Add(id);
             }
@@ -102,7 +102,7 @@ namespace AssCS
                         // Leaving Plain Text Block
                         i++;
                         // Get block contents
-                        work = Text.Substring(i, nextOverride - i);
+                        work = Text[i..nextOverride];
                         i = nextOverride + 1;
 
                         if (work.Length > 0 && work.IndexOf('\\') == -1)

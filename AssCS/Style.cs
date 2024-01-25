@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace AssCS
 {
-    public class Style : AssComponent, ICommitable
+    public class Style : IAssComponent, ICommitable
     {
         public int Id { get; }
         public string Name { get; set; }

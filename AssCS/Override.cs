@@ -28,7 +28,7 @@ namespace AssCS
                 if (data.StartsWith(p.Name))
                 {
                     _name = p.Name;
-                    ParseParameters(data.Substring(p.Name.Length));
+                    ParseParameters(data[p.Name.Length..]);
                     _valid = true;
                     return;
                 }
@@ -91,12 +91,12 @@ namespace AssCS
                     }
                     i++;
                 }
-                paramList.Add(data.Substring(start, i - start).Trim());
+                paramList.Add(data[start..i].Trim());
             }
 
             if (i + 1 < data.Length)
             {
-                paramList.Add(data.Substring(i + 1));
+                paramList.Add(data[(i + 1)..]);
             }
             return paramList;
         }
@@ -152,19 +152,14 @@ namespace AssCS
             Classification = classification;
         }
 
-        public OverrideParameter(OverrideParameter parameter)
-        {
-
-        }
-
         public string GetString()
         {
             if (Omitted) { throw new InvalidOperationException("OverrideParameter: Get() called on omitted parameter!"); }
             if (block != null)
             {
                 var blockText = block.Text;
-                if (blockText.StartsWith('{')) blockText = blockText.Substring(1);
-                if (blockText.EndsWith('}')) blockText = blockText.Substring(0, blockText.Length - 1);
+                if (blockText.StartsWith('{')) blockText = blockText[1..];
+                if (blockText.EndsWith('}')) blockText = blockText[..^1];
                 return blockText;
             }
             return value ?? "";

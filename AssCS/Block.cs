@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AssCS
 {
-    public abstract class Block : AssComponent
+    public abstract class Block : IAssComponent
     {
         public string Text { get; }
         public BlockType Type { get; }

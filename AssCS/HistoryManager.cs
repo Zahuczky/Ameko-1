@@ -11,10 +11,10 @@ namespace AssCS
         public event EventCommitEvent? CommitEvent;
         public event StyleCommitEvent? CommitStyle;
 
-        private Stack<Commit<Event>> eventsHistory;
-        private Stack<Commit<Event>> eventsFuture;
-        private Stack<Commit<Style>> stylesHistory;
-        private Stack<Commit<Style>> stylesFuture;
+        private readonly Stack<Commit<Event>> eventsHistory;
+        private readonly Stack<Commit<Event>> eventsFuture;
+        private readonly Stack<Commit<Style>> stylesHistory;
+        private readonly Stack<Commit<Style>> stylesFuture;
 
         public void Commit(Commit<Event> commit)
         {

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace AssCS
 {
-    public class Color : AssComponent
+    public class Color : IAssComponent
     {
         public uint Red { get; set; }
         public uint Green { get; set; }

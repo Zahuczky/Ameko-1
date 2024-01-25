@@ -4,9 +4,9 @@ using System.Text;
 
 namespace AssCS
 {
-    public class Time : AssComponent
+    public class Time : IAssComponent
     {
-        private TimeSpan localTime;
+        private readonly TimeSpan localTime;
 
         public long Hours
         {
