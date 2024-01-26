@@ -69,7 +69,9 @@ namespace AssCS
                 data,
                 BlockType.DRAWING
                 )
-        { }
+        { 
+            Scale = scale;
+        }
     }
 
     /// <summary>
