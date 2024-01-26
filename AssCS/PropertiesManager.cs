@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AssCS
@@ -68,6 +69,11 @@ namespace AssCS
         public void Clear()
         {
             properties.Clear();
+        }
+
+        public List<ProjectProperty> GetAll()
+        {
+            return properties.Values.ToList();
         }
 
         public void LoadDefault()

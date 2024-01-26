@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AssCS
@@ -62,6 +63,11 @@ namespace AssCS
         public void Clear()
         {
             styles.Clear();
+        }
+
+        public List<Style> GetAll()
+        {
+            return styles.Values.ToList();
         }
 
         public void LoadDefault()

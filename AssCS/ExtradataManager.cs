@@ -107,6 +107,11 @@ namespace AssCS
                 extradata.RemoveAll(e => e.Expiration >= 10);
         }
 
+        public List<Extradata> GetAll()
+        {
+            return extradata;
+        }
+
         public void Sort()
         {
             extradata.Sort();

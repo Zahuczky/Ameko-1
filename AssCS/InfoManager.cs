@@ -30,6 +30,11 @@ namespace AssCS
             info.Clear();
         }
 
+        public Dictionary<string, string> GetAll()
+        {
+            return info;
+        }
+
         public void LoadDefault()
         {
             Clear();
