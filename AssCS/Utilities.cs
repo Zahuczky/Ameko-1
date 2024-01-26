@@ -92,5 +92,17 @@ namespace AssCS
             }
             return output;
         }
+
+        public static string Base64Encode(string input)
+        {
+            var bytes = Encoding.UTF8.GetBytes(input);
+            return Convert.ToBase64String(bytes);
+        }
+
+        public static string Base64Decode(string input)
+        {
+            var bytes = Convert.FromBase64String(input);
+            return Encoding.UTF8.GetString(bytes);
+        }
     }
 }

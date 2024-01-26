@@ -111,6 +111,13 @@ namespace AssCS.IO
             else return;
         }
 
+        /// <summary>
+        /// AssCS Extradata is written with the format char 'b', and the value is always base64 encoded.
+        /// This breaks compatibility with Aegisub Extradata, which uses 'e' and 'u' for Inline and UU encoding.
+        /// Aegisub Extradata-encoded lines will be discarded during parsing.
+        /// </summary>
+        /// <param name="line">Incoming line from the file</param>
+        /// <param name="file">File to write parsed data to</param>
         private void ParseExtradata(string line, File file)
         {
             if (!line.StartsWith("Data:")) return;
@@ -122,10 +129,14 @@ namespace AssCS.IO
             string valueType = match.Groups[3].Value;
             string value = valueType switch
             {
-                "e" => Utilities.InlineDecode(match.Groups[4].Value),
-                "u" => Convert.ToString(Utilities.UUDecode(match.Groups[4].Value)),
-                _ => ""
+                "b" => Utilities.Base64Decode(match.Groups[4].Value),
+                // "e" => Utilities.InlineDecode(match.Groups[4].Value),
+                // "u" => Convert.ToString(Utilities.UUDecode(match.Groups[4].Value)),
+                _ => String.Empty
             };
+            // Skip "empty" lines
+            if (value.Equals(String.Empty)) return;
+
             // Ensure the next ID will be larger than the largest existing ID
             file.ExtradataManager.NextId = Math.Max(id + 1, file.ExtradataManager.NextId);
             file.ExtradataManager.Add(new Extradata(id, 0, key, value));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -95,26 +96,22 @@ namespace AssCS.IO
             writer.WriteLine();
         }
 
+        /// <summary>
+        /// AssCS Extradata is written with the format char 'b', and the value is always base64 encoded.
+        /// This breaks compatibility with Aegisub Extradata, which uses 'e' and 'u' for Inline and UU encoding.
+        /// </summary>
+        /// <param name="writer">StreamWriter instance writing the file</param>
         private void WriteExtradata(StreamWriter writer)
         {
             writer.WriteLine("[Aegisub Extradata]");
             foreach (var extra in file.ExtradataManager.GetAll())
             {
-                string line = $"Data: {extra.Id},{Utilities.InlineEncode(extra.Key)},";
-                string inlineEncoded = Utilities.InlineEncode(extra.Value);
-                if (4 * extra.Value.Length < 3 * inlineEncoded.Length)
-                {
-                    line += $"u{Utilities.UUEncode(extra.Value, false)}";
-                }
-                else
-                {
-                    line += $"e{inlineEncoded}";
-                }
-                writer.WriteLine(line);
+                writer.WriteLine($"Data: {extra.Id},{Utilities.InlineEncode(extra.Key)},b{Utilities.Base64Encode(extra.Value)}");
             }
         }
 
-        public AssWriter(File file, string filepath, Encoding encoding, ConsumerInfo consumer)
+        public AssWriter(File file, string filepath, ConsumerInfo consumer) : this(file, filepath, consumer, Encoding.UTF8) { }
+        public AssWriter(File file, string filepath, ConsumerInfo consumer, Encoding encoding)
         {
             this.file = file;
             this.filepath = filepath;
