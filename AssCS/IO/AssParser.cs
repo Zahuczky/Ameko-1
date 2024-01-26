@@ -26,12 +26,18 @@ namespace AssCS.IO
                 var match = Regex.Match(line, headerRegex);
                 if (match.Success)
                 {
-                    var lower = match.Groups[1].Value.ToLower();
-                    parseState = lower switch
+                    var upper = match.Groups[1].Value.ToUpperInvariant();
+                    parseState = upper switch
                     {
-                        "v4+ styles" => ParseStyle,
-                        "events" => ParseEvent,
-                        // TODO
+                        "V4 STYLES" => ParseStyle, // Yeah idk
+                        "V4+ STYLES" => ParseStyle,
+                        "V4++ STYLES" => ParseStyle,
+                        "EVENTS" => ParseEvent,
+                        "SCRIPT INFO" => ParseScriptInfo,
+                        "AEGISUB PROJECT GARBAGE" => ParseProjectProperties,
+                        "AEGISUB EXTRADATA" => ParseExtradata,
+                        "GRAPHICS" => ParseUnknown, // TODO
+                        "FONTS" => ParseUnknown, // TODO (Attachments)
                         _ => ParseUnknown
                     };
                     continue; // Skip further processing of this line
@@ -46,6 +52,10 @@ namespace AssCS.IO
 
         private void ParseStyle(string line, File file)
         {
+            // TODO: Version parsing for v4.00 and v4.00+
+            // Will involve adding additional parameters to ToAss() functions
+            if (file.Version != FileVersion.V400P) return;
+
             if (!line.StartsWith("Style:")) return;
             file.StyleManager.Set(
                 new Style(file.StyleManager.NextId, line)
@@ -62,17 +72,63 @@ namespace AssCS.IO
 
         private void ParseScriptInfo(string line, File file)
         {
-            // TODO
+            // This block can have comments
+            if (line.StartsWith(';')) return;
+
+            var pair = line.Split(":");
+            if (pair.Length >= 2)
+            {
+                file.InfoManager.Set(
+                    pair[0].Trim(),
+                    string.Join(":", pair, 1, pair.Length - 1).Trim()
+                );
+            }
+
+            if (pair[0].Trim().ToUpperInvariant().Equals("SCRIPTTYPE"))
+                file.Version = pair[1].Trim() switch
+                {
+                    "v4.00" => FileVersion.V400,
+                    "v4.00+" => FileVersion.V400P,
+                    "v4.00++" => FileVersion.V400PP,
+                    _ => FileVersion.UNKNOWN
+                };
+
+            // Not a key:value pair
+            else return;
         }
 
-        private void ParseMetadata(string line, File file)
+        private void ParseProjectProperties(string line, File file)
         {
-            // TODO
+            var pair = line.Split(":");
+            if (pair.Length >= 2)
+            {
+                file.PropertiesManager.Set(
+                    pair[0].Trim(),
+                    string.Join(":", pair, 1, pair.Length - 1).Trim()
+                );
+            }
+            // Not a key:value pair
+            else return;
         }
 
         private void ParseExtradata(string line, File file)
         {
-            // TODO
+            if (!line.StartsWith("Data:")) return;
+            var extraRegex = @"^Data:\ *(\d+),([^,]+),(.)(.*)";
+            var match = Regex.Match(line, extraRegex);
+            if (!match.Success) return;
+            int id = Convert.ToInt32(match.Groups[1].Value);
+            string key = Utilities.InlineDecode(match.Groups[2].Value);
+            string valueType = match.Groups[3].Value;
+            string value = valueType switch
+            {
+                "e" => Utilities.InlineDecode(match.Groups[4].Value),
+                "u" => Convert.ToString(Utilities.UUDecode(match.Groups[4].Value)),
+                _ => ""
+            };
+            // Ensure the next ID will be larger than the largest existing ID
+            file.ExtradataManager.NextId = Math.Max(id + 1, file.ExtradataManager.NextId);
+            file.ExtradataManager.Add(new Extradata(id, 0, key, value));
         }
 
         private void ParseUnknown(string line, File file)
