@@ -13,11 +13,14 @@ namespace Holo
         
         public PluginHandler PluginHandler { get; }
         public ConfigurationManager ConfigurationManager { get; }
+        public Workspace Workspace { get; }
 
         private Holo()
         {
             PluginHandler = new PluginHandler(Path.Combine(HoloDirectory, "plugins"));
             ConfigurationManager = new ConfigurationManager(HoloDirectory);
+            Workspace = new Workspace();
+            
             if (!ConfigurationManager.LoadConfiguration())
             {
                 ConfigurationManager.GenerateDefaultConfiguration(); // TODO

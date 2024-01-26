@@ -8,7 +8,7 @@ namespace Holo
 {
     public class ConfigurationManager
     {
-        private string configDirectory;
+        private readonly string configDirectory;
         private HoloConfiguration? _config;
         public HoloConfiguration? CurrentConfiguration => _config;
 
