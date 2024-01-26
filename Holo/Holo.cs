@@ -13,7 +13,7 @@ namespace Holo
         
         public PluginHandler PluginHandler { get; }
         public ConfigurationManager ConfigurationManager { get; }
-        public Workspace Workspace { get; }
+        public Workspace Workspace { get; set; }
 
         private Holo()
         {

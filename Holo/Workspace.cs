@@ -9,6 +9,12 @@ using Tomlyn;
 
 namespace Holo
 {
+    /// <summary>
+    /// Represents a workspace consisting of multiple, potentially open, files.
+    /// All files are opened in a workspace. Not all files in a workspace need be opened.
+    /// Workspaces may be saved to allow multiple files to be opened at a time, and to
+    /// facilitate sharing of workspaces.
+    /// </summary>
     public class Workspace
     {
         private int _id;
@@ -17,9 +23,22 @@ namespace Holo
         private readonly List<Link> ReferencedFiles;
         private readonly Dictionary<int, AssCS.File> LoadedFiles;
 
+        /// <summary>
+        /// Index of the currently selected open file in the workspace
+        /// </summary>
         public int WorkingIndex { get; set; }
 
-        public bool AddFileToWorkspace(string filePath)
+        /// <summary>
+        /// The currently selected open file
+        /// </summary>
+        public AssCS.File WorkingFile => LoadedFiles[WorkingIndex];
+
+        /// <summary>
+        /// Add a file to the current workspace and open it
+        /// </summary>
+        /// <param name="filePath">Path to the file</param>
+        /// <returns>ID of the file</returns>
+        public int AddFileToWorkspace(string filePath)
         {
             try
             {
@@ -29,12 +48,16 @@ namespace Holo
                 ReferencedFiles.Add(link);
                 LoadedFiles.Add(link.Id, file);
                 WorkingIndex = link.Id;
-                return true;
+                return link.Id;
             }
-            catch { return false; }
+            catch { return -1; }
         }
 
-        public bool AddFileToWorkspace()
+        /// <summary>
+        /// Adds a new empty file to the workspace
+        /// </summary>
+        /// <returns>ID of the file</returns>
+        public int AddFileToWorkspace()
         {
             var dummyLink = new Link(NextId, string.Empty);
             ReferencedFiles.Add(dummyLink);
@@ -42,9 +65,15 @@ namespace Holo
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
             LoadedFiles.Add(dummyLink.Id, dummyFile);
-            return true;
+            WorkingIndex = dummyLink.Id;
+            return dummyLink.Id;
         }
 
+        /// <summary>
+        /// Closes a file and removes it from the workspace
+        /// </summary>
+        /// <param name="id">ID of the file</param>
+        /// <returns>True if the file was removed</returns>
         public bool RemoveFileFromWorkspace(int id)
         {
             CloseFileInWorkspace(id);
@@ -52,22 +81,32 @@ namespace Holo
             return removed > 0;
         }
 
-        public bool OpenFileFromWorkspace(int id)
+        /// <summary>
+        /// Open a file currently in the workspace
+        /// </summary>
+        /// <param name="id">ID of the file</param>
+        /// <returns>ID of the file</returns>
+        public int OpenFileFromWorkspace(int id)
         {
             try
             {
                 AssParser parser = new AssParser();
                 var link = ReferencedFiles.Find(f => f.Id == id);
-                if (link == null) return false;
+                if (link == null) return -1;
 
                 var file = parser.Load(link.Path);
                 LoadedFiles.Add(link.Id, file);
                 WorkingIndex = link.Id;
-                return true;
+                return id;
             }
-            catch { return false; }
+            catch { return -1; }
         }
 
+        /// <summary>
+        /// Closes a file without removing it from the workspace
+        /// </summary>
+        /// <param name="id">ID of the file to close</param>
+        /// <returns>True if the file was closed</returns>
         public bool CloseFileInWorkspace(int id)
         {
             // TODO: Do we want to assume that the caller already saved the file?
@@ -80,6 +119,33 @@ namespace Holo
             return false;
         }
 
+        /// <summary>
+        /// Write the workspace to disk
+        /// </summary>
+        /// <param name="filePath">Path to save the file</param>
+        /// <returns>True if the file was saved</returns>
+        public bool WriteWorkspaceFile(string filePath)
+        {
+            try
+            {
+                var file = new Workspacefile
+                {
+                    WorkspaceVersion = "1.0",
+                    ReferencedFiles = this.ReferencedFiles.Select(f => f.Path).ToList()
+                };
+                using var writer = new StreamWriter(filePath);
+                writer.Write(Toml.FromModel(file));
+                return true;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
+        /// Instantiate a Workspace by loading a workspace file from disk
+        /// </summary>
+        /// <param name="filePath">Path to the workspace file</param>
+        /// <exception cref="FileNotFoundException">If the file was not found</exception>
+        /// <exception cref="IOException">If an error occured during reading / parsing</exception>
         public Workspace(string filePath)
         {
             if (!System.IO.File.Exists(filePath)) throw new FileNotFoundException($"Workspace file {filePath} was not found");
@@ -87,7 +153,7 @@ namespace Holo
             {
                 using var reader = new StreamReader(filePath);
                 var configContents = reader.ReadToEnd();
-                Workfile space = Toml.ToModel<Workfile>(filePath);
+                Workspacefile space = Toml.ToModel<Workspacefile>(filePath);
                 ReferencedFiles = space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList();
                 LoadedFiles = new Dictionary<int, AssCS.File>();
                 WorkingIndex = 0;
@@ -95,6 +161,9 @@ namespace Holo
             catch { throw new IOException($"An error occured while loading workspace file {filePath}"); }
         }
 
+        /// <summary>
+        /// Instantiate a Workspace with a new empty file
+        /// </summary>
         public Workspace()
         {
             ReferencedFiles = new List<Link>();
@@ -103,11 +172,24 @@ namespace Holo
             WorkingIndex = 0;
         }
 
-        private class Workfile
+        /// <summary>
+        /// Simplified representation of a workspace for saving
+        /// </summary>
+        private class Workspacefile
         {
+            /// <summary>
+            /// Version of the workspace to allow for future additions to the spec
+            /// </summary>
+            public string? WorkspaceVersion;
+            /// <summary>
+            /// List of filenames referenced in the workspace
+            /// </summary>
             public List<string>? ReferencedFiles;
         }
 
+        /// <summary>
+        /// Link between an ID and a filepath
+        /// </summary>
         private class Link : Tuple<int, string>
         {
             public Link(int id, string path) : base(id, path) { }
