@@ -5,6 +5,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Manages the extradata in a file
+    /// </summary>
     public class ExtradataManager
     {
         private readonly List<Extradata> extradata;

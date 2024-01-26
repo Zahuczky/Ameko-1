@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Represents a style that can be applied to an event
+    /// </summary>
     public class Style : IAssComponent, ICommitable
     {
         public int Id { get; }
@@ -30,6 +33,10 @@ namespace AssCS
         public Margins Margins { get; set; }
         int Encoding { get; set; }
 
+        /// <summary>
+        /// Bootstrap this style from its representation in a file
+        /// </summary>
+        /// <param name="data">Line</param>
         public void FromAss(string data)
         {
             var styleRegex = @"Style:\ ([^,]*),([^,]*),([\d.]+),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)";

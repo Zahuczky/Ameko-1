@@ -6,6 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace AssCS
 {
+    /// <summary>
+    /// The meat and potatoes of the subtitle file
+    /// </summary>
     public class Event : IAssComponent, ICommitable
     {
         public int Id { get; }
@@ -20,9 +23,19 @@ namespace AssCS
         public string Text { get; set; }
         public List<int> LinkedExtradatas { get; set; }
 
+        /// <summary>
+        /// Characters per second. It is recommended to keep dialogue events under 18 CPS.
+        /// </summary>
         public double Cps => (End - Start).TotalSeconds / GetStrippedText().Length;
+        /// <summary>
+        /// Maximum line length (in characters).
+        /// </summary>
         public int MaxLineWidth => GetStrippedText().Split("\\N").Select(l => l.Length).Max();
 
+        /// <summary>
+        /// Bootstrap this event from its representation in a file
+        /// </summary>
+        /// <param name="data">Line</param>
         public void FromAss(string data)
         {
             var eventRegex = @"^(Comment|Dialogue):\ (\d+),(\d+:\d+:\d+.\d+),(\d+:\d+:\d+.\d+),([^,]*),([^,]*),(-?\d+),(-?\d+),(-?\d+),([^,]*),(.*)";
@@ -60,6 +73,10 @@ namespace AssCS
 
         }
 
+        /// <summary>
+        /// Parse this event's override tags
+        /// </summary>
+        /// <returns>This event, split up into a list of Blocks</returns>
         public List<Block> ParseTags()
         {
             List<Block> blocks = new List<Block>();
@@ -143,23 +160,41 @@ namespace AssCS
             return blocks;
         }
 
+        /// <summary>
+        /// Strip away any override tags or comments
+        /// </summary>
         public void StripTags()
         {
             Text = GetStrippedText();
         }
 
+        /// <summary>
+        /// Get the text without override tags or comments
+        /// </summary>
+        /// <returns>Stripped text</returns>
         public string GetStrippedText()
         {
             var blocks = ParseTags();
             return string.Join("", blocks.Where(b => b.Type == BlockType.PLAIN).Select(b => b.Text));
         }
 
+        /// <summary>
+        /// Check if this event collides with another event.
+        /// Events collide if their timestamps overlap.
+        /// </summary>
+        /// <param name="other">Event to check against</param>
+        /// <returns>True if the events collide</returns>
         public bool CollidesWith(Event other)
         {
             if (other == null) return false;
             return (Start < other.Start) ? (other.Start < End) : (Start < other.End);
         }
 
+        /// <summary>
+        /// Replace the text in this line.
+        /// Operation is skipped if the input is empty.
+        /// </summary>
+        /// <param name="blocks"></param>
         public void UpdateText(List<Block> blocks)
         {
             if (blocks.Count == 0) return;
@@ -177,6 +212,11 @@ namespace AssCS
 
         public string? AsOverride() => null;
 
+        /// <summary>
+        /// Clone an event
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="e"></param>
         public Event(int id, Event e)
         {
             Id = id;
@@ -192,6 +232,10 @@ namespace AssCS
             LinkedExtradatas = new List<int>(e.LinkedExtradatas);
         }
 
+        /// <summary>
+        /// Compose a new Event
+        /// </summary>
+        /// <param name="id"></param>
         public Event(int id)
         {
             Id = id;
@@ -207,6 +251,11 @@ namespace AssCS
             LinkedExtradatas = new List<int>();
         }
 
+        /// <summary>
+        /// Load an event from a string
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="data"></param>
         public Event(int id, string data) : this(id)
         {
             FromAss(data);

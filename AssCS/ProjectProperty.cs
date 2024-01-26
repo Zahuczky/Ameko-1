@@ -4,6 +4,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Project property key-value pairs
+    /// </summary>
     public class ProjectProperty
     {
         public string Name { get; set; }

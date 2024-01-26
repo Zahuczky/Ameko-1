@@ -4,6 +4,11 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Representation of a timestamp.
+    /// This API supports millisecond percision, but note that
+    /// precision will be dropped to centiseconds for export.
+    /// </summary>
     public class Time : IAssComponent
     {
         private readonly TimeSpan localTime;
@@ -70,6 +75,10 @@ namespace AssCS
         public static Time FromDecis(long decis) => new Time(TimeSpan.FromMilliseconds(decis * 100));
         public static Time FromSeconds(long secs) => new Time(TimeSpan.FromSeconds(secs));
 
+        /// <summary>
+        /// Bootstrap a Time component from its representation in a file
+        /// </summary>
+        /// <param name="data">Line</param>
         public static Time FromAss(string data)
         {
             var splits = data.Split(':');

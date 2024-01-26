@@ -5,6 +5,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Manages the events in a file
+    /// </summary>
     public class EventManager
     {
         private readonly LinkedList<Event> chain;

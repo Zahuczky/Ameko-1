@@ -5,6 +5,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Representation of a single segment of an Event.
+    /// </summary>
     public abstract class Block : IAssComponent
     {
         public string Text { get; }
@@ -24,6 +27,10 @@ namespace AssCS
         public string? AsOverride() => Text;
     }
 
+    /// <summary>
+    /// Any text in an event that is not a comment, override, or drawing
+    /// should be considered to be in a Plaintext Block.
+    /// </summary>
     public class PlainBlock : Block
     {
         public PlainBlock(string data) :
@@ -34,6 +41,10 @@ namespace AssCS
         { }
     }
 
+    /// <summary>
+    /// Text within a set of override brackets <code>{ }</code>
+    /// that does not contain an override are Comments.
+    /// </summary>
     public class CommentBlock : Block
     {
         public CommentBlock(string data) :
@@ -44,6 +55,12 @@ namespace AssCS
         { }
     }
 
+    /// <summary>
+    /// Text following any drawing level greater than 0 is assumed
+    /// to be a Drawing. A drawing is initiated by a preceeding Override
+    /// Block containg the drawing override P tag:
+    /// <code>{\p[drawinglevel]}</code>
+    /// </summary>
     public class DrawingBlock : Block
     {
         public int Scale { get; set; }
@@ -55,6 +72,10 @@ namespace AssCS
         { }
     }
 
+    /// <summary>
+    /// An Override block is composed of a set of override brackets
+    /// containing one or more Override Tags
+    /// </summary>
     public class OverrideBlock : Block
     {
         public List<OverrideTag> Tags { get; }
@@ -93,6 +114,9 @@ namespace AssCS
         }
     }
 
+    /// <summary>
+    /// Type of Block
+    /// </summary>
     public enum BlockType
     {
         PLAIN,

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// A single Advanced Substation Alpha subtitle file
+    /// </summary>
     public class File
     {
         public FileVersion Version { get; set; }
@@ -15,6 +18,9 @@ namespace AssCS
         public PropertiesManager PropertiesManager { get; }
         public HistoryManager HistoryManager { get; }
 
+        /// <summary>
+        /// Bootstrap this file with default values for a fresh start
+        /// </summary>
         public void LoadDefault()
         {
             Version = FileVersion.V400P;
@@ -24,6 +30,10 @@ namespace AssCS
             PropertiesManager.LoadDefault();
         }
 
+        /// <summary>
+        /// Clone another File instance
+        /// </summary>
+        /// <param name="source">File to be copied</param>
         public File(File source)
         {
             Version = source.Version;
@@ -36,6 +46,9 @@ namespace AssCS
             HistoryManager = new HistoryManager();
         }
 
+        /// <summary>
+        /// Instantiate a new File instance
+        /// </summary>
         public File()
         {
             Version = FileVersion.V400P;
@@ -49,11 +62,26 @@ namespace AssCS
         }
     }
 
+    /// <summary>
+    /// ASS File Version
+    /// </summary>
     public enum FileVersion
     {
+        /// <summary>
+        /// v4.00
+        /// </summary>
         V400 = 0,
+        /// <summary>
+        /// v4.00+
+        /// </summary>
         V400P = 1,
+        /// <summary>
+        /// v4.00++
+        /// </summary>
         V400PP = 2,
+        /// <summary>
+        /// Unknown
+        /// </summary>
         UNKNOWN = -1
     }
 }

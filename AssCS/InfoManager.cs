@@ -5,6 +5,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Manages the script information for a file
+    /// </summary>
     public class InfoManager
     {
         private readonly Dictionary<string, string> info;

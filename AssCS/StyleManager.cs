@@ -5,6 +5,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Manages the styles in a file
+    /// </summary>
     public class StyleManager
     {
         private readonly Dictionary<int, Style> styles;

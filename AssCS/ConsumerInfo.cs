@@ -4,6 +4,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Information about the program consuming AssCS.
+    /// </summary>
     public class ConsumerInfo
     {
         public string Name { get; }

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace AssCS
 {
+    /// <summary>
+    /// Manages the properties for a file
+    /// </summary>
     public class PropertiesManager
     {
         private readonly Dictionary<string, ProjectProperty> properties;
