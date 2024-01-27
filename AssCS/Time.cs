@@ -79,6 +79,7 @@ namespace AssCS
         public static Time FromCentis(long centis) => new Time(TimeSpan.FromMilliseconds(centis * 10));
         public static Time FromDecis(long decis) => new Time(TimeSpan.FromMilliseconds(decis * 100));
         public static Time FromSeconds(long secs) => new Time(TimeSpan.FromSeconds(secs));
+        public static Time FromTime(Time t) => new Time(t);
 
         /// <summary>
         /// Bootstrap a Time component from its representation in a file

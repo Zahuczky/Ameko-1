@@ -54,7 +54,7 @@ namespace AssCS
                                 }
 
                                 syl.TagType = tag.Name;
-                                syl.StartTime += syl.Duration;
+                                syl.Start += Time.FromMillis(syl.Duration);
                                 syl.Duration = tag.Parameters[0].GetInt() * 10;
                             }
                             else
@@ -79,7 +79,7 @@ namespace AssCS
             syllables.Clear();
             Syllable syl = new Syllable
             {
-                StartTime = line.Start.TotalMilliseconds,
+                Start = Time.FromTime(line.Start),
                 Duration = 0,
                 TagType = "\\k",
                 OverrideTags = new Dictionary<int, string>()
@@ -88,22 +88,22 @@ namespace AssCS
 
             if (normalize)
             {
-                long lineEnd = line.End.TotalMilliseconds;
-                long lastEnd = syl.StartTime + syl.Duration;
+                Time lineEnd = line.End;
+                Time lastEnd = syl.Start + Time.FromMillis(syl.Duration);
 
-                if (lastEnd < lineEnd) syllables.Last().Duration += (lineEnd - lastEnd);
+                if (lastEnd < lineEnd) syllables.Last().Duration += (lineEnd - lastEnd).TotalMilliseconds;
                 else if (lastEnd > lineEnd)
                 {
                     foreach (var s in syllables)
                     {
-                        if (s.StartTime > lineEnd)
+                        if (s.Start > lineEnd)
                         {
-                            s.StartTime = lineEnd;
+                            s.Start = Time.FromTime(lineEnd);
                             s.Duration = 0;
                         }
                         else
                         {
-                            s.Duration = Math.Min(s.Duration, lineEnd - s.StartTime);
+                            s.Duration = Math.Min(s.Duration, (lineEnd - s.Start).TotalMilliseconds);
                         }
                     }
                 }
@@ -144,7 +144,7 @@ namespace AssCS
 
             if (preSyl.Duration < 0) return;
 
-            newSyl.StartTime = preSyl.StartTime + preSyl.Duration;
+            newSyl.Start = preSyl.Start + Time.FromMillis(preSyl.Duration);
             newSyl.TagType = string.Copy(preSyl.TagType);
 
             int len = preSyl.Text.Length;
@@ -173,18 +173,18 @@ namespace AssCS
             syllables.RemoveAt(idx);
         }
 
-        public void SetStartTime(int idx, long time)
+        public void SetStartTime(int idx, Time time)
         {
             if (idx == 0) return;
 
             var syl = syllables[idx];
             var prev = syllables[idx - 1];
 
-            if (time < prev.StartTime) return;
-            if (time > syl.StartTime + syl.Duration) return;
+            if (time < prev.Start) return;
+            if (time > syl.Start + Time.FromMillis(syl.Duration)) return;
 
-            var delta = time - syl.StartTime;
-            syl.StartTime = time;
+            var delta = (time - syl.Start).TotalMilliseconds;
+            syl.Start = Time.FromTime(time);
             syl.Duration -= delta;
             prev.Duration += delta;
         }
@@ -197,21 +197,21 @@ namespace AssCS
             // Chop off any portion of syllables starting before the new start
             do
             {
-                long delta = start.TotalMilliseconds - syllables[idx].StartTime;
-                syllables[idx].StartTime = start.TotalMilliseconds;
+                long delta = (start - syllables[idx].Start).TotalMilliseconds;
+                syllables[idx].Start = Time.FromTime(start);
                 syllables[idx].Duration = Math.Max(0, syllables[idx].Duration - delta);
             }
-            while (++idx < syllables.Count && syllables[idx].StartTime <  start.TotalMilliseconds);
+            while (++idx < syllables.Count && syllables[idx].Start <  start);
 
             // Truncate syllables ending after the new end time
             idx = syllables.Count - 1;
-            while (syllables[idx].StartTime > end.TotalMilliseconds)
+            while (syllables[idx].Start > end)
             {
-                syllables[idx].StartTime = end.TotalMilliseconds;
+                syllables[idx].Start = Time.FromTime(end);
                 syllables[idx].Duration = 0;
                 --idx;
             }
-            syllables[idx].Duration = end.TotalMilliseconds - syllables[idx].StartTime;
+            syllables[idx].Duration = (end - syllables[idx].Start).TotalMilliseconds;
         }
 
         public Karaoke(Event line, bool autoSplit, bool normalize)
@@ -223,7 +223,13 @@ namespace AssCS
 
     public class Syllable
     {
-        public long StartTime;
+        /// <summary>
+        /// Time relative to time zero (file-time), not line start
+        /// </summary>
+        public Time Start;
+        /// <summary>
+        /// Duration of the line in milliseconds
+        /// </summary>
         public long Duration;
         public string TagType;
         public string Text;
@@ -247,6 +253,7 @@ namespace AssCS
 
         public Syllable()
         {
+            Start = new Time();
             TagType = string.Empty;
             Text = string.Empty;
             OverrideTags = new Dictionary<int, string>();
