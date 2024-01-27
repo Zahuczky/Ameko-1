@@ -7,10 +7,9 @@ namespace AssCS
 {
     public class OverrideTag
     {
-        private string _name;
         private bool _valid = false;
         public List<OverrideParameter> Parameters { get; }
-        public string Name => _name;
+        public string Name { get; set; }
         public bool Valid => _valid;
 
         public void Clear()

@@ -48,6 +48,11 @@ namespace AssCS
             get => localTime.TotalSeconds;
         }
 
+        public long TotalMilliseconds
+        {
+            get => (long)localTime.TotalMilliseconds;
+        }
+
         public string AsAss()
         {
             return $"{Hours}:{Minutes:00}:{Seconds:00}.{Centiseconds:00}";
