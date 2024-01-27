@@ -69,7 +69,9 @@ namespace AssCS
                 data,
                 BlockType.DRAWING
                 )
-        { }
+        { 
+            Scale = scale;
+        }
     }
 
     /// <summary>
@@ -90,12 +92,16 @@ namespace AssCS
             Tags.Clear();
             var depth = 0;
             var start = 0;
-            for (int i = 0; i < Text.Length; ++i)
+            for (int i = 1; i < Text.Length; ++i)
             {
-                if (depth > 0 && Text[i] == ')') --depth;
+                if (depth > 0)
+                {
+                    if (Text[i] == ')') --depth;
+
+                }
                 else if (Text[i] == '\\')
                 {
-                    Tags.Add(new OverrideTag(Text[start..i]));
+                    Tags.Add(new OverrideTag(Text.Substring(start, i - start)));
                     start = i;
                 }
                 else if (Text[i] == '(') ++depth;

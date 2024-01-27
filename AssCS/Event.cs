@@ -49,10 +49,10 @@ namespace AssCS
             Style = match.Groups[5].Value;
             Actor = match.Groups[6].Value;
             Margins.Left = Convert.ToInt32(match.Groups[7].Value);
-            Margins.Right = Convert.ToInt32(match.Groups[9].Value);
-            Margins.Vertical = Convert.ToInt32(match.Groups[10].Value);
-            Effect = match.Groups[11].Value;
-            Text = match.Groups[12].Value;
+            Margins.Right = Convert.ToInt32(match.Groups[8].Value);
+            Margins.Vertical = Convert.ToInt32(match.Groups[9].Value);
+            Effect = match.Groups[10].Value;
+            Text = match.Groups[11].Value;
             LoadExtradata(data);
         }
 
@@ -87,51 +87,51 @@ namespace AssCS
             }
 
             int drawingLevel = 0;
-            for (int i = 0; i < Text.Length;)
+            string text = string.Copy(Text);
+            string work;
+            int endPlain;
+            for (int len = text.Length, cur = 0; cur < len;)
             {
-                string work;
-                int nextOverride = 0;
-                char c = Text[i];
-                // Overrides
-                if (c == '{')
+                // Override block
+                if (text[cur] == '{')
                 {
-                    int end = Text.IndexOf('}', i);
+                    int end = text.IndexOf('}', cur);
                     if (end == -1)
                     {
-                        // Entering Plain Text Block [Goto] // TODO: Refactor
-                        // Unclosed block → Plain (VSFilter) (Libass does not have this requirement)
-                        nextOverride = Text.IndexOf('{', i);
-                        if (nextOverride == -1)
+                        // ----- Plain -----
+                        endPlain = text.IndexOf('{', cur + 1);
+                        if (endPlain == -1)
                         {
-                            work = Text[i..];
-                            i = Text.Length - 1;
+                            work = text.Substring(cur);
+                            cur = len;
                         }
                         else
                         {
-                            work = Text[i..nextOverride];
-                            i = nextOverride;
+                            work = text.Substring(cur, endPlain - cur);
+                            cur = endPlain;
                         }
                         if (drawingLevel == 0) blocks.Add(new PlainBlock(work));
                         else blocks.Add(new DrawingBlock(work, drawingLevel));
+                        // ----- End Plain -----
                     }
                     else
                     {
-                        // Leaving Plain Text Block
-                        i++;
+                        ++cur;
                         // Get block contents
-                        work = Text[i..nextOverride];
-                        i = nextOverride + 1;
+                        work = text.Substring(cur, end - cur);
+                        cur = end + 1;
 
                         if (work.Length > 0 && work.IndexOf('\\') == -1)
                         {
-
-                        } else
+                            // Comment
+                            blocks.Add(new CommentBlock(work));
+                        }
+                        else
                         {
-                            // Create a block
+                            // Create block
                             var block = new OverrideBlock(work);
                             block.ParseTags();
-
-                            // Look for p (drawing) tags
+                            // Search for drawings
                             foreach (var tag in block.Tags)
                             {
                                 if (tag.Name == "\\p") drawingLevel = tag.Parameters[0].GetInt();
@@ -141,21 +141,21 @@ namespace AssCS
                         continue;
                     }
                 }
-                // Entering Plain Text Block [Goto] // TODO: Refactor
-                nextOverride = Text.IndexOf('{', i);
-                if (nextOverride == -1)
+                // ----- Plain 2 electric boogaloo -----
+                endPlain = text.IndexOf('{', cur + 1);
+                if (endPlain == -1)
                 {
-                    work = Text[i..];
-                    i = Text.Length - 1;
+                    work = text.Substring(cur);
+                    cur = len;
                 }
                 else
                 {
-                    work = Text[i..nextOverride];
-                    i = nextOverride;
+                    work = text.Substring(cur, endPlain - cur);
+                    cur = endPlain;
                 }
                 if (drawingLevel == 0) blocks.Add(new PlainBlock(work));
                 else blocks.Add(new DrawingBlock(work, drawingLevel));
-                // Leaving Plain Text Block
+                // ----- End Plain -----
             }
             return blocks;
         }

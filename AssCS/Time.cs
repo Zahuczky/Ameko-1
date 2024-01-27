@@ -50,7 +50,7 @@ namespace AssCS
 
         public string AsAss()
         {
-            return $"{Hours}:{Minutes:2}:{Seconds:2}.{Centiseconds:2}";
+            return $"{Hours}:{Minutes:00}:{Seconds:00}.{Centiseconds:00}";
         }
 
         public string? AsOverride() => null;
@@ -81,10 +81,10 @@ namespace AssCS
         /// <param name="data">Line</param>
         public static Time FromAss(string data)
         {
-            var splits = data.Split(':');
-            if (splits.Length != 3) throw new ArgumentException($"Time: {data} is an invalid timecode.");
+            var splits = data.Split(':', '.');
+            if (splits.Length != 4) throw new ArgumentException($"Time: {data} is an invalid timecode.");
             long millis = 0;
-            int[] multiplier = { 3600 * 1000, 60 * 1000, 1000, 1 };
+            int[] multiplier = { 3600 * 1000, 60 * 1000, 1000, 10 };
             for (int i = 0; i < splits.Length; i++)
             {
                 millis += Convert.ToInt64(splits[i]) * multiplier[i];
