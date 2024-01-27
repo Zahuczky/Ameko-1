@@ -29,8 +29,8 @@ namespace AssCS
 
         public void FromAss(string data)
         {
-            var rgbRegex = @"&H([\da-fA-F]{2}){3}&?";
-            var rgbaRegex = @"&H([\da-fA-F]{2}){4}&?";
+            var rgbRegex = @"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$";
+            var rgbaRegex = @"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$";
             var rgbMatch = Regex.Match(data, rgbRegex);
             var rgbaMatch = Regex.Match(data, rgbaRegex);
             if (!rgbMatch.Success && !rgbaMatch.Success) throw new ArgumentException($"Color {data} is invalid or malformed.");

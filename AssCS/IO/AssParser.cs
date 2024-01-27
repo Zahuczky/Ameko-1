@@ -42,7 +42,7 @@ namespace AssCS.IO
                     };
                     continue; // Skip further processing of this line
                 }
-                parseState(line, assFile);
+                 parseState(line, assFile);
             }
 
             return assFile;
