@@ -26,33 +26,33 @@ namespace AssCS
             {
                 if (data.StartsWith(p.Name))
                 {
-                    _name = p.Name;
+                    Name = p.Name;
                     ParseParameters(data[p.Name.Length..]);
                     _valid = true;
                     return;
                 }
             }
             // Garbage :poppo:
-            _name = data;
+            Name = data;
             _valid = false;
         }
 
         public OverrideTag()
         {
-            _name = "";
+            Name = "";
             Parameters = new List<OverrideParameter>();
         }
 
         public OverrideTag(string data)
         {
-            _name = "";
+            Name = "";
             Parameters = new List<OverrideParameter>();
             SetText(data);
         }
 
         public OverrideTag(OverrideTag tag)
         {
-            _name = tag.Name;
+            Name = tag.Name;
             Parameters = new List<OverrideParameter>(tag.Parameters);
             _valid = tag.Valid;
         }
