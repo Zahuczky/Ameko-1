@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:Ameko.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+			 x:DataType="vm:EventsViewModel"
+             x:Class="Ameko.Views.EventsView">
+	<Panel>
+		<DataGrid IsReadOnly="True"
+				  SelectionMode="Extended"
+				  VerticalScrollBarVisibility="Auto"
+				  ItemsSource="{Binding Events}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Start" Binding="{Binding Start.TextContent}" />
+				<DataGridTextColumn Header="End" Binding="{Binding End.TextContent}" />
+				<DataGridTextColumn Header="CPS" Binding="{Binding Cps}" />
+				<DataGridTextColumn Header="Content" Binding="{Binding Text}" />
+			</DataGrid.Columns>
+		</DataGrid>
+	</Panel>
+</UserControl>

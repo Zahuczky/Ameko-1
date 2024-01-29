@@ -1,6 +1,11 @@
-﻿namespace Ameko.ViewModels;
+﻿using Ameko.Services;
+
+namespace Ameko.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public string Greeting => "Welcome to Avalonia!";
+    public MainViewModel()
+    {
+        HoloService.HoloInstance.Workspace.AddFileToWorkspace("c:\\test.ass");
+    }
 }
