@@ -60,6 +60,8 @@ namespace AssCS
 
         public string? AsOverride() => null;
 
+        public string TextContent => AsAss();
+
         public Time()
         {
             localTime = TimeSpan.Zero;
