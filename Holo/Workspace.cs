@@ -2,8 +2,10 @@
 using AssCS.IO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Tomlyn;
 
@@ -15,10 +17,11 @@ namespace Holo
     /// Workspaces may be saved to allow multiple files to be opened at a time, and to
     /// facilitate sharing of workspaces.
     /// </summary>
-    public class Workspace
+    public class Workspace : INotifyPropertyChanged
     {
         private int _id;
         public int NextId => _id++;
+        private int _workingIndex = 0;
 
         private readonly List<Link> ReferencedFiles;
         private readonly Dictionary<int, AssCS.File> LoadedFiles;
@@ -26,7 +29,11 @@ namespace Holo
         /// <summary>
         /// Index of the currently selected open file in the workspace
         /// </summary>
-        public int WorkingIndex { get; set; }
+        public int WorkingIndex
+        {
+            get { return _workingIndex; }
+            set { _workingIndex = value; OnPropertyChanged(nameof(WorkingIndex)); }
+        }
 
         /// <summary>
         /// The currently selected open file
@@ -170,6 +177,12 @@ namespace Holo
             LoadedFiles = new Dictionary<int, AssCS.File>();
             AddFileToWorkspace();
             WorkingIndex = 0;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
