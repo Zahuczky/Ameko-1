@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:Ameko.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Ameko.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="Ameko">
         <views:MainView />
 </Window>
