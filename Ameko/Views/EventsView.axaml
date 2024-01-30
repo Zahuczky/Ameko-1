@@ -3,11 +3,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:Ameko.ViewModels"
+			 xmlns:asscs="using:AssCS"
+			 xmlns:converters="using:Ameko.Converters"
              mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
 			 x:DataType="vm:EventsViewModel"
              x:Class="Ameko.Views.EventsView">
-	<StackPanel>
-		<Label Content="{Binding SelectedEvent.Text, FallbackValue=''}" />
+	<UserControl.Resources>
+		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
+	</UserControl.Resources>
+	<DockPanel>
+		<Label DockPanel.Dock="Top" Content="{Binding SelectedEvent.Text, FallbackValue=''}" />
 		<DataGrid Name="eventsGrid"
 				  IsReadOnly="True"
 				  SelectionMode="Extended"
@@ -17,9 +22,29 @@
 				<DataGridTextColumn IsVisible="False" Header="ID" Binding="{Binding Id}" />
 				<DataGridTextColumn Header="Start" Binding="{Binding Start.TextContent}" />
 				<DataGridTextColumn Header="End" Binding="{Binding End.TextContent}" />
-				<DataGridTextColumn Header="CPS" Binding="{Binding Cps}" />
+				
+				<DataGridTemplateColumn Header="CPS">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="asscs:Event">
+							<TextBlock Text="{Binding Cps}"
+									   VerticalAlignment="Center"
+									   HorizontalAlignment="Center"
+									   Foreground="{Binding Cps, Converter={StaticResource CpsConverter}}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				
 				<DataGridTextColumn Header="Content" Binding="{Binding Text}" />
 			</DataGrid.Columns>
+
+			<DataGrid.Styles>
+				<Style Selector="DataGridRow">
+					<Setter Property="Background" Value="Transparent" />
+				</Style>
+				<Style Selector="ScrollBar">
+					<Setter Property="Background" Value="Gray" />
+				</Style>
+			</DataGrid.Styles>
 		</DataGrid>
-	</StackPanel>
+	</DockPanel>
 </UserControl>
