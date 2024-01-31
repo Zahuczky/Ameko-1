@@ -55,14 +55,7 @@ namespace Holo
     {
         public string? AudioProvider;
         public string? VideoProvider;
-        public PanelLayoutConfiguration? PanelConfig;
+        public int CpsThreshold;
     }
 
-    public class PanelLayoutConfiguration
-    {
-        public int? Rows;
-        public int? Columns;
-        public int[]? Widths;
-        public int[]? Heights;
-    }
 }
