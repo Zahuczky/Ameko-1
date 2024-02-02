@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Ameko.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:components="clr-namespace:Ameko.Views.Components"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+        x:Class="Ameko.Views.Windows.MainWindow"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		x:DataType="vm:MainWindowViewModel"
+        Title="{Binding CompiledTitle}">
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_File">
+
+			</MenuItem>
+			<MenuItem Header="_Help">
+				<MenuItem Header="_About Ameko" Click="ShowAboutDialog">
+					<MenuItem.Icon>
+						<Image Width="16" Height="16" Source="/Assets/Ameko-Simplified-BG-64.ico" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
+		</Menu>
+
+		<DockPanel>
+			<DockPanel DockPanel.Dock="Top">
+				<DockPanel DockPanel.Dock="Right">
+					<components:EditingView DockPanel.Dock="Bottom" />
+				</DockPanel>
+			</DockPanel>
+
+			<components:EventsView />
+		</DockPanel>
+	</DockPanel>
+</Window>
