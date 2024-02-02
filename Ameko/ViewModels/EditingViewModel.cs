@@ -1,4 +1,5 @@
-﻿using AssCS;
+﻿using Ameko.Services;
+using AssCS;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,14 @@ namespace Ameko.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _selectedEvent, value);
         }
 
+        private void UpdateSelections(object? sender, EventArgs e)
+        {
+            SelectedEvent = HoloService.HoloInstance.Workspace.WorkingFile.SelectedEvent;
+        }
+
         public EditingViewModel()
         {
-            
+            HoloService.HoloInstance.Workspace.WorkingFile.PropertyChanged += UpdateSelections; // won't work
         }
     }
 }

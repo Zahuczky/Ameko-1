@@ -139,6 +139,49 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Get an event by ID
+        /// </summary>
+        /// <param name="id">ID of the event</param>
+        /// <returns>The event with the specified ID</returns>
+        /// <exception cref="ArgumentException">If the ID is not found</exception>
+        public Event Get(int id)
+        {
+            if (events.ContainsKey(id))
+            {
+                return events[id].Event;
+            }
+            throw new ArgumentException($"Cannot get event id={id} because that id cannot be found.");
+        }
+
+        /// <summary>
+        /// Get the next event
+        /// </summary>
+        /// <param name="id">ID of the event before</param>
+        /// <returns>The event after the event with the specified ID, or null</returns>
+        public Event? GetAfter(int id)
+        {
+            if (events.ContainsKey(id))
+            {
+                return events[events[id].Link.Next.Value].Event;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get the previous event
+        /// </summary>
+        /// <param name="id">ID of the event after</param>
+        /// <returns>The event before the event with the specified ID, or null</returns>
+        public Event? GetBefore(int id)
+        {
+            if (events.ContainsKey(id))
+            {
+                return events[events[id].Link.Previous.Value].Event;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Clean house
         /// </summary>
         public void Clear()

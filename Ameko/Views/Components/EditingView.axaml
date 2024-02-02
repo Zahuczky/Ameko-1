@@ -7,6 +7,7 @@
 			 x:DataType="vm:EditingViewModel"
              x:Class="Ameko.Views.Components.EditingView">
 	<Panel>
-		<Label DockPanel.Dock="Top" Content="{Binding SelectedEvent.Text, FallbackValue=''}" />
+		<TextBox TextWrapping="Wrap"
+				   Text="{Binding SelectedEvent.Text, FallbackValue='he'}" />
 	</Panel>
 </UserControl>

@@ -139,11 +139,11 @@ namespace AssCS
         }
         public static bool operator ==(Time a, Time b)
         {
-            return a.localTime == b.localTime;
+            return a.localTime.Equals(b.localTime);
         }
         public static bool operator !=(Time a, Time b)
         {
-            return a.localTime != b.localTime;
+            return !a.localTime.Equals(b.localTime);
         }
     }
 }

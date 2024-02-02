@@ -27,13 +27,6 @@ namespace AssCS
             return s.Id;
         }
 
-        public int Set(Commit<Style> commit)
-        {
-            var committedStyle = commit.Snapshot;
-            styles[committedStyle.Id] = committedStyle;
-            return committedStyle.Id;
-        }
-
         public Style? Get(string name)
         {
             foreach (Style style in styles.Values)

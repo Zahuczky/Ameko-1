@@ -24,7 +24,7 @@ namespace Holo
         private int _workingIndex = 0;
 
         private readonly List<Link> ReferencedFiles;
-        private readonly Dictionary<int, AssCS.File> LoadedFiles;
+        private readonly Dictionary<int, FileWrapper> LoadedFiles;
 
         /// <summary>
         /// Index of the currently selected open file in the workspace
@@ -38,7 +38,7 @@ namespace Holo
         /// <summary>
         /// The currently selected open file
         /// </summary>
-        public AssCS.File WorkingFile => LoadedFiles[WorkingIndex];
+        public FileWrapper WorkingFile => LoadedFiles[WorkingIndex];
 
         /// <summary>
         /// Add a file to the current workspace and open it
@@ -53,7 +53,7 @@ namespace Holo
                 var file = parser.Load(filePath);
                 var link = new Link(NextId, filePath);
                 ReferencedFiles.Add(link);
-                LoadedFiles.Add(link.Id, file);
+                LoadedFiles.Add(link.Id, new FileWrapper(file));
                 WorkingIndex = link.Id;
                 return link.Id;
             }
@@ -71,7 +71,7 @@ namespace Holo
 
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
-            LoadedFiles.Add(dummyLink.Id, dummyFile);
+            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile));
             WorkingIndex = dummyLink.Id;
             return dummyLink.Id;
         }
@@ -102,7 +102,7 @@ namespace Holo
                 if (link == null) return -1;
 
                 var file = parser.Load(link.Path);
-                LoadedFiles.Add(link.Id, file);
+                LoadedFiles.Add(link.Id, new FileWrapper(file));
                 WorkingIndex = link.Id;
                 return id;
             }
@@ -162,7 +162,7 @@ namespace Holo
                 var configContents = reader.ReadToEnd();
                 Workspacefile space = Toml.ToModel<Workspacefile>(filePath);
                 ReferencedFiles = space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList();
-                LoadedFiles = new Dictionary<int, AssCS.File>();
+                LoadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
             }
             catch { throw new IOException($"An error occured while loading workspace file {filePath}"); }
@@ -174,7 +174,7 @@ namespace Holo
         public Workspace()
         {
             ReferencedFiles = new List<Link>();
-            LoadedFiles = new Dictionary<int, AssCS.File>();
+            LoadedFiles = new Dictionary<int, FileWrapper>();
             AddFileToWorkspace();
             WorkingIndex = 0;
         }

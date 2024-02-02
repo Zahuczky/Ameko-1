@@ -260,5 +260,38 @@ namespace AssCS
         {
             FromAss(data);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (!obj.GetType().Equals(typeof(Event))) return false;
+            Event e = (Event)obj;
+            return Id == e.Id
+                && Comment == e.Comment
+                && Layer == e.Layer
+                && Start == e.Start
+                && End == e.End
+                && Style.Equals(e.Style)
+                && Actor.Equals(e.Actor)
+                && Margins.Equals(e.Margins)
+                && Effect.Equals(e.Effect)
+                && Text.Equals(e.Text);
+        }
+
+        public override int GetHashCode()
+        {
+            HashCode hash = new HashCode();
+            hash.Add(Id);
+            hash.Add(Comment);
+            hash.Add(Layer);
+            hash.Add(Start);
+            hash.Add(End);
+            hash.Add(Style);
+            hash.Add(Actor);
+            hash.Add(Margins);
+            hash.Add(Effect);
+            hash.Add(Text);
+            return hash.ToHashCode();
+        }
     }
 }
