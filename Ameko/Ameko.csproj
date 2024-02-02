@@ -35,10 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataModels\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AssCS\AssCS.csproj" />
     <ProjectReference Include="..\Holo\Holo.csproj" />
   </ItemGroup>

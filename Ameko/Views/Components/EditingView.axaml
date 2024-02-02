@@ -2,12 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:vm="using:Ameko.ViewModels"
              mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
-			 x:DataType="vm:EditingViewModel"
+			 xmlns:components="using:Ameko.Views.Components"
+			 xmlns:vm="using:Ameko.ViewModels"
+			 x:DataType="vm:MainWindowViewModel"
              x:Class="Ameko.Views.Components.EditingView">
 	<Panel>
 		<TextBox TextWrapping="Wrap"
-				   Text="{Binding SelectedEvent.Text, FallbackValue='he'}" />
+				   Text="{Binding $parent[components:EventsView].FileWrapper.SelectedEvent.Text}" />
+		<!-- TODO proper bindings when its not 12:30am-->
 	</Panel>
 </UserControl>

@@ -1,10 +1,11 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Ameko.ViewModels"
+		xmlns:dm="using:Ameko.DataModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:components="clr-namespace:Ameko.Views.Components"
         mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+        xmlns:components="using:Ameko.Views.Components"
         x:Class="Ameko.Views.Windows.MainWindow"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
 		x:DataType="vm:MainWindowViewModel"
@@ -12,7 +13,7 @@
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
-
+				<!-- TODO -->
 			</MenuItem>
 			<MenuItem Header="_Help">
 				<MenuItem Header="_About Ameko" Click="ShowAboutDialog">
@@ -23,14 +24,35 @@
 			</MenuItem>
 		</Menu>
 
-		<DockPanel>
-			<DockPanel DockPanel.Dock="Top">
-				<DockPanel DockPanel.Dock="Right">
-					<components:EditingView DockPanel.Dock="Bottom" />
-				</DockPanel>
-			</DockPanel>
+		<Panel DockPanel.Dock="Left">
+			<Label HorizontalAlignment="Center"
+				   VerticalAlignment="Center"
+				   Width="125"
+				   Content="Workspace" />
+		</Panel>
+		
+		<TabControl ItemsSource="{Binding FileTabItems}"
+					SelectedIndex="{Binding TCSelectedIndex}">
+			<TabControl.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}" />
+				</DataTemplate>
+			</TabControl.ItemTemplate>
+			<TabControl.ContentTemplate>
+				<DataTemplate x:DataType="dm:FileTabItem">
+					<DockPanel>
+						<components:EditingView DockPanel.Dock="Top"
+												FileWrapper="{Binding File}" />
+						<components:EventsView FileWrapper="{Binding File}" />
+					</DockPanel>
+				</DataTemplate>
+			</TabControl.ContentTemplate>
 
-			<components:EventsView />
-		</DockPanel>
+			<TabControl.Styles>
+				<Style Selector="TabItem">
+					<Setter Property="Padding" Value="2 1" />
+				</Style>
+			</TabControl.Styles>
+		</TabControl>
 	</DockPanel>
 </Window>

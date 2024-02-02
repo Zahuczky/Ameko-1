@@ -16,6 +16,7 @@ namespace Holo
         private List<Event>? selectedEvents;
 
         public File File => file;
+        public int ID { get; }
 
         public List<Event>? SelectedEvents
         {
@@ -108,9 +109,10 @@ namespace Holo
             return want;
         }
 
-        public FileWrapper(File file)
+        public FileWrapper(File file, int id)
         {
             this.file = file;
+            ID = id;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -40,6 +40,8 @@ namespace Holo
         /// </summary>
         public FileWrapper WorkingFile => LoadedFiles[WorkingIndex];
 
+        public FileWrapper GetFile(int id) => LoadedFiles[id];
+
         /// <summary>
         /// Add a file to the current workspace and open it
         /// </summary>
@@ -53,7 +55,7 @@ namespace Holo
                 var file = parser.Load(filePath);
                 var link = new Link(NextId, filePath);
                 ReferencedFiles.Add(link);
-                LoadedFiles.Add(link.Id, new FileWrapper(file));
+                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id));
                 WorkingIndex = link.Id;
                 return link.Id;
             }
@@ -71,7 +73,7 @@ namespace Holo
 
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
-            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile));
+            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id));
             WorkingIndex = dummyLink.Id;
             return dummyLink.Id;
         }
@@ -102,7 +104,7 @@ namespace Holo
                 if (link == null) return -1;
 
                 var file = parser.Load(link.Path);
-                LoadedFiles.Add(link.Id, new FileWrapper(file));
+                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id));
                 WorkingIndex = link.Id;
                 return id;
             }
@@ -145,6 +147,11 @@ namespace Holo
                 return true;
             }
             catch { return false; }
+        }
+
+        public FileWrapper this[int key]
+        {
+            get => LoadedFiles[key];
         }
 
         /// <summary>

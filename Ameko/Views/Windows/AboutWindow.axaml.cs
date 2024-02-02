@@ -7,8 +7,8 @@ namespace Ameko.Views.Windows
     {
         public AboutWindow()
         {
-            this.DataContext = new AboutWindowViewModel();
             InitializeComponent();
+            this.DataContext = new AboutWindowViewModel();
         }
     }
 }

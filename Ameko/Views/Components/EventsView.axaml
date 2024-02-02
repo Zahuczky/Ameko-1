@@ -2,26 +2,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+			 xmlns:components="using:Ameko.Views.Components"
+			 xmlns:converters="using:Ameko.Converters"
 			 xmlns:vm="using:Ameko.ViewModels"
 			 xmlns:asscs="using:AssCS"
-			 xmlns:converters="using:Ameko.Converters"
-             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
-			 x:DataType="vm:EventsViewModel"
+			 x:DataType="vm:MainWindowViewModel"
              x:Class="Ameko.Views.Components.EventsView">
 	<UserControl.Resources>
 		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
 	</UserControl.Resources>
 	<DockPanel>
 		<DataGrid Name="eventsGrid"
-				  IsReadOnly="True"
-				  SelectionMode="Extended"
-				  VerticalScrollBarVisibility="Auto"
-				  ItemsSource="{Binding Events}">
+		  IsReadOnly="True"
+		  SelectionMode="Extended"
+		  VerticalScrollBarVisibility="Auto"
+		  ItemsSource="{Binding $parent[components:EventsView].FileWrapper.File.EventManager.Ordered}">
 			<DataGrid.Columns>
 				<DataGridTextColumn IsVisible="False" Header="ID" Binding="{Binding Id}" />
 				<DataGridTextColumn Header="Start" Binding="{Binding Start.TextContent}" />
 				<DataGridTextColumn Header="End" Binding="{Binding End.TextContent}" />
-				
+
 				<DataGridTemplateColumn Header="CPS">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate x:DataType="asscs:Event">
@@ -32,7 +33,7 @@
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
-				
+
 				<DataGridTextColumn Header="Content" Binding="{Binding Text}" />
 			</DataGrid.Columns>
 
