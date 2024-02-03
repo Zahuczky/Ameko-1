@@ -6,6 +6,7 @@
 
     <Application.Styles>
         <SimpleTheme />
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml"/>
 		<Style Selector="Svg">
 			<Setter Property="(Svg.Css)" Value="path { fill: #FFFFFF; }" />
 		</Style>

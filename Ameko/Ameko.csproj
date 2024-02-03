@@ -43,10 +43,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataModels\" />
+    <ProjectReference Include="..\Holo\Holo.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Holo\Holo.csproj" />
+    <Compile Update="Views\TabItemView.axaml.cs">
+      <DependentUpon>TabItemView.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DataModels\" />
   </ItemGroup>
 </Project>
