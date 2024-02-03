@@ -41,8 +41,11 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         InitializeComponent();
         this.WhenActivated((CompositeDisposable disposables) =>
         {
-            ViewModel!.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
-            ViewModel!.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
+            if (ViewModel != null)
+            {
+                ViewModel.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
+                ViewModel.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
+            }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });

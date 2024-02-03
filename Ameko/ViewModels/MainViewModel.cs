@@ -10,6 +10,8 @@ namespace Ameko.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private int selectedTabIndex;
+
+    public string WindowTitle { get; } = $"Ameko {AmekoService.VERSION_BUG}";
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
     public Interaction<MainViewModel, string?> ShowOpenFileDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }

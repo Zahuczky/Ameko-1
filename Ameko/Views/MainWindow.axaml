@@ -7,7 +7,7 @@
         xmlns:views="using:Ameko.Views"
         x:Class="Ameko.Views.MainWindow"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
-        Title="Ameko"
+        Title="{Binding WindowTitle}"
 		Name="root">
         <views:MainView />
 </Window>
