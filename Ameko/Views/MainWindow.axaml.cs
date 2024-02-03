@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
+using System;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         await dialog.ShowDialog(this);
     }
 
-    private async Task DoShowOpenFileDialogAsync(InteractionContext<MainViewModel, string?> interaction)
+    private async Task DoShowOpenFileDialogAsync(InteractionContext<MainViewModel, Uri?> interaction)
     {
         var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
@@ -29,8 +30,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         });
         if (files.Count > 0)
         {
-            var filepath = files[0].Path.AbsolutePath.ToString();
-            interaction.SetOutput(filepath);
+            interaction.SetOutput(files[0].Path);
             return;
         }
         interaction.SetOutput(null);

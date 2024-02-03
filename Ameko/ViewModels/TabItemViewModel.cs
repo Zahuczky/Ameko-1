@@ -32,6 +32,7 @@ namespace Ameko.ViewModels
 
         public int ID => _id;
         public ObservableCollection<Event> Events { get; private set; }
+        public int SelectedIndex { get; set; }
 
         public Event? SelectedEvent
         {

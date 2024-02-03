@@ -17,7 +17,7 @@ public class MainViewModel : ViewModelBase
 
     public string WindowTitle { get; } = $"Ameko {AmekoService.VERSION_BUG}";
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
-    public Interaction<MainViewModel, string?> ShowOpenFileDialog { get; }
+    public Interaction<MainViewModel, Uri?> ShowOpenFileDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowOpenFileDialogCommand { get; }
 
@@ -33,7 +33,7 @@ public class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         ShowAboutDialog = new Interaction<AboutWindowViewModel, AboutWindowViewModel?>();
-        ShowOpenFileDialog = new Interaction<MainViewModel, string?>();
+        ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
         
         ShowAboutDialogCommand = ReactiveCommand.Create(async () =>
         {
@@ -42,13 +42,13 @@ public class MainViewModel : ViewModelBase
         });
         ShowOpenFileDialogCommand = ReactiveCommand.Create(async () =>
         {
-            string filepath = await ShowOpenFileDialog.Handle(this);
-            if (filepath == null) return;
+            var uri = await ShowOpenFileDialog.Handle(this);
+            if (uri == null) return;
 
-            int id = HoloService.HoloInstance.Workspace.AddFileToWorkspace(filepath);
+            int id = HoloService.HoloInstance.Workspace.AddFileToWorkspace(uri.LocalPath);
             // TODO: Real 
             Tabs?.Add(new TabItemViewModel(
-                Path.GetFileNameWithoutExtension(filepath), 
+                Path.GetFileNameWithoutExtension(uri.LocalPath), 
                 HoloService.HoloInstance.Workspace.GetFile(id)
             ));
             SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol

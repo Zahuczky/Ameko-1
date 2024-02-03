@@ -13,20 +13,22 @@
 	</UserControl.Resources>
 	<DockPanel>
 		<!-- A/V/Editing area -->
-		<DockPanel DockPanel.Dock="Top" Height="300">
-			<Panel DockPanel.Dock="Left">
-				<Label Content="Video Area" HorizontalAlignment="Center" VerticalAlignment="Center" />
+		<Grid DockPanel.Dock="Top"
+			  Height="300"
+			  ColumnDefinitions="*, *"
+			  RowDefinitions="2*, 3*">
+			<Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+				<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Video Area" />
 			</Panel>
-			<DockPanel>
-				<Panel DockPanel.Dock="Top">
-					<Label Content="Audio area" HorizontalAlignment="Center" VerticalAlignment="Center" />
-				</Panel>
-				<Panel>
-					<TextBox TextWrapping="Wrap" 
-							 Text="{Binding SelectedEvent.Text, FallbackValue='Fallback'}" />
-				</Panel>
-			</DockPanel>
-		</DockPanel>
+			<Panel Grid.Row="0" Grid.Column="1">
+				<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Audio Area" />
+			</Panel>
+			<Panel Grid.Row="1" Grid.Column="1">
+				<TextBox TextWrapping="Wrap"
+						 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}" />
+			</Panel>
+					 
+		</Grid>
 		
 		<DataGrid Name="eventsGrid"
 				  IsReadOnly="True"
