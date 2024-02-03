@@ -16,7 +16,7 @@
 					</MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="_Open Subtitle">
+				<MenuItem Header="_Open Subtitle" Command="{Binding ShowOpenFileDialogCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/folder2-open.svg" />
 					</MenuItem.Icon>
@@ -57,7 +57,9 @@
 			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Workspace" />
 		</Panel>
 
-		<TabControl ItemsSource="{Binding Tabs}" TabStripPlacement="Bottom">
+		<TabControl ItemsSource="{Binding Tabs}"
+					SelectedIndex="{Binding SelectedTabIndex}"
+					TabStripPlacement="Bottom">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<TextBlock Text="{Binding Title}" />
