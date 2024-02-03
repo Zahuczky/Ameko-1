@@ -1,6 +1,6 @@
 ﻿using Ameko.ViewModels;
 using Ameko.Views;
-using Ameko.Views.Windows;
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -20,16 +20,16 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel()
+                DataContext = new MainViewModel()
             };
         }
-        //else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        //{
-        //    singleViewPlatform.MainView = new MainView
-        //    {
-        //        DataContext = new MainWindowViewModel()
-        //    };
-        //}
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        {
+            singleViewPlatform.MainView = new MainView
+            {
+                DataContext = new MainViewModel()
+            };
+        }
 
         base.OnFrameworkInitializationCompleted();
     }

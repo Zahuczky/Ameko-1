@@ -41,6 +41,7 @@ namespace Holo
         public FileWrapper WorkingFile => LoadedFiles[WorkingIndex];
 
         public FileWrapper GetFile(int id) => LoadedFiles[id];
+        public List<FileWrapper> Files => LoadedFiles.Values.ToList();
 
         /// <summary>
         /// Add a file to the current workspace and open it

@@ -3,13 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
-			 xmlns:components="using:Ameko.Views.Components"
 			 xmlns:vm="using:Ameko.ViewModels"
-			 x:DataType="vm:MainWindowViewModel"
-             x:Class="Ameko.Views.Components.EditingView">
-	<Panel>
-		<TextBox TextWrapping="Wrap"
-				   Text="{Binding $parent[components:EventsView].FileWrapper.SelectedEvent.Text}" />
-		<!-- TODO proper bindings when its not 12:30am-->
-	</Panel>
+			 x:DataType="vm:TabItemViewModel"
+             x:Class="Ameko.Views.TabView">
+	<TextBlock Text="{Binding Description}" />
 </UserControl>

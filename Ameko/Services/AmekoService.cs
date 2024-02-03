@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +13,7 @@ namespace Ameko.Services
             get
             {
                 var version = (!ThisAssembly.Git.SemVer.Major.Equals(string.Empty))
-                    ? $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}{ThisAssembly.Git.SemVer.Patch}{ThisAssembly.Git.SemVer.DashLabel} "
+                    ? $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}{ThisAssembly.Git.SemVer.DashLabel} "
                     : "";
                 var position = $"{ThisAssembly.Git.Branch}-{ThisAssembly.Git.Commit}";
                 return $"{version}@ {position}";

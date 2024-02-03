@@ -1,14 +1,12 @@
-using Ameko.ViewModels;
 using Avalonia.Controls;
 
-namespace Ameko.Views.Windows
+namespace Ameko.Views
 {
     public partial class AboutWindow : Window
     {
         public AboutWindow()
         {
             InitializeComponent();
-            this.DataContext = new AboutWindowViewModel();
         }
     }
 }

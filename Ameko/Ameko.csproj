@@ -3,7 +3,6 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
   
@@ -13,21 +12,29 @@
 
   
   <ItemGroup>
+    <None Remove="Assets\Ameko-Logo-256.png" />
+    <None Remove="Assets\Ameko-Logo-512.png" />
     <None Remove="Assets\Ameko-Simplified-BG-64.ico" />
+    <None Remove="Assets\Ameko-Simplified-Purple-64.ico" />
+    <None Remove="Assets\Ameko-Simplified-White-64.ico" />
+    <None Remove="Assets\B5\collection.svg" />
+    <None Remove="Assets\B5\door-open.svg" />
+    <None Remove="Assets\B5\file-earmark.svg" />
+    <None Remove="Assets\B5\floppy.svg" />
+    <None Remove="Assets\B5\folder-plus.svg" />
+    <None Remove="Assets\B5\folder2-open.svg" />
+    <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\Licensing.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.7" />
-    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.0.7" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.7" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.7" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.7" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.7" />
-    <PackageReference Include="Avalonia.Xaml.Interactions" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Xaml.Interactions.DragAndDrop" Version="11.0.6" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
     <PackageReference Include="GitInfo" Version="3.3.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -35,7 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AssCS\AssCS.csproj" />
+    <Folder Include="DataModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Holo\Holo.csproj" />
   </ItemGroup>
 </Project>
