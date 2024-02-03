@@ -52,7 +52,6 @@ namespace Ameko.ViewModels
         private void UpdateSelections(object? sender, EventArgs e)
         {
             SelectedEvent = HoloService.HoloInstance.Workspace.WorkingFile.SelectedEvent;
-            // TODO: Get the grid updated to reflect changes
         }
 
         public TabItemViewModel(string title, FileWrapper wrapper)
