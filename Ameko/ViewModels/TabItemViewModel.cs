@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Holo;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +11,27 @@ namespace Ameko.ViewModels
     public class TabItemViewModel : ViewModelBase
     {
         private string _title;
-        private string _description;
-
+        private FileWrapper _wrapper;
+        private int _id;
         public string Title
         {
             get => _title;
             set => this.RaiseAndSetIfChanged(ref _title, value);
         }
 
-        public string Description
+        public FileWrapper Wrapper
         {
-            get => _description;
-            set => this.RaiseAndSetIfChanged(ref _description, value);
+            get => _wrapper;
+            set => this.RaiseAndSetIfChanged(ref _wrapper, value);
         }
 
-        public TabItemViewModel(string title, string description)
+        public int ID => _id;
+
+        public TabItemViewModel(string title, FileWrapper wrapper)
         {
             _title = title;
-            _description = description;
+            _wrapper = wrapper;
+            _id = wrapper.ID;
         }
     }
 }

@@ -1,7 +1,11 @@
 ﻿using Ameko.Services;
+using DynamicData;
 using ReactiveUI;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
@@ -16,6 +20,8 @@ public class MainViewModel : ViewModelBase
     public Interaction<MainViewModel, string?> ShowOpenFileDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowOpenFileDialogCommand { get; }
+
+    public ICommand CloseTabCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public int SelectedTabIndex
@@ -41,12 +47,23 @@ public class MainViewModel : ViewModelBase
 
             int id = HoloService.HoloInstance.Workspace.AddFileToWorkspace(filepath);
             // TODO: Real 
-            Tabs?.Add(new TabItemViewModel(Path.GetFileNameWithoutExtension(filepath), 
-                                            HoloService.HoloInstance.Workspace.GetFile(id).File.EventManager.Head.Text
-                                            ));
+            Tabs?.Add(new TabItemViewModel(
+                Path.GetFileNameWithoutExtension(filepath), 
+                HoloService.HoloInstance.Workspace.GetFile(id)
+            ));
             SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol
         });
 
-        Tabs = [new TabItemViewModel("File1", "Content1"), new TabItemViewModel("File2", "Content2")];
+        CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>
+        {
+            // TODO: Saving and stuff
+            var closed = HoloService.HoloInstance.Workspace.CloseFileInWorkspace(fileId);
+            if (Tabs != null) {
+                var tab = Tabs.Where(t => t.ID == fileId).Single();
+                Tabs.Remove(tab);
+            }
+        });
+
+        Tabs = new ObservableCollection<TabItemViewModel>();
     }
 }

@@ -6,7 +6,8 @@
 			 xmlns:views="using:Ameko.Views"
              mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
              x:Class="Ameko.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+			 x:Name="main">
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
@@ -62,7 +63,25 @@
 					TabStripPlacement="Bottom">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
-					<TextBlock Text="{Binding Title}" />
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding Title}">
+							<TextBlock.Styles>
+								<Style Selector="TextBlock">
+									<Setter Property="Foreground" Value="White" />
+								</Style>
+							</TextBlock.Styles>
+						</TextBlock>
+						<Button Command="{Binding #main((vm:MainViewModel)DataContext).CloseTabCommand}" CommandParameter="{Binding ID}">
+							<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/x-circle.svg" />
+							<Button.Styles>
+								<Style Selector="Button">
+									<Setter Property="Background" Value="Transparent" />
+									<Setter Property="Padding" Value="2 0 0 0" />
+									<Setter Property="BorderThickness" Value="0" />
+								</Style>
+							</Button.Styles>
+						</Button>
+					</StackPanel>
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 			<TabControl.ContentTemplate>
