@@ -60,6 +60,8 @@ namespace AssCS
 
         public string? AsOverride() => null;
 
+        public string TextContent => AsAss();
+
         public Time()
         {
             localTime = TimeSpan.Zero;
@@ -67,7 +69,7 @@ namespace AssCS
 
         public Time(Time t)
         {
-            localTime = TimeSpan.FromMilliseconds(t.Milliseconds);
+            localTime = TimeSpan.FromMilliseconds(t.TotalMilliseconds);
         }
 
         private Time(TimeSpan t)
@@ -137,11 +139,11 @@ namespace AssCS
         }
         public static bool operator ==(Time a, Time b)
         {
-            return a.localTime == b.localTime;
+            return a.localTime.Equals(b.localTime);
         }
         public static bool operator !=(Time a, Time b)
         {
-            return a.localTime != b.localTime;
+            return !a.localTime.Equals(b.localTime);
         }
     }
 }

@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="450"
+		xmlns:vm="using:Ameko.ViewModels"
+		x:DataType="vm:AboutWindowViewModel"
+        x:Class="Ameko.Views.AboutWindow"
+		Width="450" Height="450"
+		CanResize="False"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="About Ameko">
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Top">
+			<Image Height="169" Margin="10" Stretch="Uniform" Source="avares://Ameko/Assets/Ameko-Logo-512.png" />
+			<Label Content="Ameko" HorizontalAlignment="Center" FontSize="32" />
+			<Label Content="{Binding CompiledVersion}" HorizontalAlignment="Center" FontSize="14" />
+		</StackPanel>
+		<TextBox Margin="10"
+				 IsReadOnly="True"
+				 IsEnabled="True"
+				 TextWrapping="Wrap"
+				 Text="{Binding Licensing}" />
+	</DockPanel>
+</Window>

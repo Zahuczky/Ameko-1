@@ -20,7 +20,7 @@ namespace AssCS.IO
 
         public void Write(bool export)
         {
-            using var ioFile = System.IO.File.Open(filepath, System.IO.FileMode.Open);
+            using var ioFile = System.IO.File.Open(filepath, System.IO.FileMode.OpenOrCreate);
             var writer = new System.IO.StreamWriter(ioFile, encoding);
 
             WriteHeader(writer);

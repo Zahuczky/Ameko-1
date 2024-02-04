@@ -1,0 +1,117 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Ameko.ViewModels"
+			 xmlns:views="using:Ameko.Views"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+             x:Class="Ameko.Views.MainView"
+             x:DataType="vm:MainViewModel"
+			 x:Name="main">
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_File">
+				<MenuItem Header="_New">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/file-earmark.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="_Open Subtitle" Command="{Binding ShowOpenFileDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/folder2-open.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="_Save Subtitle" Command="{Binding ShowSaveFileDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/floppy.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="Save Subtitle _As..." Command="{Binding ShowSaveAsFileDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/floppy2.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="Open _Workspace">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/collection.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="Save Works_pace">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/save.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="_Quit">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/door-open.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
+			<MenuItem Header="_Help">
+				<MenuItem Header="About _Ameko" Command="{Binding ShowAboutDialogCommand}">
+					<MenuItem.Icon>
+						<Image Width="16" Height="16" Source="avares://Ameko/Assets/Ameko-Simplified-BG-64.ico" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
+		</Menu>
+
+		<Panel DockPanel.Dock="Left" Width="125">
+			<TabControl TabStripPlacement="Bottom">
+				<TabItem>
+					<TabItem.Header>
+						<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/collection.svg" />
+					</TabItem.Header>
+					<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Workspace" />
+				</TabItem>
+				<TabItem>
+					<TabItem.Header>
+						<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/hammer.svg" />
+					</TabItem.Header>
+					<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Tools coming soon!" />
+				</TabItem>
+			</TabControl>
+		</Panel>
+
+		<TabControl ItemsSource="{Binding Tabs}"
+					SelectedIndex="{Binding SelectedTabIndex}"
+					TabStripPlacement="Bottom">
+			<TabControl.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding Display}">
+							<TextBlock.Styles>
+								<Style Selector="TextBlock">
+									<Setter Property="Foreground" Value="White" />
+								</Style>
+							</TextBlock.Styles>
+						</TextBlock>
+						<Button Command="{Binding #main((vm:MainViewModel)DataContext).CloseTabCommand}" CommandParameter="{Binding ID}">
+							<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/x-circle.svg" />
+							<Button.Styles>
+								<Style Selector="Button">
+									<Setter Property="Background" Value="Transparent" />
+									<Setter Property="Padding" Value="2 0 0 0" />
+									<Setter Property="BorderThickness" Value="0" />
+								</Style>
+							</Button.Styles>
+						</Button>
+					</StackPanel>
+				</DataTemplate>
+			</TabControl.ItemTemplate>
+			<TabControl.ContentTemplate>
+				<DataTemplate>
+					<views:TabView />
+				</DataTemplate>
+			</TabControl.ContentTemplate>
+			<TabControl.Styles>
+				<Style Selector="TabItem">
+					<Setter Property="Padding" Value="3 2 3 0" />
+				</Style>
+			</TabControl.Styles>
+		</TabControl>
+	</DockPanel>
+</UserControl>

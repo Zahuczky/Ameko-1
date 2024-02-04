@@ -11,13 +11,22 @@ namespace AssCS
     public class Commit<T> where T : ICommitable
     {
         public Guid Id { get; }
-        public T Snapshot { get; }
+        public List<T> Snapshot { get; }
+        public Action Action { get; }
 
-        public Commit(T snapshot)
+        public Commit(List<T> snapshot, Action action)
         {
             Id = Guid.NewGuid();
             Snapshot = snapshot;
+            Action = action;
         }
+    }
+
+    public enum Action
+    {
+        EDIT,
+        INSERT,
+        DELETE
     }
 
     public interface ICommitable

@@ -2,8 +2,11 @@
 using AssCS.IO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Tomlyn;
 
@@ -15,38 +18,46 @@ namespace Holo
     /// Workspaces may be saved to allow multiple files to be opened at a time, and to
     /// facilitate sharing of workspaces.
     /// </summary>
-    public class Workspace
+    public class Workspace : INotifyPropertyChanged
     {
         private int _id;
         public int NextId => _id++;
+        private int _workingIndex = 0;
 
-        private readonly List<Link> ReferencedFiles;
-        private readonly Dictionary<int, AssCS.File> LoadedFiles;
+        private readonly ObservableCollection<Link> ReferencedFiles;
+        private readonly Dictionary<int, FileWrapper> LoadedFiles;
 
         /// <summary>
         /// Index of the currently selected open file in the workspace
         /// </summary>
-        public int WorkingIndex { get; set; }
+        public int WorkingIndex
+        {
+            get { return _workingIndex; }
+            set { _workingIndex = value; OnPropertyChanged(nameof(WorkingIndex)); }
+        }
 
         /// <summary>
         /// The currently selected open file
         /// </summary>
-        public AssCS.File WorkingFile => LoadedFiles[WorkingIndex];
+        public FileWrapper WorkingFile => LoadedFiles[WorkingIndex];
+
+        public FileWrapper GetFile(int id) => LoadedFiles[id];
+        public List<FileWrapper> Files => LoadedFiles.Values.ToList();
 
         /// <summary>
         /// Add a file to the current workspace and open it
         /// </summary>
         /// <param name="filePath">Path to the file</param>
         /// <returns>ID of the file</returns>
-        public int AddFileToWorkspace(string filePath)
+        public int AddFileToWorkspace(Uri filePath)
         {
             try
             {
                 AssParser parser = new AssParser();
-                var file = parser.Load(filePath);
-                var link = new Link(NextId, filePath);
+                var file = parser.Load(filePath.LocalPath);
+                var link = new Link(NextId, filePath.LocalPath);
                 ReferencedFiles.Add(link);
-                LoadedFiles.Add(link.Id, file);
+                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, filePath));
                 WorkingIndex = link.Id;
                 return link.Id;
             }
@@ -64,7 +75,7 @@ namespace Holo
 
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
-            LoadedFiles.Add(dummyLink.Id, dummyFile);
+            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id, null));
             WorkingIndex = dummyLink.Id;
             return dummyLink.Id;
         }
@@ -77,8 +88,9 @@ namespace Holo
         public bool RemoveFileFromWorkspace(int id)
         {
             CloseFileInWorkspace(id);
-            var removed = ReferencedFiles.RemoveAll(f => f.Id == id);
-            return removed > 0;
+            var removable = ReferencedFiles.Where(f => f.Id == id).Single();
+            var removed = ReferencedFiles.Remove(removable);
+            return removed;
         }
 
         /// <summary>
@@ -91,11 +103,11 @@ namespace Holo
             try
             {
                 AssParser parser = new AssParser();
-                var link = ReferencedFiles.Find(f => f.Id == id);
-                if (link == null) return -1;
-
+                var links = ReferencedFiles.Where(f => f.Id == id);
+                if (links == null) return -1;
+                var link = links.First();
                 var file = parser.Load(link.Path);
-                LoadedFiles.Add(link.Id, file);
+                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
                 WorkingIndex = link.Id;
                 return id;
             }
@@ -140,6 +152,11 @@ namespace Holo
             catch { return false; }
         }
 
+        public FileWrapper this[int key]
+        {
+            get => LoadedFiles[key];
+        }
+
         /// <summary>
         /// Instantiate a Workspace by loading a workspace file from disk
         /// </summary>
@@ -154,8 +171,8 @@ namespace Holo
                 using var reader = new StreamReader(filePath);
                 var configContents = reader.ReadToEnd();
                 Workspacefile space = Toml.ToModel<Workspacefile>(filePath);
-                ReferencedFiles = space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList();
-                LoadedFiles = new Dictionary<int, AssCS.File>();
+                ReferencedFiles = new ObservableCollection<Link>(space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList());
+                LoadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
             }
             catch { throw new IOException($"An error occured while loading workspace file {filePath}"); }
@@ -166,10 +183,16 @@ namespace Holo
         /// </summary>
         public Workspace()
         {
-            ReferencedFiles = new List<Link>();
-            LoadedFiles = new Dictionary<int, AssCS.File>();
+            ReferencedFiles = new ObservableCollection<Link>();
+            LoadedFiles = new Dictionary<int, FileWrapper>();
             AddFileToWorkspace();
             WorkingIndex = 0;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

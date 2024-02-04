@@ -159,5 +159,20 @@ namespace AssCS
             Right = m.Right;
             Vertical = m.Vertical;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (!obj.GetType().Equals(typeof(Margins))) return false;
+            Margins o = (Margins)obj;
+            return Left == o.Left
+                && Right == o.Right
+                && Vertical == o.Vertical;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Left, Right, Vertical);
+        }
     }
 }

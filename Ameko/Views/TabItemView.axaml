@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+			 xmlns:converters="using:Ameko.Converters"
+			 xmlns:vm="using:Ameko.ViewModels"
+			 xmlns:asscs="using:AssCS"
+			 x:DataType="vm:TabItemViewModel"
+             x:Class="Ameko.Views.TabView">
+	<UserControl.Resources>
+		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
+	</UserControl.Resources>
+	<DockPanel>
+		<!-- A/V/Editing area -->
+		<Grid DockPanel.Dock="Top"
+			  Height="300"
+			  ColumnDefinitions="*, *"
+			  RowDefinitions="2*, 3*">
+			<Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+				<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Video Area" />
+			</Panel>
+			<Panel Grid.Row="0" Grid.Column="1">
+				<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Audio Area" />
+			</Panel>
+			<Panel Grid.Row="1" Grid.Column="1">
+				<TextBox TextWrapping="Wrap"
+						 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}" />
+			</Panel>
+					 
+		</Grid>
+		
+		<DataGrid Name="eventsGrid"
+				  IsReadOnly="True"
+				  SelectionMode="Extended"
+				  VerticalScrollBarVisibility="Auto"
+				  ItemsSource="{Binding Events}">
+			<DataGrid.Columns>
+				<DataGridTextColumn IsVisible="False" Header="ID" Binding="{Binding Id}" />
+				<DataGridTextColumn Header="Start" Binding="{Binding Start.TextContent}" />
+				<DataGridTextColumn Header="End" Binding="{Binding End.TextContent}" />
+
+				<DataGridTemplateColumn Header="CPS">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="asscs:Event">
+							<TextBlock Text="{Binding Cps}"
+									   VerticalAlignment="Center"
+									   HorizontalAlignment="Center"
+									   Background="{Binding Cps, Converter={StaticResource CpsConverter}}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTextColumn Header="Content" Binding="{Binding Text}" />
+			</DataGrid.Columns>
+			<DataGrid.Styles>
+				<Style Selector="DataGridRow">
+					<Setter Property="Background" Value="Transparent" />
+				</Style>
+				<Style Selector="ScrollBar">
+					<Setter Property="Background" Value="Gray" />
+				</Style>
+			</DataGrid.Styles>
+		</DataGrid>
+	</DockPanel>
+</UserControl>

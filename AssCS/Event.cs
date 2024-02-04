@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,24 +11,79 @@ namespace AssCS
     /// <summary>
     /// The meat and potatoes of the subtitle file
     /// </summary>
-    public class Event : IAssComponent, ICommitable
+    public class Event : IAssComponent, ICommitable, INotifyPropertyChanged
     {
-        public int Id { get; }
-        public bool Comment { get; set; }
-        public int Layer { get; set; }
-        public Time Start { get; set; }
-        public Time End { get; set; }
-        public string Style { get; set; }
-        public string Actor { get; set; }
-        public Margins Margins { get; set; }
-        public string Effect { get; set; }
-        public string Text { get; set; }
+        private int _id;
+        private bool _comment;
+        private int _layer;
+        private Time _start;
+        private Time _end;
+        private string _style;
+        private string _actor;
+        private Margins _margins;
+        private string _effect;
+        private string _text;
+
+        public int Id { get => _id; }
+        public bool Comment
+        {
+            get => _comment;
+            set { _comment = value; OnPropertyChanged(nameof(Comment)); }
+        }
+        public int Layer
+        {
+            get => _layer;
+            set { _layer = value; OnPropertyChanged(nameof(Layer)); }
+        }
+        public Time Start
+        {
+            get => _start;
+            set { _start = value; OnPropertyChanged(nameof(Start)); }
+        }
+        public Time End
+        {
+            get => _end;
+            set { _end = value; OnPropertyChanged(nameof(End)); }
+        }
+        public string Style
+        {
+            get => _style;
+            set { _style = value; OnPropertyChanged(nameof(Style)); }
+        }
+        public string Actor
+        {
+            get => _actor;
+            set { _actor = value; OnPropertyChanged(nameof(Actor)); }
+        }
+        public Margins Margins
+        {
+            get => _margins;
+            set { _margins = value; OnPropertyChanged(nameof(Margins)); }
+        }
+        public string Effect
+        {
+            get => _effect;
+            set { _effect = value; OnPropertyChanged(nameof(Effect)); }
+        }
+        public string Text
+        {
+            get => _text;
+            set { _text = value; OnPropertyChanged(nameof(Text)); }
+        }
         public List<int> LinkedExtradatas { get; set; }
 
         /// <summary>
         /// Characters per second. It is recommended to keep dialogue events under 18 CPS.
         /// </summary>
-        public double Cps => (End - Start).TotalSeconds / GetStrippedText().Length;
+        public double Cps
+        {
+            get
+            {
+                var secs = (End - Start).TotalSeconds;
+                if (secs == 0) return 0;
+                return Math.Round(GetStrippedText().Length / (End - Start).TotalSeconds);
+            }
+        }
         /// <summary>
         /// Maximum line length (in characters).
         /// </summary>
@@ -219,16 +276,16 @@ namespace AssCS
         /// <param name="e"></param>
         public Event(int id, Event e)
         {
-            Id = id;
-            Comment = e.Comment;
-            Layer = e.Layer;
-            Start = new Time(e.Start);
-            End = new Time(e.End);
-            Style = e.Style;
-            Actor = e.Actor;
-            Margins = new Margins(e.Margins);
-            Effect = e.Effect;
-            Text = e.Text;
+            _id = id;
+            _comment = e.Comment;
+            _layer = e.Layer;
+            _start = new Time(e.Start);
+            _end = new Time(e.End);
+            _style = e.Style;
+            _actor = e.Actor;
+            _margins = new Margins(e.Margins);
+            _effect = e.Effect;
+            _text = e.Text;
             LinkedExtradatas = new List<int>(e.LinkedExtradatas);
         }
 
@@ -238,16 +295,16 @@ namespace AssCS
         /// <param name="id"></param>
         public Event(int id)
         {
-            Id = id;
-            Comment = false;
-            Layer = 0;
-            Start = Time.FromSeconds(0);
-            End = Time.FromSeconds(5);
-            Style = "Default";
-            Actor = "";
-            Margins = new Margins(0, 0, 0);
-            Effect = "";
-            Text = "";
+            _id = id;
+            _comment = false;
+            _layer = 0;
+            _start = Time.FromSeconds(0);
+            _end = Time.FromSeconds(5);
+            _style = "Default";
+            _actor = "";
+            _margins = new Margins(0, 0, 0);
+            _effect = "";
+            _text = "";
             LinkedExtradatas = new List<int>();
         }
 
@@ -259,6 +316,45 @@ namespace AssCS
         public Event(int id, string data) : this(id)
         {
             FromAss(data);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (!obj.GetType().Equals(typeof(Event))) return false;
+            Event e = (Event)obj;
+            return Id == e.Id
+                && Comment == e.Comment
+                && Layer == e.Layer
+                && Start == e.Start
+                && End == e.End
+                && Style.Equals(e.Style)
+                && Actor.Equals(e.Actor)
+                && Margins.Equals(e.Margins)
+                && Effect.Equals(e.Effect)
+                && Text.Equals(e.Text);
+        }
+
+        public override int GetHashCode()
+        {
+            HashCode hash = new HashCode();
+            hash.Add(Id);
+            hash.Add(Comment);
+            hash.Add(Layer);
+            hash.Add(Start);
+            hash.Add(End);
+            hash.Add(Style);
+            hash.Add(Actor);
+            hash.Add(Margins);
+            hash.Add(Effect);
+            hash.Add(Text);
+            return hash.ToHashCode();
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

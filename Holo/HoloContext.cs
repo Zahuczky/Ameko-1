@@ -12,6 +12,7 @@ namespace Holo
         public static string HoloDirectory => localappdata;
         
         public PluginHandler PluginHandler { get; }
+        // TODO: Scripts
         public ConfigurationManager ConfigurationManager { get; }
         public Workspace Workspace { get; set; }
 
