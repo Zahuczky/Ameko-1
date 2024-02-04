@@ -2,6 +2,7 @@
 using AssCS.IO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Holo
         public int NextId => _id++;
         private int _workingIndex = 0;
 
-        private readonly List<Link> ReferencedFiles;
+        private readonly ObservableCollection<Link> ReferencedFiles;
         private readonly Dictionary<int, FileWrapper> LoadedFiles;
 
         /// <summary>
@@ -87,8 +88,9 @@ namespace Holo
         public bool RemoveFileFromWorkspace(int id)
         {
             CloseFileInWorkspace(id);
-            var removed = ReferencedFiles.RemoveAll(f => f.Id == id);
-            return removed > 0;
+            var removable = ReferencedFiles.Where(f => f.Id == id).Single();
+            var removed = ReferencedFiles.Remove(removable);
+            return removed;
         }
 
         /// <summary>
@@ -101,9 +103,9 @@ namespace Holo
             try
             {
                 AssParser parser = new AssParser();
-                var link = ReferencedFiles.Find(f => f.Id == id);
-                if (link == null) return -1;
-
+                var links = ReferencedFiles.Where(f => f.Id == id);
+                if (links == null) return -1;
+                var link = links.First();
                 var file = parser.Load(link.Path);
                 LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
                 WorkingIndex = link.Id;
@@ -169,7 +171,7 @@ namespace Holo
                 using var reader = new StreamReader(filePath);
                 var configContents = reader.ReadToEnd();
                 Workspacefile space = Toml.ToModel<Workspacefile>(filePath);
-                ReferencedFiles = space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList();
+                ReferencedFiles = new ObservableCollection<Link>(space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList());
                 LoadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
             }
@@ -181,7 +183,7 @@ namespace Holo
         /// </summary>
         public Workspace()
         {
-            ReferencedFiles = new List<Link>();
+            ReferencedFiles = new ObservableCollection<Link>();
             LoadedFiles = new Dictionary<int, FileWrapper>();
             AddFileToWorkspace();
             WorkingIndex = 0;

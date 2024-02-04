@@ -24,6 +24,7 @@
     <None Remove="Assets\B5\floppy2.svg" />
     <None Remove="Assets\B5\folder-plus.svg" />
     <None Remove="Assets\B5\folder2-open.svg" />
+    <None Remove="Assets\B5\hammer.svg" />
     <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\B5\x-circle.svg" />
     <None Remove="Assets\Licensing.txt" />

@@ -60,7 +60,20 @@
 		</Menu>
 
 		<Panel DockPanel.Dock="Left" Width="125">
-			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Workspace" />
+			<TabControl TabStripPlacement="Bottom">
+				<TabItem>
+					<TabItem.Header>
+						<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/collection.svg" />
+					</TabItem.Header>
+					<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Workspace" />
+				</TabItem>
+				<TabItem>
+					<TabItem.Header>
+						<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/hammer.svg" />
+					</TabItem.Header>
+					<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Tools coming soon!" />
+				</TabItem>
+			</TabControl>
 		</Panel>
 
 		<TabControl ItemsSource="{Binding Tabs}"

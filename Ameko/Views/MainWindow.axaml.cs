@@ -17,6 +17,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         var dialog = new AboutWindow();
         dialog.DataContext = interaction.Input;
         await dialog.ShowDialog(this);
+        interaction.SetOutput(null);
     }
 
     private async Task DoShowOpenFileDialogAsync(InteractionContext<MainViewModel, Uri?> interaction)
