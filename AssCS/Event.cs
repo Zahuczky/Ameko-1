@@ -75,7 +75,15 @@ namespace AssCS
         /// <summary>
         /// Characters per second. It is recommended to keep dialogue events under 18 CPS.
         /// </summary>
-        public double Cps => (End - Start).TotalSeconds != 0 ? Math.Round(GetStrippedText().Length / (End - Start).TotalSeconds) : 0;
+        public double Cps
+        {
+            get
+            {
+                var secs = (End - Start).TotalSeconds;
+                if (secs == 0) return 0;
+                return Math.Round(GetStrippedText().Length / (End - Start).TotalSeconds);
+            }
+        }
         /// <summary>
         /// Maximum line length (in characters).
         /// </summary>

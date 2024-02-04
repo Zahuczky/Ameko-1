@@ -21,6 +21,7 @@
     <None Remove="Assets\B5\door-open.svg" />
     <None Remove="Assets\B5\file-earmark.svg" />
     <None Remove="Assets\B5\floppy.svg" />
+    <None Remove="Assets\B5\floppy2.svg" />
     <None Remove="Assets\B5\folder-plus.svg" />
     <None Remove="Assets\B5\folder2-open.svg" />
     <None Remove="Assets\B5\save.svg" />
@@ -50,9 +51,5 @@
     <Compile Update="Views\TabItemView.axaml.cs">
       <DependentUpon>TabItemView.axaml</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DataModels\" />
   </ItemGroup>
 </Project>

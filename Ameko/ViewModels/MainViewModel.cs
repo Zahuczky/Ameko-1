@@ -1,5 +1,8 @@
-﻿using Ameko.Services;
+﻿using Ameko.DataModels;
+using Ameko.Services;
+using AssCS.IO;
 using DynamicData;
+using Holo;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -18,8 +21,12 @@ public class MainViewModel : ViewModelBase
     public string WindowTitle { get; } = $"Ameko {AmekoService.VERSION_BUG}";
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenFileDialog { get; }
+    public Interaction<FileWrapper, Uri?> ShowSaveFileDialog { get; }
+    public Interaction<FileWrapper, Uri?> ShowSaveAsFileDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowOpenFileDialogCommand { get; }
+    public ICommand ShowSaveFileDialogCommand { get; }
+    public ICommand ShowSaveAsFileDialogCommand { get; }
 
     public ICommand CloseTabCommand { get; }
 
@@ -34,12 +41,15 @@ public class MainViewModel : ViewModelBase
     {
         ShowAboutDialog = new Interaction<AboutWindowViewModel, AboutWindowViewModel?>();
         ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
-        
+        ShowSaveFileDialog = new Interaction<FileWrapper, Uri?>();
+        ShowSaveAsFileDialog = new Interaction<FileWrapper, Uri?>();
+
         ShowAboutDialogCommand = ReactiveCommand.Create(async () =>
         {
             var about = new AboutWindowViewModel();
             await ShowAboutDialog.Handle(about);
         });
+
         ShowOpenFileDialogCommand = ReactiveCommand.Create(async () =>
         {
             var uri = await ShowOpenFileDialog.Handle(this);
@@ -52,6 +62,19 @@ public class MainViewModel : ViewModelBase
                 HoloService.HoloInstance.Workspace.GetFile(id)
             ));
             SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol
+        });
+
+        ShowSaveAsFileDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            var workingFile = HoloService.HoloInstance.Workspace.WorkingFile;
+            if (workingFile == null) return;
+
+            var uri = await ShowSaveAsFileDialog.Handle(workingFile);
+            if (uri == null) return;
+
+            var loc = uri.LocalPath;
+            var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
+            writer.Write(false);
         });
 
         CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>

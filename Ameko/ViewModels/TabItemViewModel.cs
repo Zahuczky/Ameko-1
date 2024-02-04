@@ -18,6 +18,7 @@ namespace Ameko.ViewModels
         private FileWrapper _wrapper;
         private readonly int _id;
         private Event? _selectedEvent;
+
         public string Title
         {
             get => _title;
@@ -28,6 +29,11 @@ namespace Ameko.ViewModels
         {
             get => _wrapper;
             set => this.RaiseAndSetIfChanged(ref _wrapper, value);
+        }
+
+        public string Display
+        {
+            get => $"{Title}{(!Wrapper.UpToDate ? "*" : "")}";
         }
 
         public int ID => _id;
@@ -64,6 +70,9 @@ namespace Ameko.ViewModels
             Events = new ObservableCollection<Event>(Wrapper.File.EventManager.Ordered);
             Wrapper.File.EventManager.CurrentEvents.CollectionChanged += UpdateEvents;
             Wrapper.PropertyChanged += UpdateSelections;
+            
+            // TODO: Maybe not do this this way
+            Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
         }
     }
 }

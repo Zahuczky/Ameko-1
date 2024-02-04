@@ -13,7 +13,11 @@ namespace Holo
     {
         private readonly File file;
         private Event? selectedEvent;
+        private Event? selectedEventCopy;
         private List<Event>? selectedEvents;
+        private Uri? filePath;
+        private bool upToDate;
+        private string title;
 
         public File File => file;
         public int ID { get; }
@@ -29,26 +33,46 @@ namespace Holo
             get => selectedEvent;
             private set { selectedEvent = value; OnPropertyChanged(nameof(SelectedEvent)); }
         }
+
+        public Uri? FilePath
+        {
+            get => filePath;
+            set { filePath = value; OnPropertyChanged(nameof(FilePath)); }
+        }
+
+        public bool UpToDate
+        {
+            get => upToDate;
+            set { upToDate = value; OnPropertyChanged(nameof(UpToDate)); }
+        }
+
+        public string Title
+        {
+            get => title;
+            set { title = value; OnPropertyChanged(nameof(Title)); }
+        }
         
         public void Select(List<Event> selectedEvents, Event selectedEvent)
         {
-            if (SelectedEvents == null)
+            if (SelectedEvents == null && selectedEvent != null)
             {
                 file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.EDIT));
                 SelectedEvents = selectedEvents;
                 SelectedEvent = selectedEvent;
+                selectedEventCopy = new Event(selectedEvent.Id, selectedEvent);
                 return;
             }
 
             if (selectedEvents.Count == 0) return;
             
-            if ((SelectedEvent != null 
-                && SelectedEvent.Equals(file.EventManager.Get(SelectedEvent.Id)))
+            if ((SelectedEvent != null && selectedEventCopy != null
+                && selectedEventCopy.Equals(file.EventManager.Get(selectedEventCopy.Id)))
                 || SelectedEvent == null)
             {
                 // No change, continue
                 SelectedEvents = selectedEvents;
                 SelectedEvent = selectedEvent;
+                selectedEventCopy = new Event(selectedEvent!.Id, selectedEvent);
                 return;
             }
             else
@@ -57,6 +81,8 @@ namespace Holo
                 file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.EDIT));
                 SelectedEvents = selectedEvents;
                 SelectedEvent = selectedEvent;
+                selectedEventCopy = new Event(selectedEvent.Id, selectedEvent);
+                UpToDate = false;
                 return;
             }
         }
@@ -109,10 +135,13 @@ namespace Holo
             return want;
         }
 
-        public FileWrapper(File file, int id)
+        public FileWrapper(File file, int id, Uri? filePath)
         {
             this.file = file;
             ID = id;
+            UpToDate = true;
+            if (filePath != null) title = System.IO.Path.GetFileNameWithoutExtension(filePath.LocalPath);
+            else title = $"File {id}";
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

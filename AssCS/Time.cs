@@ -69,7 +69,7 @@ namespace AssCS
 
         public Time(Time t)
         {
-            localTime = TimeSpan.FromMilliseconds(t.Milliseconds);
+            localTime = TimeSpan.FromMilliseconds(t.TotalMilliseconds);
         }
 
         private Time(TimeSpan t)

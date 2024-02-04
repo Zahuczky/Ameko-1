@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using Holo;
 using ReactiveUI;
 using System;
 using System.Reactive.Disposables;
@@ -36,6 +37,27 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowSaveAsFileDialogAsync(InteractionContext<FileWrapper, Uri?> interaction)
+    {
+        if (interaction.Input == null) return;
+
+        var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save Subtitle File As...",
+            FileTypeChoices = new[]
+            {
+                new FilePickerFileType("ASS Files") { Patterns = new[] { "*.ass" } }
+            },
+            SuggestedFileName = $"{interaction.Input.Title} (Copy)"
+        });
+        if (file != null)
+        {
+            interaction.SetOutput(file.Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -45,6 +67,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             {
                 ViewModel.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
                 ViewModel.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
+                // TODO: Save (not as)
+                ViewModel.ShowSaveAsFileDialog.RegisterHandler(DoShowSaveAsFileDialogAsync);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

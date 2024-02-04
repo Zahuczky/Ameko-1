@@ -56,7 +56,7 @@ namespace Holo
                 var file = parser.Load(filePath);
                 var link = new Link(NextId, filePath);
                 ReferencedFiles.Add(link);
-                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id));
+                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(filePath)));
                 WorkingIndex = link.Id;
                 return link.Id;
             }
@@ -74,7 +74,7 @@ namespace Holo
 
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
-            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id));
+            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id, null));
             WorkingIndex = dummyLink.Id;
             return dummyLink.Id;
         }
@@ -105,7 +105,7 @@ namespace Holo
                 if (link == null) return -1;
 
                 var file = parser.Load(link.Path);
-                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id));
+                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
                 WorkingIndex = link.Id;
                 return id;
             }
