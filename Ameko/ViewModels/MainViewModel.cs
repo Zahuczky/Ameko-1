@@ -21,7 +21,6 @@ public class MainViewModel : ViewModelBase
     public string WindowTitle { get; } = $"Ameko {AmekoService.VERSION_BUG}";
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenFileDialog { get; }
-    public Interaction<FileWrapper, Uri?> ShowSaveFileDialog { get; }
     public Interaction<FileWrapper, Uri?> ShowSaveAsFileDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowOpenFileDialogCommand { get; }
@@ -41,7 +40,6 @@ public class MainViewModel : ViewModelBase
     {
         ShowAboutDialog = new Interaction<AboutWindowViewModel, AboutWindowViewModel?>();
         ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
-        ShowSaveFileDialog = new Interaction<FileWrapper, Uri?>();
         ShowSaveAsFileDialog = new Interaction<FileWrapper, Uri?>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(async () =>
@@ -55,13 +53,33 @@ public class MainViewModel : ViewModelBase
             var uri = await ShowOpenFileDialog.Handle(this);
             if (uri == null) return;
 
-            int id = HoloService.HoloInstance.Workspace.AddFileToWorkspace(uri.LocalPath);
+            int id = HoloService.HoloInstance.Workspace.AddFileToWorkspace(uri);
             // TODO: Real 
             Tabs?.Add(new TabItemViewModel(
                 Path.GetFileNameWithoutExtension(uri.LocalPath), 
                 HoloService.HoloInstance.Workspace.GetFile(id)
             ));
             SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol
+        });
+
+        ShowSaveFileDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            var workingFile = HoloService.HoloInstance.Workspace.WorkingFile;
+            if (workingFile == null) return;
+
+            Uri uri;
+            if (workingFile.FilePath == null)
+            {
+                uri = await ShowSaveAsFileDialog.Handle(workingFile);
+                if (uri == null) return;
+            }
+            else
+            {
+                uri = workingFile.FilePath;
+            }
+            var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
+            writer.Write(false);
+            workingFile.UpToDate = true;
         });
 
         ShowSaveAsFileDialogCommand = ReactiveCommand.Create(async () =>
@@ -72,9 +90,9 @@ public class MainViewModel : ViewModelBase
             var uri = await ShowSaveAsFileDialog.Handle(workingFile);
             if (uri == null) return;
 
-            var loc = uri.LocalPath;
             var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
             writer.Write(false);
+            workingFile.UpToDate = true;
         });
 
         CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>

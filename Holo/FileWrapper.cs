@@ -81,7 +81,7 @@ namespace Holo
                 file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.EDIT));
                 SelectedEvents = selectedEvents;
                 SelectedEvent = selectedEvent;
-                selectedEventCopy = new Event(selectedEvent.Id, selectedEvent);
+                selectedEventCopy = new Event(selectedEvent!.Id, selectedEvent);
                 UpToDate = false;
                 return;
             }
@@ -140,6 +140,7 @@ namespace Holo
             this.file = file;
             ID = id;
             UpToDate = true;
+            FilePath = filePath;
             if (filePath != null) title = System.IO.Path.GetFileNameWithoutExtension(filePath.LocalPath);
             else title = $"File {id}";
         }

@@ -48,15 +48,15 @@ namespace Holo
         /// </summary>
         /// <param name="filePath">Path to the file</param>
         /// <returns>ID of the file</returns>
-        public int AddFileToWorkspace(string filePath)
+        public int AddFileToWorkspace(Uri filePath)
         {
             try
             {
                 AssParser parser = new AssParser();
-                var file = parser.Load(filePath);
-                var link = new Link(NextId, filePath);
+                var file = parser.Load(filePath.LocalPath);
+                var link = new Link(NextId, filePath.LocalPath);
                 ReferencedFiles.Add(link);
-                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(filePath)));
+                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, filePath));
                 WorkingIndex = link.Id;
                 return link.Id;
             }

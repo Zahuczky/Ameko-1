@@ -67,7 +67,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             {
                 ViewModel.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
                 ViewModel.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
-                // TODO: Save (not as)
                 ViewModel.ShowSaveAsFileDialog.RegisterHandler(DoShowSaveAsFileDialogAsync);
             }
 

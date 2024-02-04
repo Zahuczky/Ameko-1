@@ -6,8 +6,16 @@
         xmlns:vm="using:Ameko.ViewModels"
         xmlns:views="using:Ameko.Views"
         x:Class="Ameko.Views.MainWindow"
+		x:DataType="vm:MainViewModel"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}"
 		Name="root">
-        <views:MainView />
+	<Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding ShowOpenFileDialogCommand}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding ShowSaveFileDialogCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding ShowSaveAsFileDialogCommand}" />
+        <KeyBinding Gesture="Shift+F1" Command="{Binding ShowAboutDialogCommand}" />
+	</Window.KeyBindings>
+	
+	<views:MainView />
 </Window>
