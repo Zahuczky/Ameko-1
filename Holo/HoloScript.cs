@@ -7,7 +7,7 @@ namespace Holo
     /// <summary>
     /// Provide a base interface for scripts to use.
     /// </summary>
-    public interface IScript
+    public abstract class HoloScript
     {
         /// <summary>
         /// Name of the script
@@ -30,7 +30,19 @@ namespace Holo
         /// Entry point
         /// </summary>
         /// <returns>Result of the script's execution</returns>
-        public ExecutionResult Execute();
+        public abstract ExecutionResult Execute();
+
+        public HoloScript() : this("", "", "", 1.0)
+        {
+
+        }
+        protected HoloScript(string name, string description, string author, double version)
+        {
+            Name = name;
+            Description = description;
+            Author = author;
+            Version = version;
+        }
     }
 
     /// <summary>

@@ -6,6 +6,7 @@ using Holo;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -28,8 +29,10 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowSaveAsFileDialogCommand { get; }
 
     public ICommand CloseTabCommand { get; }
+    public ICommand ActivateScriptCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
+    public ObservableCollection<string> ScriptNames { get; }
     public int SelectedTabIndex
     {
         get => selectedTabIndex;
@@ -105,6 +108,20 @@ public class MainViewModel : ViewModelBase
             }
         });
 
+        ActivateScriptCommand = ReactiveCommand.Create<string>((string scriptName) =>
+        {
+            var script = HoloService.HoloInstance.ScriptHandler.Get(scriptName);
+            if (script == null) return;
+            var result = script.Execute();
+            Debug.WriteLine($"Script `{script.Name}` finished executing with status `{result.Status}` and message `{result.Message}`");
+        });
+
         Tabs = new ObservableCollection<TabItemViewModel>();
+        ScriptNames = new ObservableCollection<string>(HoloService.HoloInstance.ScriptHandler.LoadedScripts);
+        HoloService.HoloInstance.ScriptHandler.LoadedScripts.CollectionChanged += (o, e) =>
+        {
+            ScriptNames.Clear();
+            ScriptNames.AddRange(HoloService.HoloInstance.ScriptHandler.LoadedScripts);
+        };
     }
 }
