@@ -6,12 +6,14 @@
 
 Ameko is a subtitle editing suite for Advanced Substation Alpha (ASS) subtitles.
 
-<h2 align="center">Licenses</h1>
+<h2 align="center">Roadmap</h1>
 
-Ameko, AssCS, and Holo are licensed under the BSD-3-Clause license.
+### Milestone 1 - MVP
 
-Ameko makes use of the following libraries, licensed as follows:
-- Avalonia, under the MIT license.
-- Tomlyn, under the BSD-2-Clause license.
+The goal for Milestone 1 is to have a Minimum  Viable Product (MVP). In Ameko's case, the MVP is delivering a feature-rich *subtitle editor*. Note that Ameko intends to be an editing *suite* in its final form. Thus, the MVP is missing some pretty major features one might consider invaluable to the subtitle workflow, such as audio, video, graphical tools, etc.
 
-Parts of AssCS are based on Aegisub, under a mostly BSD-style license.
+However, as Milestone 1 is serving mostly as a proof-of-concept for the viability of the Ameko-Holo-AssCS pipeline, a fully-featured subtitle editor will play the role of the minimuim product. The full list of MVP features can be found under the MVP milestone issue filter, but the gist is that it should include all major editing features that don't require audio or video as part of the workflow.
+
+### Future Milestones
+
+As Ameko is still early in the development cycle, the exact nature of post-MVP milestones is still unclear. Potential milestones include Audio, Video, and Tooling, but these could be merged or split into fewer or more milestones as the scope discovery process continues.
