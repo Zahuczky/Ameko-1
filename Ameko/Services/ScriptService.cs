@@ -1,18 +1,25 @@
 ﻿using CSScriptLib;
+using Holo;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Holo
+namespace Ameko.Services
 {
-    public class ScriptHandler
+    public class ScriptService
     {
+        private static readonly Lazy<ScriptService> _instance = new Lazy<ScriptService>(() => new ScriptService());
         private readonly string scriptRoot;
         private readonly Dictionary<string, HoloScript> scripts;
-
+        
+        public static ScriptService Instance => _instance.Value;
         public ObservableCollection<string> LoadedScripts { get; private set; }
 
         public HoloScript? Get(string name)
@@ -22,13 +29,15 @@ namespace Holo
             return null;
         }
 
-        public bool LoadAll()
+        public async void Reload(bool manual)
         {
             if (!Directory.Exists(scriptRoot))
             {
                 Directory.CreateDirectory(scriptRoot);
-                return false;
             }
+
+            scripts.Clear();
+            LoadedScripts.Clear();
 
             foreach (var path in Directory.EnumerateFiles(scriptRoot))
             {
@@ -48,14 +57,19 @@ namespace Holo
                     continue;
                 }
             }
-            return true;
+            if (manual)
+            {
+                var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", "Scripts have been reloaded.", ButtonEnum.Ok);
+                await box.ShowAsync();
+            }
         }
 
-        public ScriptHandler(string scriptRoot)
+        private ScriptService()
         {
-            this.scriptRoot = scriptRoot;
+            scriptRoot = Path.Combine(HoloContext.HoloDirectory, "scripts");
             LoadedScripts = new ObservableCollection<string>();
             scripts = new Dictionary<string, HoloScript>();
+            Reload(false);
         }
     }
 }

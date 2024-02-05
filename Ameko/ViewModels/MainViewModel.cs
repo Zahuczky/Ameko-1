@@ -30,6 +30,7 @@ public class MainViewModel : ViewModelBase
 
     public ICommand CloseTabCommand { get; }
     public ICommand ActivateScriptCommand { get; }
+    public ICommand ReloadScriptsCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<string> ScriptNames { get; }
@@ -108,20 +109,25 @@ public class MainViewModel : ViewModelBase
             }
         });
 
-        ActivateScriptCommand = ReactiveCommand.Create<string>((string scriptName) =>
+        ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
         {
-            var script = HoloService.HoloInstance.ScriptHandler.Get(scriptName);
+            var script = ScriptService.Instance.Get(scriptName);
             if (script == null) return;
-            var result = script.Execute();
+            var result = await script.Execute();
             Debug.WriteLine($"Script `{script.Name}` finished executing with status `{result.Status}` and message `{result.Message}`");
         });
 
+        ReloadScriptsCommand = ReactiveCommand.Create(() =>
+        {
+            ScriptService.Instance.Reload(true);
+        });
+
         Tabs = new ObservableCollection<TabItemViewModel>();
-        ScriptNames = new ObservableCollection<string>(HoloService.HoloInstance.ScriptHandler.LoadedScripts);
-        HoloService.HoloInstance.ScriptHandler.LoadedScripts.CollectionChanged += (o, e) =>
+        ScriptNames = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts);
+        ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
             ScriptNames.Clear();
-            ScriptNames.AddRange(HoloService.HoloInstance.ScriptHandler.LoadedScripts);
+            ScriptNames.AddRange(ScriptService.Instance.LoadedScripts);
         };
     }
 }

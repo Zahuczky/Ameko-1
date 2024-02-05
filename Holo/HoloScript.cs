@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Holo
 {
@@ -30,7 +31,7 @@ namespace Holo
         /// Entry point
         /// </summary>
         /// <returns>Result of the script's execution</returns>
-        public abstract ExecutionResult Execute();
+        public abstract Task<ExecutionResult> Execute();
 
         public HoloScript() : this("", "", "", 1.0)
         {

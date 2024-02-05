@@ -17,6 +17,7 @@
     <None Remove="Assets\Ameko-Simplified-BG-64.ico" />
     <None Remove="Assets\Ameko-Simplified-Purple-64.ico" />
     <None Remove="Assets\Ameko-Simplified-White-64.ico" />
+    <None Remove="Assets\B5\arrow-clockwise.svg" />
     <None Remove="Assets\B5\braces.svg" />
     <None Remove="Assets\B5\code-slash.svg" />
     <None Remove="Assets\B5\collection.svg" />
@@ -34,17 +35,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia" Version="11.0.7" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.7" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.7" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.7" />
+    <PackageReference Include="CS-Script" Version="4.8.14" />
     <PackageReference Include="GitInfo" Version="3.3.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
   </ItemGroup>
 
   <ItemGroup>
