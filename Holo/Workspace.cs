@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Tomlet;
 using Tomlyn;
 
 namespace Holo
@@ -26,6 +27,9 @@ namespace Holo
 
         private readonly ObservableCollection<Link> ReferencedFiles;
         private readonly Dictionary<int, FileWrapper> LoadedFiles;
+        
+        public Uri? FilePath { get; private set; }
+        public ObservableCollection<Style> Styles { get; private set; }
 
         /// <summary>
         /// Index of the currently selected open file in the workspace
@@ -136,17 +140,22 @@ namespace Holo
         /// </summary>
         /// <param name="filePath">Path to save the file</param>
         /// <returns>True if the file was saved</returns>
-        public bool WriteWorkspaceFile(string filePath)
+        public bool WriteWorkspaceFile(Uri filePath)
         {
             try
             {
-                var file = new Workspacefile
+                var fp = filePath.LocalPath;
+                var dir = Path.GetDirectoryName(fp);
+                var file = new WorkspaceModel
                 {
-                    WorkspaceVersion = "1.0",
-                    ReferencedFiles = this.ReferencedFiles.Select(f => f.Path).ToList()
+                    WorkspaceVersion = 1.0,
+                    // Relative the paths going in
+                    ReferencedFiles = this.ReferencedFiles.Where(f => !f.Path.Equals(string.Empty)).Select(f => Path.GetRelativePath(dir, f.Path)).ToList(),
+                    Styles = this.Styles.Select(s => new Tuple<int, string>(s.Id, s.AsAss())).ToList()
                 };
-                using var writer = new StreamWriter(filePath);
-                writer.Write(Toml.FromModel(file));
+                using var writer = new StreamWriter(fp, false);
+                string m = TomletMain.TomlStringFrom(file);
+                writer.Write(m);
                 return true;
             }
             catch { return false; }
@@ -163,17 +172,22 @@ namespace Holo
         /// <param name="filePath">Path to the workspace file</param>
         /// <exception cref="FileNotFoundException">If the file was not found</exception>
         /// <exception cref="IOException">If an error occured during reading / parsing</exception>
-        public Workspace(string filePath)
+        public Workspace(Uri filePath)
         {
-            if (!System.IO.File.Exists(filePath)) throw new FileNotFoundException($"Workspace file {filePath} was not found");
+            var fp = filePath.LocalPath;
+            var dir = Path.GetDirectoryName(fp);
+            if (!System.IO.File.Exists(fp)) throw new FileNotFoundException($"Workspace file {filePath} was not found");
             try
             {
-                using var reader = new StreamReader(filePath);
+                using var reader = new StreamReader(fp);
                 var configContents = reader.ReadToEnd();
-                Workspacefile space = Toml.ToModel<Workspacefile>(filePath);
-                ReferencedFiles = new ObservableCollection<Link>(space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList());
+                WorkspaceModel space = TomletMain.To<WorkspaceModel>(configContents);
+                // De-relative the paths coming out of the workspace
+                ReferencedFiles = new ObservableCollection<Link>(space.ReferencedFiles.Select(f => new Link(NextId, Path.Combine(dir, f))).ToList());
+                Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(s.Item1, s.Item2)));
                 LoadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
+                FilePath = filePath;
             }
             catch { throw new IOException($"An error occured while loading workspace file {filePath}"); }
         }
@@ -185,6 +199,7 @@ namespace Holo
         {
             ReferencedFiles = new ObservableCollection<Link>();
             LoadedFiles = new Dictionary<int, FileWrapper>();
+            Styles = new ObservableCollection<Style>();
             AddFileToWorkspace();
             WorkingIndex = 0;
         }
@@ -198,16 +213,20 @@ namespace Holo
         /// <summary>
         /// Simplified representation of a workspace for saving
         /// </summary>
-        private class Workspacefile
+        private class WorkspaceModel
         {
             /// <summary>
             /// Version of the workspace to allow for future additions to the spec
             /// </summary>
-            public string? WorkspaceVersion;
+            public double WorkspaceVersion;
             /// <summary>
             /// List of filenames referenced in the workspace
             /// </summary>
             public List<string>? ReferencedFiles;
+            /// <summary>
+            /// List of workspace styles
+            /// </summary>
+            public List<Tuple<int,string>>? Styles;
         }
 
         /// <summary>

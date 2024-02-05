@@ -33,12 +33,12 @@
 					</MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="Open _Workspace">
+				<MenuItem Header="Open _Workspace" Command="{Binding ShowOpenWorkspaceDialogCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/collection.svg" />
 					</MenuItem.Icon>
 				</MenuItem>
-				<MenuItem Header="Save Works_pace">
+				<MenuItem Header="Save Works_pace" Command="{Binding ShowSaveWorkspaceDialogCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/save.svg" />
 					</MenuItem.Icon>

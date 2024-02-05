@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Samboy063.Tomlet" Version="5.3.0" />
     <PackageReference Include="Tomlyn" Version="0.17.0" />
   </ItemGroup>
 

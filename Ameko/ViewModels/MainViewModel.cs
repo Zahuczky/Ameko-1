@@ -23,10 +23,14 @@ public class MainViewModel : ViewModelBase
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenFileDialog { get; }
     public Interaction<FileWrapper, Uri?> ShowSaveAsFileDialog { get; }
+    public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
+    public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowOpenFileDialogCommand { get; }
     public ICommand ShowSaveFileDialogCommand { get; }
     public ICommand ShowSaveAsFileDialogCommand { get; }
+    public ICommand ShowOpenWorkspaceDialogCommand { get; }
+    public ICommand ShowSaveWorkspaceDialogCommand { get; }
 
     public ICommand CloseTabCommand { get; }
     public ICommand ActivateScriptCommand { get; }
@@ -45,6 +49,8 @@ public class MainViewModel : ViewModelBase
         ShowAboutDialog = new Interaction<AboutWindowViewModel, AboutWindowViewModel?>();
         ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsFileDialog = new Interaction<FileWrapper, Uri?>();
+        ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();
+        ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(async () =>
         {
@@ -99,6 +105,35 @@ public class MainViewModel : ViewModelBase
             workingFile.UpToDate = true;
         });
 
+        ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            var workspace = HoloService.HoloInstance.Workspace;
+            Uri uri;
+            if (workspace.FilePath == null)
+            {
+                uri = await ShowSaveAsWorkspaceDialog.Handle(workspace);
+                if (uri == null) return;
+            }
+            else
+            {
+                uri = workspace.FilePath;
+            }
+            workspace.WriteWorkspaceFile(uri);
+        });
+
+        ShowOpenWorkspaceDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            var uri = await ShowOpenWorkspaceDialog.Handle(this);
+            if (uri == null) return;
+
+            // TODO: save prompts and stuff!
+            if (Tabs != null)
+            {
+                Tabs.Clear();
+            }
+            HoloService.HoloInstance.Workspace = new Workspace(uri);
+        });
+
         CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>
         {
             // TODO: Saving and stuff
@@ -122,7 +157,7 @@ public class MainViewModel : ViewModelBase
             ScriptService.Instance.Reload(true);
         });
 
-        Tabs = new ObservableCollection<TabItemViewModel>();
+        Tabs = new ObservableCollection<TabItemViewModel>(HoloService.HoloInstance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));
         ScriptNames = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts);
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
