@@ -66,6 +66,7 @@ namespace Holo
             if (selectedEvents.Count == 0) return;
             
             if ((SelectedEvent != null && selectedEventCopy != null
+                && file.EventManager.Has(selectedEventCopy.Id)
                 && selectedEventCopy.Equals(file.EventManager.Get(selectedEventCopy.Id)))
                 || SelectedEvent == null)
             {

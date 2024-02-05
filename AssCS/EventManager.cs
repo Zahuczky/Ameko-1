@@ -154,6 +154,16 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Check if an event exists
+        /// </summary>
+        /// <param name="id">Event ID to check</param>
+        /// <returns>True if it exists</returns>
+        public bool Has(int id)
+        {
+            return events.ContainsKey(id);
+        }
+
+        /// <summary>
         /// Get the next event
         /// </summary>
         /// <param name="id">ID of the event before</param>

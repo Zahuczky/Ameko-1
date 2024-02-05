@@ -65,6 +65,15 @@
 					<Setter Property="Background" Value="Gray" />
 				</Style>
 			</DataGrid.Styles>
+			<DataGrid.ContextMenu>
+				<ContextMenu>
+					<MenuItem Header="Delete" Command="{Binding DeleteSelectedCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/trash.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+			</DataGrid.ContextMenu>
 		</DataGrid>
 	</Grid>
 </UserControl>

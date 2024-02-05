@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Ameko.ViewModels
 {
@@ -18,6 +19,8 @@ namespace Ameko.ViewModels
         private FileWrapper _wrapper;
         private readonly int _id;
         private Event? _selectedEvent;
+
+        public ICommand DeleteSelectedCommand { get; }
 
         public string Title
         {
@@ -53,7 +56,8 @@ namespace Ameko.ViewModels
 
         private void UpdateEvents(object? sender, EventArgs e)
         {
-            Events = new ObservableCollection<Event>(Wrapper.File.EventManager.Ordered);
+            Events.Clear();
+            Events.AddRange(Wrapper.File.EventManager.Ordered);
         }
 
         private void UpdateSelections(object? sender, EventArgs e)
@@ -70,7 +74,14 @@ namespace Ameko.ViewModels
             Events = new ObservableCollection<Event>(Wrapper.File.EventManager.Ordered);
             Wrapper.File.EventManager.CurrentEvents.CollectionChanged += UpdateEvents;
             Wrapper.PropertyChanged += UpdateSelections;
-            
+
+            DeleteSelectedCommand = ReactiveCommand.Create(() =>
+            {
+                // TODO: Add checking!
+                if (Wrapper.SelectedEvent == null || Wrapper.SelectedEvents == null) return;
+                Wrapper.Remove(Wrapper.SelectedEvents, Wrapper.SelectedEvent);
+            });
+
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
         }
