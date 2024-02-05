@@ -1,14 +1,18 @@
-﻿using Ameko.Services;
+﻿using Ameko.DataModels;
+using Ameko.Services;
 using AssCS;
+using AssCS.IO;
 using DynamicData;
 using Holo;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace Ameko.ViewModels
@@ -20,7 +24,15 @@ namespace Ameko.ViewModels
         private readonly int _id;
         private Event? _selectedEvent;
 
+        public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
+        public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
+        public Interaction<TabItemViewModel, string?> Paste { get; }
+
         public ICommand DeleteSelectedCommand { get; }
+        public ICommand CutSelectedEventsCommand { get; }
+        public ICommand CopySelectedEventsCommand { get; }
+        public ICommand PasteCommand { get; }
+        public ICommand DuplicateSelectedEventsCommand { get; }
 
         public string Title
         {
@@ -75,11 +87,40 @@ namespace Ameko.ViewModels
             Wrapper.File.EventManager.CurrentEvents.CollectionChanged += UpdateEvents;
             Wrapper.PropertyChanged += UpdateSelections;
 
+            CopySelectedEvents = new Interaction<TabItemViewModel, string?>();
+            CutSelectedEvents = new Interaction<TabItemViewModel, string?>();
+            Paste = new Interaction<TabItemViewModel, string?>();
+
             DeleteSelectedCommand = ReactiveCommand.Create(() =>
             {
                 // TODO: Add checking!
                 if (Wrapper.SelectedEvent == null || Wrapper.SelectedEvents == null) return;
                 Wrapper.Remove(Wrapper.SelectedEvents, Wrapper.SelectedEvent);
+            });
+
+            CopySelectedEventsCommand = ReactiveCommand.Create(async () =>
+            {
+                await CopySelectedEvents.Handle(this);
+            });
+
+            CutSelectedEventsCommand = ReactiveCommand.Create(async () =>
+            {
+                await CutSelectedEvents.Handle(this);
+            });
+
+            PasteCommand = ReactiveCommand.Create(async () =>
+            {
+                await Paste.Handle(this);
+            });
+
+            DuplicateSelectedEventsCommand = ReactiveCommand.Create(() =>
+            {
+                if (Wrapper.SelectedEvents == null) return;
+                foreach (var evnt in Wrapper.SelectedEvents)
+                {
+                    var newEvnt = new Event(Wrapper.File.EventManager.NextId, evnt);
+                    Wrapper.File.EventManager.AddAfter(evnt.Id, newEvnt);
+                }
             });
 
             // TODO: Maybe not do this this way

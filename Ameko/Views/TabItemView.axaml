@@ -67,6 +67,33 @@
 			</DataGrid.Styles>
 			<DataGrid.ContextMenu>
 				<ContextMenu>
+					<MenuItem Header="Duplicate" Command="{Binding DuplicateSelectedEventsCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/files.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator />
+					<MenuItem Header="Copy" Command="{Binding CopySelectedEventsCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/copy.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Cut" Command="{Binding CutSelectedEventsCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/scissors.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Paste" Command="{Binding PasteCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/clipboard.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Paste Over..." IsEnabled="False">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/clipboard-data.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator />
 					<MenuItem Header="Delete" Command="{Binding DeleteSelectedCommand}">
 						<MenuItem.Icon>
 							<Svg Path="avares://Ameko/Assets/B5/trash.svg" />

@@ -51,6 +51,7 @@ namespace AssCS
             var pre = events[id].Link;
             var link = chain.AddAfter(pre, e.Id);
             events[e.Id] = new EventLink(link, e);
+            current.Add(e.Id);
             return e.Id;
         }
 
