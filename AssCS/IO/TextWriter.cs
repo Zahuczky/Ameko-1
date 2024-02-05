@@ -16,7 +16,7 @@ namespace AssCS.IO
         {
             using var ioFile = System.IO.File.Open(filepath, System.IO.FileMode.Open);
             var writer = new System.IO.StreamWriter(ioFile, encoding);
-            writer.WriteLine($"# Exported by {consumer.Name} {consumer.Version} (AssCS {AssCSInfo.Version})");
+            writer.WriteLine($"# Exported by {consumer.Name} {consumer.Version} [AssCS]");
 
             foreach (var line in file.EventManager.Ordered)
             {

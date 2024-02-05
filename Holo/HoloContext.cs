@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Holo
@@ -12,13 +13,14 @@ namespace Holo
         public static string HoloDirectory => localappdata;
         
         public PluginHandler PluginHandler { get; }
-        // TODO: Scripts
+        public ScriptHandler ScriptHandler { get; }
         public ConfigurationManager ConfigurationManager { get; }
         public Workspace Workspace { get; set; }
 
         private HoloContext()
         {
             PluginHandler = new PluginHandler(Path.Combine(HoloDirectory, "plugins"));
+            ScriptHandler = new ScriptHandler(Path.Combine(HoloDirectory, "scripts"));
             ConfigurationManager = new ConfigurationManager(HoloDirectory);
             Workspace = new Workspace();
             
@@ -26,6 +28,8 @@ namespace Holo
             {
                 ConfigurationManager.GenerateDefaultConfiguration(); // TODO
             }
+
+            ScriptHandler.LoadAll();
         }
     }
 }

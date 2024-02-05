@@ -17,6 +17,8 @@
     <None Remove="Assets\Ameko-Simplified-BG-64.ico" />
     <None Remove="Assets\Ameko-Simplified-Purple-64.ico" />
     <None Remove="Assets\Ameko-Simplified-White-64.ico" />
+    <None Remove="Assets\B5\braces.svg" />
+    <None Remove="Assets\B5\code-slash.svg" />
     <None Remove="Assets\B5\collection.svg" />
     <None Remove="Assets\B5\door-open.svg" />
     <None Remove="Assets\B5\file-earmark.svg" />
