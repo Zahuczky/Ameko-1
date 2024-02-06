@@ -8,7 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Tomlyn;
+using Tomlet;
+using static Holo.Workspace;
 
 namespace Holo
 {
@@ -24,8 +25,13 @@ namespace Holo
         public int NextId => _id++;
         private int _workingIndex = 0;
 
-        private readonly ObservableCollection<Link> ReferencedFiles;
-        private readonly Dictionary<int, FileWrapper> LoadedFiles;
+        public ObservableCollection<Link> ReferencedFiles { get; set; }
+        public ObservableCollection<FileWrapper> Files { get; set; }
+
+        private Dictionary<int, FileWrapper> loadedFiles;
+        
+        public Uri? FilePath { get; private set; }
+        public ObservableCollection<Style> Styles { get; private set; }
 
         /// <summary>
         /// Index of the currently selected open file in the workspace
@@ -39,10 +45,9 @@ namespace Holo
         /// <summary>
         /// The currently selected open file
         /// </summary>
-        public FileWrapper WorkingFile => LoadedFiles[WorkingIndex];
+        public FileWrapper WorkingFile => loadedFiles[WorkingIndex];
 
-        public FileWrapper GetFile(int id) => LoadedFiles[id];
-        public List<FileWrapper> Files => LoadedFiles.Values.ToList();
+        public FileWrapper GetFile(int id) => loadedFiles[id];
 
         /// <summary>
         /// Add a file to the current workspace and open it
@@ -57,7 +62,8 @@ namespace Holo
                 var file = parser.Load(filePath.LocalPath);
                 var link = new Link(NextId, filePath.LocalPath);
                 ReferencedFiles.Add(link);
-                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, filePath));
+                loadedFiles.Add(link.Id, new FileWrapper(file, link.Id, filePath));
+                Files.Add(GetFile(link.Id));
                 WorkingIndex = link.Id;
                 return link.Id;
             }
@@ -70,12 +76,14 @@ namespace Holo
         /// <returns>ID of the file</returns>
         public int AddFileToWorkspace()
         {
-            var dummyLink = new Link(NextId, string.Empty);
+            var id = NextId;
+            var dummyLink = new Link(id, string.Empty, $"New {id}");
             ReferencedFiles.Add(dummyLink);
 
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
-            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id, null));
+            loadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id, null));
+            Files.Add(GetFile(dummyLink.Id));
             WorkingIndex = dummyLink.Id;
             return dummyLink.Id;
         }
@@ -107,7 +115,8 @@ namespace Holo
                 if (links == null) return -1;
                 var link = links.First();
                 var file = parser.Load(link.Path);
-                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
+                loadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
+                Files.Add(GetFile(link.Id));
                 WorkingIndex = link.Id;
                 return id;
             }
@@ -119,13 +128,17 @@ namespace Holo
         /// </summary>
         /// <param name="id">ID of the file to close</param>
         /// <returns>True if the file was closed</returns>
-        public bool CloseFileInWorkspace(int id)
+        public bool CloseFileInWorkspace(int id, bool replace = true)
         {
             // TODO: Do we want to assume that the caller already saved the file?
-            if (LoadedFiles.Remove(id))
+            if (loadedFiles.Remove(id))
             {
-                if (LoadedFiles.Count > 0) WorkingIndex = LoadedFiles.Keys.Min();
-                else AddFileToWorkspace();
+                Files.Remove(Files.Where(f => f.ID == id).Single());
+                if (replace)
+                {
+                    if (loadedFiles.Count > 0) WorkingIndex = loadedFiles.Keys.Min();
+                    else AddFileToWorkspace();
+                }
                 return true;
             }
             return false;
@@ -136,17 +149,22 @@ namespace Holo
         /// </summary>
         /// <param name="filePath">Path to save the file</param>
         /// <returns>True if the file was saved</returns>
-        public bool WriteWorkspaceFile(string filePath)
+        public bool WriteWorkspaceFile(Uri filePath)
         {
             try
             {
-                var file = new Workspacefile
+                var fp = filePath.LocalPath;
+                var dir = Path.GetDirectoryName(fp);
+                var file = new WorkspaceModel
                 {
-                    WorkspaceVersion = "1.0",
-                    ReferencedFiles = this.ReferencedFiles.Select(f => f.Path).ToList()
+                    WorkspaceVersion = 1.0,
+                    // Relative the paths going in
+                    ReferencedFiles = this.ReferencedFiles.Where(f => !f.Path.Equals(string.Empty)).Select(f => Path.GetRelativePath(dir, f.Path)).ToList(),
+                    Styles = this.Styles.Select(s => new Tuple<int, string>(s.Id, s.AsAss())).ToList()
                 };
-                using var writer = new StreamWriter(filePath);
-                writer.Write(Toml.FromModel(file));
+                using var writer = new StreamWriter(fp, false);
+                string m = TomletMain.TomlStringFrom(file);
+                writer.Write(m);
                 return true;
             }
             catch { return false; }
@@ -154,26 +172,40 @@ namespace Holo
 
         public FileWrapper this[int key]
         {
-            get => LoadedFiles[key];
+            get => loadedFiles[key];
         }
 
         /// <summary>
-        /// Instantiate a Workspace by loading a workspace file from disk
+        /// Load a workspace file from disk
         /// </summary>
         /// <param name="filePath">Path to the workspace file</param>
         /// <exception cref="FileNotFoundException">If the file was not found</exception>
         /// <exception cref="IOException">If an error occured during reading / parsing</exception>
-        public Workspace(string filePath)
+        public void OpenWorkspaceFile(Uri filePath)
         {
-            if (!System.IO.File.Exists(filePath)) throw new FileNotFoundException($"Workspace file {filePath} was not found");
+            foreach (var f in loadedFiles)
+                CloseFileInWorkspace(f.Key, false);
+
+            var fp = filePath.LocalPath;
+            var dir = Path.GetDirectoryName(fp);
+            if (!System.IO.File.Exists(fp)) throw new FileNotFoundException($"Workspace file {filePath} was not found");
             try
             {
-                using var reader = new StreamReader(filePath);
+                using var reader = new StreamReader(fp);
                 var configContents = reader.ReadToEnd();
-                Workspacefile space = Toml.ToModel<Workspacefile>(filePath);
-                ReferencedFiles = new ObservableCollection<Link>(space.ReferencedFiles.Select(f => new Link(NextId, f)).ToList());
-                LoadedFiles = new Dictionary<int, FileWrapper>();
+                WorkspaceModel space = TomletMain.To<WorkspaceModel>(configContents);
+                _id = 0;
+                ReferencedFiles.Clear();
+                Files.Clear();
+                // De-relative the paths coming out of the workspace
+                foreach (var rf in space.ReferencedFiles.Select(f => new Link(NextId, Path.Combine(dir, f))).ToList())
+                {
+                    ReferencedFiles.Add(rf);
+                }
+                Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(s.Item1, s.Item2)));
+                loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
+                FilePath = filePath;
             }
             catch { throw new IOException($"An error occured while loading workspace file {filePath}"); }
         }
@@ -184,7 +216,9 @@ namespace Holo
         public Workspace()
         {
             ReferencedFiles = new ObservableCollection<Link>();
-            LoadedFiles = new Dictionary<int, FileWrapper>();
+            loadedFiles = new Dictionary<int, FileWrapper>();
+            Files = new ObservableCollection<FileWrapper>();
+            Styles = new ObservableCollection<Style>();
             AddFileToWorkspace();
             WorkingIndex = 0;
         }
@@ -198,26 +232,58 @@ namespace Holo
         /// <summary>
         /// Simplified representation of a workspace for saving
         /// </summary>
-        private class Workspacefile
+        private class WorkspaceModel
         {
             /// <summary>
             /// Version of the workspace to allow for future additions to the spec
             /// </summary>
-            public string? WorkspaceVersion;
+            public double WorkspaceVersion;
             /// <summary>
             /// List of filenames referenced in the workspace
             /// </summary>
             public List<string>? ReferencedFiles;
+            /// <summary>
+            /// List of workspace styles
+            /// </summary>
+            public List<Tuple<int,string>>? Styles;
         }
 
         /// <summary>
         /// Link between an ID and a filepath
         /// </summary>
-        private class Link : Tuple<int, string>
+        public class Link : INotifyPropertyChanged
         {
-            public Link(int id, string path) : base(id, path) { }
-            public int Id => Item1;
-            public string Path => Item2;
+            private int id;
+            private string path;
+            private string name;
+            public Link(int id, string path, string? name = null)
+            {
+                this.id = id;
+                this.path = path;
+                if (name != null) this.name = name;
+                else this.name = System.IO.Path.GetFileNameWithoutExtension(path);
+            }
+            public int Id
+            {
+                get => id;
+                set { id = value; OnPropertyChanged(nameof(Id)); }
+            }
+            public string Path
+            {
+                get => path;
+                set { path = value; OnPropertyChanged(nameof(Path)); }
+            }
+            public string Name
+            {
+                get => name;
+                set { name = value; OnPropertyChanged(nameof(Name)); }
+            }
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

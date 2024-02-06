@@ -143,7 +143,7 @@ namespace Holo
             UpToDate = true;
             FilePath = filePath;
             if (filePath != null) title = System.IO.Path.GetFileNameWithoutExtension(filePath.LocalPath);
-            else title = $"File {id}";
+            else title = $"New {id}";
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

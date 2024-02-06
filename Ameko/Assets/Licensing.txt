@@ -10,7 +10,8 @@ The following libraries are property of their respective owners and may be licen
 - Avalonia
 - CS-Script
 - GitInfo
+- MessageBox.Avalonia
 - Svg.Skia
-- Tomlyn
+- Tomlet
 
 Parts of AssCS are based on Aegisub, under a mostly BSD-style license. Ameko is not affiliated with the Aegisub project.

@@ -173,6 +173,7 @@ namespace AssCS
         {
             if (events.ContainsKey(id))
             {
+                if (events[id].Link.Next == null) return null;
                 return events[events[id].Link.Next.Value].Event;
             }
             return null;
@@ -187,6 +188,7 @@ namespace AssCS
         {
             if (events.ContainsKey(id))
             {
+                if (events[id].Link.Previous == null) return null;
                 return events[events[id].Link.Previous.Value].Event;
             }
             return null;

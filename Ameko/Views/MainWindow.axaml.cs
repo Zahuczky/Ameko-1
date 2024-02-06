@@ -49,11 +49,50 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             {
                 new FilePickerFileType("ASS Files") { Patterns = new[] { "*.ass" } }
             },
-            SuggestedFileName = $"{interaction.Input.Title} (Copy)"
+            SuggestedFileName = $"{interaction.Input.Title}"
         });
         if (file != null)
         {
             interaction.SetOutput(file.Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
+    private async Task DoShowSaveAsWorkspaceDialogAsync(InteractionContext<Workspace, Uri?> interaction)
+    {
+        if (interaction.Input == null) return;
+
+        var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save Workspace As...",
+            FileTypeChoices = new[]
+            {
+                new FilePickerFileType("Ameko Workspace Files") { Patterns = new[] { "*.amk" } }
+            },
+            SuggestedFileName = $"Workspace"
+        });
+        if (file != null)
+        {
+            interaction.SetOutput(file.Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
+    private async Task DoShowOpenWorkspaceDialogAsync(InteractionContext<MainViewModel, Uri?> interaction)
+    {
+        var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open Workspace File",
+            AllowMultiple = false,
+            FileTypeFilter = new[] {
+                new FilePickerFileType("Ameko Workspace Files") { Patterns = new[] { "*.amk" } }
+            }
+        });
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
             return;
         }
         interaction.SetOutput(null);
@@ -69,6 +108,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
                 ViewModel.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
                 ViewModel.ShowSaveAsFileDialog.RegisterHandler(DoShowSaveAsFileDialogAsync);
+                ViewModel.ShowSaveAsWorkspaceDialog.RegisterHandler(DoShowSaveAsWorkspaceDialogAsync);
+                ViewModel.ShowOpenWorkspaceDialog.RegisterHandler(DoShowOpenWorkspaceDialogAsync);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
