@@ -74,7 +74,7 @@ namespace Ameko.ViewModels
 
         private void UpdateSelections(object? sender, EventArgs e)
         {
-            SelectedEvent = HoloService.HoloInstance.Workspace.WorkingFile.SelectedEvent;
+            SelectedEvent = Wrapper.SelectedEvent;
         }
 
         public TabItemViewModel(string title, FileWrapper wrapper)
@@ -125,6 +125,8 @@ namespace Ameko.ViewModels
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
+            SelectedIndex = 0;
+            Wrapper.Select([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
         }
     }
 }

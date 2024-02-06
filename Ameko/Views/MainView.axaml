@@ -130,7 +130,7 @@
 			</TabControl.ContentTemplate>
 			<TabControl.Styles>
 				<Style Selector="TabItem">
-					<Setter Property="Padding" Value="3 2 3 0" />
+					<Setter Property="Padding" Value="5 2 5 0" />
 				</Style>
 			</TabControl.Styles>
 		</TabControl>

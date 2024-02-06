@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Tomlyn;
+using Tomlet;
 
 namespace Holo
 {
@@ -21,7 +21,7 @@ namespace Holo
             {
                 using var reader = new StreamReader(configFilePath);
                 var configContents = reader.ReadToEnd();
-                _config = Toml.ToModel<HoloConfiguration>(configContents);
+                _config = TomletMain.To<HoloConfiguration>(configContents);
                 return true;
             }
             catch { return false; }
@@ -34,7 +34,7 @@ namespace Holo
             try
             {
                 using var writer = new StreamWriter(configFilePath);
-                writer.Write(Toml.FromModel(CurrentConfiguration));
+                writer.Write(TomletMain.TomlStringFrom(CurrentConfiguration));
                 return true;
             } catch { return false; }
         }

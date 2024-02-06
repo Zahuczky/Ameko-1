@@ -37,6 +37,8 @@
 				  Grid.ColumnSpan="3"
 				  IsReadOnly="True"
 				  SelectionMode="Extended"
+				  SelectedItem="{Binding SelectedTab}"
+				  SelectedIndex="{Binding SelectedIndex}"
 				  VerticalScrollBarVisibility="Auto"
 				  ItemsSource="{Binding Events}">
 			<DataGrid.Columns>

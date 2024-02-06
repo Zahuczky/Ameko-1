@@ -72,16 +72,6 @@ namespace Ameko.Views
         {
             InitializeComponent();
 
-            eventsGrid.SelectionChanged += (o, e) =>
-            {
-                List<Event> list = eventsGrid.SelectedItems.Cast<Event>().ToList();
-                Event recent = (Event)eventsGrid.SelectedItem;
-                if (DataContext != null)
-                {
-                    ((TabItemViewModel)DataContext).UpdateEventSelection(list, recent);
-                }
-            };
-
             this.WhenActivated((CompositeDisposable disposables) =>
             {
                 if (ViewModel != null)
@@ -89,6 +79,13 @@ namespace Ameko.Views
                     ViewModel.CopySelectedEvents.RegisterHandler(DoCopySelectedEventAsync);
                     ViewModel.CutSelectedEvents.RegisterHandler(DoCutSelectedEventAsync);
                     ViewModel.Paste.RegisterHandler(DoPasteAsync);
+
+                    eventsGrid.SelectionChanged += (o, e) =>
+                    {
+                        List<Event> list = eventsGrid.SelectedItems.Cast<Event>().ToList();
+                        Event recent = (Event)eventsGrid.SelectedItem;
+                        ViewModel.UpdateEventSelection(list, recent);
+                    };
                 }
 
                 Disposable.Create(() => { }).DisposeWith(disposables);

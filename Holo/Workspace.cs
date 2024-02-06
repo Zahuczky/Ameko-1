@@ -9,7 +9,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Tomlet;
-using Tomlyn;
 
 namespace Holo
 {
@@ -237,6 +236,7 @@ namespace Holo
             public Link(int id, string path) : base(id, path) { }
             public int Id => Item1;
             public string Path => Item2;
+            public string Name => System.IO.Path.GetFileNameWithoutExtension(Path);
         }
     }
 }

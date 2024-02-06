@@ -41,7 +41,11 @@ public class MainViewModel : ViewModelBase
     public int SelectedTabIndex
     {
         get => selectedTabIndex;
-        set => this.RaiseAndSetIfChanged(ref selectedTabIndex, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref selectedTabIndex, value);
+            HoloService.HoloInstance.Workspace.WorkingIndex = Tabs[value].ID;
+        }
     }
 
     public MainViewModel()
