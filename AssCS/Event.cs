@@ -68,7 +68,12 @@ namespace AssCS
         public string Text
         {
             get => _text;
-            set { _text = value; OnPropertyChanged(nameof(Text)); }
+            set
+            {
+                _text = value;
+                OnPropertyChanged(nameof(Text));
+                OnPropertyChanged(nameof(Cps));
+            }
         }
         public List<int> LinkedExtradatas { get; set; }
 
