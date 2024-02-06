@@ -34,6 +34,8 @@ namespace Ameko.ViewModels
         public ICommand PasteCommand { get; }
         public ICommand DuplicateSelectedEventsCommand { get; }
         public ICommand NextOrAddEventCommand { get; }
+        public ICommand InsertBeforeCommand { get; }
+        public ICommand InsertAfterCommand { get; }
 
         public string Title
         {
@@ -122,6 +124,42 @@ namespace Ameko.ViewModels
                     var newEvnt = new Event(Wrapper.File.EventManager.NextId, evnt);
                     Wrapper.File.EventManager.AddAfter(evnt.Id, newEvnt);
                 }
+            });
+
+            InsertBeforeCommand = ReactiveCommand.Create(() =>
+            {
+                if (Wrapper.SelectedEvent == null) return;
+                var newEvnt = new Event(Wrapper.File.EventManager.NextId);
+                var before = Wrapper.File.EventManager.GetBefore(Wrapper.SelectedEvent.Id);
+                if (before != null)
+                {
+                    if ((Wrapper.SelectedEvent.Start - before.End).TotalSeconds < 5)
+                        newEvnt.Start = before.End;
+                    else
+                        newEvnt.Start = Wrapper.SelectedEvent.Start - Time.FromSeconds(5);
+                }
+                newEvnt.End = Wrapper.SelectedEvent.Start;
+                newEvnt.Style = Wrapper.SelectedEvent.Style;
+
+                Wrapper.File.EventManager.AddBefore(Wrapper.SelectedEvent.Id, newEvnt);
+            });
+
+            InsertAfterCommand = ReactiveCommand.Create(() =>
+            {
+                if (Wrapper.SelectedEvent == null) return;
+                var newEvnt = new Event(Wrapper.File.EventManager.NextId);
+                var after = Wrapper.File.EventManager.GetAfter(Wrapper.SelectedEvent.Id);
+                if (after != null)
+                {
+                    if ((after.Start - Wrapper.SelectedEvent.End).TotalSeconds < 5)
+                        newEvnt.End = after.Start;
+                    else
+                        newEvnt.End = Wrapper.SelectedEvent.End + Time.FromSeconds(5);
+                }
+                newEvnt.Start = Wrapper.SelectedEvent.End;
+                newEvnt.Style = Wrapper.SelectedEvent.Style;
+
+                Wrapper.File.EventManager.AddAfter(Wrapper.SelectedEvent.Id, newEvnt);
             });
 
             NextOrAddEventCommand = ReactiveCommand.Create(() =>

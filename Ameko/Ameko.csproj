@@ -17,7 +17,13 @@
     <None Remove="Assets\Ameko-Simplified-BG-64.ico" />
     <None Remove="Assets\Ameko-Simplified-Purple-64.ico" />
     <None Remove="Assets\Ameko-Simplified-White-64.ico" />
+    <None Remove="Assets\B5\align-end.svg" />
+    <None Remove="Assets\B5\align-start.svg" />
+    <None Remove="Assets\B5\arrow-bar-down.svg" />
+    <None Remove="Assets\B5\arrow-bar-up.svg" />
     <None Remove="Assets\B5\arrow-clockwise.svg" />
+    <None Remove="Assets\B5\arrows-collapse.svg" />
+    <None Remove="Assets\B5\arrows-expand.svg" />
     <None Remove="Assets\B5\braces.svg" />
     <None Remove="Assets\B5\clipboard-data.svg" />
     <None Remove="Assets\B5\clipboard.svg" />

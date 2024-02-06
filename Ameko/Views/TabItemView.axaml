@@ -80,6 +80,27 @@
 							<Svg Path="avares://Ameko/Assets/B5/files.svg" />
 						</MenuItem.Icon>
 					</MenuItem>
+					<MenuItem Header="Merge Lines" IsEnabled="False">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/arrows-collapse.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Split Line" IsEnabled="False">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/arrows-expand.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator />
+					<MenuItem Header="Insert Before" Command="{Binding InsertBeforeCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/arrow-bar-up.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Insert After" Command="{Binding InsertAfterCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/arrow-bar-down.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
 					<Separator />
 					<MenuItem Header="Copy" Command="{Binding CopySelectedEventsCommand}">
 						<MenuItem.Icon>
