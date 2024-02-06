@@ -36,6 +36,7 @@ namespace Ameko.ViewModels
         public ICommand NextOrAddEventCommand { get; }
         public ICommand InsertBeforeCommand { get; }
         public ICommand InsertAfterCommand { get; }
+        public ICommand SplitEventCommand { get; }
 
         public string Title
         {
@@ -160,6 +161,31 @@ namespace Ameko.ViewModels
                 newEvnt.Style = Wrapper.SelectedEvent.Style;
 
                 Wrapper.File.EventManager.AddAfter(Wrapper.SelectedEvent.Id, newEvnt);
+            });
+
+            SplitEventCommand = ReactiveCommand.Create(() =>
+            {
+                var original = Wrapper.SelectedEvent;
+                if (original == null) return;
+                var segments = original.Text.Split("\\N");
+                if (segments.Length == 0) return;
+
+                var rolling = original.Start;
+                var target = original.End;
+                foreach (var segment in segments)
+                {
+                    var newEvent = new Event(Wrapper.File.EventManager.NextId, original);
+                    var ratio = segment.Length / (double)original.Text.Replace("\\N", string.Empty).Length;
+                    newEvent.Text = segment;
+                    newEvent.Start = Time.FromTime(rolling);
+                    newEvent.End = rolling + Time.FromMillis(Convert.ToInt64((target.TotalMilliseconds - original.Start.TotalMilliseconds) * ratio));
+                    if (newEvent.End > target) newEvent.End = target;
+
+                    Wrapper.File.EventManager.AddAfter(Wrapper.SelectedEvent?.Id ?? original.Id, newEvent);
+                    Wrapper.Select([newEvent], newEvent);
+                    rolling = newEvent.End;
+                }
+                Wrapper.Remove([original], original);
             });
 
             NextOrAddEventCommand = ReactiveCommand.Create(() =>
