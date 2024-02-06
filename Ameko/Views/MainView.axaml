@@ -90,7 +90,19 @@
 						<ListBox.ItemTemplate>
 							<DataTemplate>
 								<ListBoxItem DoubleTapped="ListBoxItem_DoubleTapped"
-											 Content="{Binding Name}" />
+											 Content="{Binding Name}">
+									<ListBoxItem.ContextMenu>
+										<ContextMenu>
+											<MenuItem Header="Remove from Workspace"
+													  Command="{Binding #main((vm:MainViewModel)DataContext).RemoveFromWorkspaceCommand}"
+													  CommandParameter="{Binding Id}">
+												<MenuItem.Icon>
+													<Svg Path="avares://Ameko/Assets/B5/trash.svg" />
+												</MenuItem.Icon>
+											</MenuItem>
+										</ContextMenu>
+									</ListBoxItem.ContextMenu>
+								</ListBoxItem>
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 					</ListBox>
@@ -117,7 +129,8 @@
 								</Style>
 							</TextBlock.Styles>
 						</TextBlock>
-						<Button Command="{Binding #main((vm:MainViewModel)DataContext).CloseTabCommand}" CommandParameter="{Binding ID}">
+						<Button Command="{Binding #main((vm:MainViewModel)DataContext).CloseTabCommand}" 
+								CommandParameter="{Binding ID}">
 							<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/x-circle.svg" />
 							<Button.Styles>
 								<Style Selector="Button">

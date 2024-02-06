@@ -36,6 +36,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowSaveWorkspaceDialogCommand { get; }
 
     public ICommand CloseTabCommand { get; }
+    public ICommand RemoveFromWorkspaceCommand { get; }
     public ICommand ActivateScriptCommand { get; }
     public ICommand ReloadScriptsCommand { get; }
 
@@ -62,14 +63,21 @@ public class MainViewModel : ViewModelBase
             return;
         }
         // Open the file
-        int id = HoloContext.Instance.Workspace.OpenFileFromWorkspace(fileId);
-        var file = HoloContext.Instance.Workspace.GetFile(id);
-        // TODO: Real 
-        Tabs?.Add(new TabItemViewModel(
-            Path.GetFileNameWithoutExtension(file?.FilePath?.LocalPath ?? "Unnamed"),
-            HoloContext.Instance.Workspace.GetFile(id)
-        ));
-        SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol
+        HoloContext.Instance.Workspace.OpenFileFromWorkspace(fileId);
+    }
+
+    private void UpdateLoadedTabsCallback(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems != null)
+            foreach (FileWrapper ni in e.NewItems)
+            {
+                Tabs?.Add(new TabItemViewModel(ni.Title, ni));
+            }
+        if (e.OldItems != null)
+            foreach (FileWrapper oi in e.OldItems)
+            {
+                Tabs?.Remove(Tabs.Where(t => t.ID == oi.ID).Single());
+            }
     }
 
     public MainViewModel()
@@ -92,13 +100,7 @@ public class MainViewModel : ViewModelBase
             var uri = await ShowOpenFileDialog.Handle(this);
             if (uri == null) return;
 
-            int id = HoloContext.Instance.Workspace.AddFileToWorkspace(uri);
-            // TODO: Real 
-            Tabs?.Add(new TabItemViewModel(
-                Path.GetFileNameWithoutExtension(uri.LocalPath), 
-                HoloContext.Instance.Workspace.GetFile(id)
-            ));
-            SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol
+            HoloContext.Instance.Workspace.AddFileToWorkspace(uri);
         });
 
         ShowSaveFileDialogCommand = ReactiveCommand.Create(async () =>
@@ -160,7 +162,6 @@ public class MainViewModel : ViewModelBase
             if (uri == null) return;
 
             // TODO: save prompts and stuff!
-            Tabs?.Clear();
             HoloContext.Instance.Workspace.OpenWorkspaceFile(uri);
         });
 
@@ -172,6 +173,11 @@ public class MainViewModel : ViewModelBase
                 var tab = Tabs.Where(t => t.ID == fileId).Single();
                 Tabs.Remove(tab);
             }
+        });
+
+        RemoveFromWorkspaceCommand = ReactiveCommand.Create<int>((int fileId) =>
+        {
+            HoloContext.Instance.Workspace.RemoveFileFromWorkspace(fileId);
         });
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
@@ -189,6 +195,8 @@ public class MainViewModel : ViewModelBase
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));
         ScriptNames = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts);
+
+        HoloContext.Instance.Workspace.Files.CollectionChanged += UpdateLoadedTabsCallback;
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
             ScriptNames.Clear();

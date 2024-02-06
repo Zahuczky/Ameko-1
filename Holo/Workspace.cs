@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Tomlet;
+using static Holo.Workspace;
 
 namespace Holo
 {
@@ -25,6 +26,8 @@ namespace Holo
         private int _workingIndex = 0;
 
         public ObservableCollection<Link> ReferencedFiles { get; set; }
+        public ObservableCollection<FileWrapper> Files { get; set; }
+
         private Dictionary<int, FileWrapper> loadedFiles;
         
         public Uri? FilePath { get; private set; }
@@ -45,7 +48,6 @@ namespace Holo
         public FileWrapper WorkingFile => loadedFiles[WorkingIndex];
 
         public FileWrapper GetFile(int id) => loadedFiles[id];
-        public List<FileWrapper> Files => loadedFiles.Values.ToList();
 
         /// <summary>
         /// Add a file to the current workspace and open it
@@ -61,6 +63,7 @@ namespace Holo
                 var link = new Link(NextId, filePath.LocalPath);
                 ReferencedFiles.Add(link);
                 loadedFiles.Add(link.Id, new FileWrapper(file, link.Id, filePath));
+                Files.Add(GetFile(link.Id));
                 WorkingIndex = link.Id;
                 return link.Id;
             }
@@ -80,6 +83,7 @@ namespace Holo
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
             loadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id, null));
+            Files.Add(GetFile(dummyLink.Id));
             WorkingIndex = dummyLink.Id;
             return dummyLink.Id;
         }
@@ -112,6 +116,7 @@ namespace Holo
                 var link = links.First();
                 var file = parser.Load(link.Path);
                 loadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
+                Files.Add(GetFile(link.Id));
                 WorkingIndex = link.Id;
                 return id;
             }
@@ -123,13 +128,17 @@ namespace Holo
         /// </summary>
         /// <param name="id">ID of the file to close</param>
         /// <returns>True if the file was closed</returns>
-        public bool CloseFileInWorkspace(int id)
+        public bool CloseFileInWorkspace(int id, bool replace = true)
         {
             // TODO: Do we want to assume that the caller already saved the file?
             if (loadedFiles.Remove(id))
             {
-                if (loadedFiles.Count > 0) WorkingIndex = loadedFiles.Keys.Min();
-                else AddFileToWorkspace();
+                Files.Remove(Files.Where(f => f.ID == id).Single());
+                if (replace)
+                {
+                    if (loadedFiles.Count > 0) WorkingIndex = loadedFiles.Keys.Min();
+                    else AddFileToWorkspace();
+                }
                 return true;
             }
             return false;
@@ -174,6 +183,9 @@ namespace Holo
         /// <exception cref="IOException">If an error occured during reading / parsing</exception>
         public void OpenWorkspaceFile(Uri filePath)
         {
+            foreach (var f in loadedFiles)
+                CloseFileInWorkspace(f.Key, false);
+
             var fp = filePath.LocalPath;
             var dir = Path.GetDirectoryName(fp);
             if (!System.IO.File.Exists(fp)) throw new FileNotFoundException($"Workspace file {filePath} was not found");
@@ -184,6 +196,7 @@ namespace Holo
                 WorkspaceModel space = TomletMain.To<WorkspaceModel>(configContents);
                 _id = 0;
                 ReferencedFiles.Clear();
+                Files.Clear();
                 // De-relative the paths coming out of the workspace
                 foreach (var rf in space.ReferencedFiles.Select(f => new Link(NextId, Path.Combine(dir, f))).ToList())
                 {
@@ -204,6 +217,7 @@ namespace Holo
         {
             ReferencedFiles = new ObservableCollection<Link>();
             loadedFiles = new Dictionary<int, FileWrapper>();
+            Files = new ObservableCollection<FileWrapper>();
             Styles = new ObservableCollection<Style>();
             AddFileToWorkspace();
             WorkingIndex = 0;
