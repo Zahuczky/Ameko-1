@@ -85,7 +85,7 @@ namespace Ameko.Views
                     {
                         List<Event> list = eventsGrid.SelectedItems.Cast<Event>().ToList();
                         Event recent = (Event)eventsGrid.SelectedItem;
-                        ViewModel.UpdateEventSelection(list, recent);
+                        ViewModel?.UpdateEventSelection(list, recent);
                     };
                 }
 

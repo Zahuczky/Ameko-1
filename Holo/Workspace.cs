@@ -24,8 +24,8 @@ namespace Holo
         public int NextId => _id++;
         private int _workingIndex = 0;
 
-        private readonly ObservableCollection<Link> ReferencedFiles;
-        private readonly Dictionary<int, FileWrapper> LoadedFiles;
+        public readonly ObservableCollection<Link> ReferencedFiles;
+        private readonly Dictionary<int, FileWrapper> loadedFiles;
         
         public Uri? FilePath { get; private set; }
         public ObservableCollection<Style> Styles { get; private set; }
@@ -42,10 +42,10 @@ namespace Holo
         /// <summary>
         /// The currently selected open file
         /// </summary>
-        public FileWrapper WorkingFile => LoadedFiles[WorkingIndex];
+        public FileWrapper WorkingFile => loadedFiles[WorkingIndex];
 
-        public FileWrapper GetFile(int id) => LoadedFiles[id];
-        public List<FileWrapper> Files => LoadedFiles.Values.ToList();
+        public FileWrapper GetFile(int id) => loadedFiles[id];
+        public List<FileWrapper> Files => loadedFiles.Values.ToList();
 
         /// <summary>
         /// Add a file to the current workspace and open it
@@ -60,7 +60,7 @@ namespace Holo
                 var file = parser.Load(filePath.LocalPath);
                 var link = new Link(NextId, filePath.LocalPath);
                 ReferencedFiles.Add(link);
-                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, filePath));
+                loadedFiles.Add(link.Id, new FileWrapper(file, link.Id, filePath));
                 WorkingIndex = link.Id;
                 return link.Id;
             }
@@ -78,7 +78,7 @@ namespace Holo
 
             var dummyFile = new AssCS.File();
             dummyFile.LoadDefault();
-            LoadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id, null));
+            loadedFiles.Add(dummyLink.Id, new FileWrapper(dummyFile, dummyLink.Id, null));
             WorkingIndex = dummyLink.Id;
             return dummyLink.Id;
         }
@@ -110,7 +110,7 @@ namespace Holo
                 if (links == null) return -1;
                 var link = links.First();
                 var file = parser.Load(link.Path);
-                LoadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
+                loadedFiles.Add(link.Id, new FileWrapper(file, link.Id, new Uri(link.Path)));
                 WorkingIndex = link.Id;
                 return id;
             }
@@ -125,9 +125,9 @@ namespace Holo
         public bool CloseFileInWorkspace(int id)
         {
             // TODO: Do we want to assume that the caller already saved the file?
-            if (LoadedFiles.Remove(id))
+            if (loadedFiles.Remove(id))
             {
-                if (LoadedFiles.Count > 0) WorkingIndex = LoadedFiles.Keys.Min();
+                if (loadedFiles.Count > 0) WorkingIndex = loadedFiles.Keys.Min();
                 else AddFileToWorkspace();
                 return true;
             }
@@ -162,7 +162,7 @@ namespace Holo
 
         public FileWrapper this[int key]
         {
-            get => LoadedFiles[key];
+            get => loadedFiles[key];
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace Holo
                 // De-relative the paths coming out of the workspace
                 ReferencedFiles = new ObservableCollection<Link>(space.ReferencedFiles.Select(f => new Link(NextId, Path.Combine(dir, f))).ToList());
                 Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(s.Item1, s.Item2)));
-                LoadedFiles = new Dictionary<int, FileWrapper>();
+                loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
                 FilePath = filePath;
             }
@@ -197,7 +197,7 @@ namespace Holo
         public Workspace()
         {
             ReferencedFiles = new ObservableCollection<Link>();
-            LoadedFiles = new Dictionary<int, FileWrapper>();
+            loadedFiles = new Dictionary<int, FileWrapper>();
             Styles = new ObservableCollection<Style>();
             AddFileToWorkspace();
             WorkingIndex = 0;
@@ -231,11 +231,25 @@ namespace Holo
         /// <summary>
         /// Link between an ID and a filepath
         /// </summary>
-        private class Link : Tuple<int, string>
+        public class Link
         {
-            public Link(int id, string path) : base(id, path) { }
-            public int Id => Item1;
-            public string Path => Item2;
+            private int id;
+            private string path;
+            public Link(int id, string path)
+            {
+                this.id = id;
+                this.path = path;
+            }
+            public int Id
+            {
+                get => id;
+                set => id = value;
+            }
+            public string Path
+            {
+                get => path;
+                set => path = value;
+            }
             public string Name => System.IO.Path.GetFileNameWithoutExtension(Path);
         }
     }

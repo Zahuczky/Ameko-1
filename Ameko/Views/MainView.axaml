@@ -86,7 +86,13 @@
 					<TabItem.Header>
 						<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/collection.svg" />
 					</TabItem.Header>
-					<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Workspace" />
+					<ListBox ItemsSource="{Binding ReferencedFiles}">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<ListBoxItem Content="{Binding Name}" />
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
 				</TabItem>
 				<TabItem>
 					<TabItem.Header>
