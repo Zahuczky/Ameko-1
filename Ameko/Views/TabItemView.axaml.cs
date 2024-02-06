@@ -5,6 +5,7 @@ using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 
@@ -90,6 +91,19 @@ namespace Ameko.Views
 
                 Disposable.Create(() => { }).DisposeWith(disposables);
             });
+        }
+
+        private void TextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+        {
+            if (e.Key == Avalonia.Input.Key.Enter)
+            {
+                if (e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Shift))
+                {
+                    int idx = editBox.CaretIndex;
+                    editBox.Text = editBox.Text?.Insert(idx, "\\N");
+                    editBox.CaretIndex += 2;
+                }
+            }
         }
     }
 }

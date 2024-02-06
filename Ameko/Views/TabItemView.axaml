@@ -23,8 +23,14 @@
 		</Panel>
 		<!-- Editor -->
 		<Panel Grid.Row="2" Grid.Column="2">
-			<TextBox TextWrapping="Wrap"
-					 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}" />
+			<TextBox Name="editBox" 
+					 TextWrapping="Wrap"
+					 KeyDown="TextBox_KeyDown"
+					 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
+				<TextBox.KeyBindings>
+					<KeyBinding Gesture="Enter" Command="{Binding NextOrAddEventCommand}" />
+				</TextBox.KeyBindings>
+			</TextBox>
 		</Panel>
 		<!-- Splitters -->
 		<GridSplitter Grid.Row="1" Grid.Column="2" ResizeDirection="Rows" Background="Black" />

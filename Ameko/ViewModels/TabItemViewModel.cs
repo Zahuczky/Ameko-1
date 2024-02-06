@@ -33,6 +33,7 @@ namespace Ameko.ViewModels
         public ICommand CopySelectedEventsCommand { get; }
         public ICommand PasteCommand { get; }
         public ICommand DuplicateSelectedEventsCommand { get; }
+        public ICommand NextOrAddEventCommand { get; }
 
         public string Title
         {
@@ -66,13 +67,13 @@ namespace Ameko.ViewModels
             Wrapper.Select(selectedEvents, selectedEvent);
         }
 
-        private void UpdateEvents(object? sender, EventArgs e)
+        private void UpdateEventsCallback(object? sender, EventArgs e)
         {
             Events.Clear();
             Events.AddRange(Wrapper.File.EventManager.Ordered);
         }
 
-        private void UpdateSelections(object? sender, EventArgs e)
+        private void UpdateSelectionsCallback(object? sender, EventArgs e)
         {
             SelectedEvent = Wrapper.SelectedEvent;
         }
@@ -84,8 +85,8 @@ namespace Ameko.ViewModels
             _id = wrapper.ID;
 
             Events = new ObservableCollection<Event>(Wrapper.File.EventManager.Ordered);
-            Wrapper.File.EventManager.CurrentEvents.CollectionChanged += UpdateEvents;
-            Wrapper.PropertyChanged += UpdateSelections;
+            Wrapper.File.EventManager.CurrentEvents.CollectionChanged += UpdateEventsCallback;
+            Wrapper.PropertyChanged += UpdateSelectionsCallback;
 
             CopySelectedEvents = new Interaction<TabItemViewModel, string?>();
             CutSelectedEvents = new Interaction<TabItemViewModel, string?>();
@@ -120,6 +121,27 @@ namespace Ameko.ViewModels
                 {
                     var newEvnt = new Event(Wrapper.File.EventManager.NextId, evnt);
                     Wrapper.File.EventManager.AddAfter(evnt.Id, newEvnt);
+                }
+            });
+
+            NextOrAddEventCommand = ReactiveCommand.Create(() =>
+            {
+                if (SelectedEvent == null) return;
+                var next = Wrapper.File.EventManager.GetAfter(SelectedEvent.Id);
+                if (next != null)
+                {
+                    UpdateEventSelection([next], next);
+                }
+                else
+                {
+                    next = new Event(Wrapper.File.EventManager.NextId)
+                    {
+                        Style = SelectedEvent.Style,
+                        Start = new Time(SelectedEvent.End),
+                        End = new Time(SelectedEvent.End + Time.FromSeconds(5))
+                    };
+                    Wrapper.File.EventManager.AddLast(next);
+                    UpdateEventSelection([next], next);
                 }
             });
 
