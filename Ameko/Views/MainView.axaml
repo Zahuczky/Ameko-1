@@ -86,10 +86,11 @@
 					<TabItem.Header>
 						<Svg Width="16" Height="16" Path="avares://Ameko/Assets/B5/collection.svg" />
 					</TabItem.Header>
-					<ListBox ItemsSource="{Binding ReferencedFiles}">
+					<ListBox ItemsSource="{Binding Workspace.ReferencedFiles}">
 						<ListBox.ItemTemplate>
 							<DataTemplate>
-								<ListBoxItem Content="{Binding Name}" />
+								<ListBoxItem DoubleTapped="ListBoxItem_DoubleTapped"
+											 Content="{Binding Name}" />
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 					</ListBox>

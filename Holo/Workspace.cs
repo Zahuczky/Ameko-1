@@ -24,8 +24,8 @@ namespace Holo
         public int NextId => _id++;
         private int _workingIndex = 0;
 
-        public readonly ObservableCollection<Link> ReferencedFiles;
-        private readonly Dictionary<int, FileWrapper> loadedFiles;
+        public ObservableCollection<Link> ReferencedFiles { get; set; }
+        private Dictionary<int, FileWrapper> loadedFiles;
         
         public Uri? FilePath { get; private set; }
         public ObservableCollection<Style> Styles { get; private set; }
@@ -73,7 +73,8 @@ namespace Holo
         /// <returns>ID of the file</returns>
         public int AddFileToWorkspace()
         {
-            var dummyLink = new Link(NextId, string.Empty);
+            var id = NextId;
+            var dummyLink = new Link(id, string.Empty, $"New {id}");
             ReferencedFiles.Add(dummyLink);
 
             var dummyFile = new AssCS.File();
@@ -166,12 +167,12 @@ namespace Holo
         }
 
         /// <summary>
-        /// Instantiate a Workspace by loading a workspace file from disk
+        /// Load a workspace file from disk
         /// </summary>
         /// <param name="filePath">Path to the workspace file</param>
         /// <exception cref="FileNotFoundException">If the file was not found</exception>
         /// <exception cref="IOException">If an error occured during reading / parsing</exception>
-        public Workspace(Uri filePath)
+        public void OpenWorkspaceFile(Uri filePath)
         {
             var fp = filePath.LocalPath;
             var dir = Path.GetDirectoryName(fp);
@@ -181,8 +182,13 @@ namespace Holo
                 using var reader = new StreamReader(fp);
                 var configContents = reader.ReadToEnd();
                 WorkspaceModel space = TomletMain.To<WorkspaceModel>(configContents);
+                _id = 0;
+                ReferencedFiles.Clear();
                 // De-relative the paths coming out of the workspace
-                ReferencedFiles = new ObservableCollection<Link>(space.ReferencedFiles.Select(f => new Link(NextId, Path.Combine(dir, f))).ToList());
+                foreach (var rf in space.ReferencedFiles.Select(f => new Link(NextId, Path.Combine(dir, f))).ToList())
+                {
+                    ReferencedFiles.Add(rf);
+                }
                 Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(s.Item1, s.Item2)));
                 loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
@@ -231,26 +237,39 @@ namespace Holo
         /// <summary>
         /// Link between an ID and a filepath
         /// </summary>
-        public class Link
+        public class Link : INotifyPropertyChanged
         {
             private int id;
             private string path;
-            public Link(int id, string path)
+            private string name;
+            public Link(int id, string path, string? name = null)
             {
                 this.id = id;
                 this.path = path;
+                if (name != null) this.name = name;
+                else this.name = System.IO.Path.GetFileNameWithoutExtension(path);
             }
             public int Id
             {
                 get => id;
-                set => id = value;
+                set { id = value; OnPropertyChanged(nameof(Id)); }
             }
             public string Path
             {
                 get => path;
-                set => path = value;
+                set { path = value; OnPropertyChanged(nameof(Path)); }
             }
-            public string Name => System.IO.Path.GetFileNameWithoutExtension(Path);
+            public string Name
+            {
+                get => name;
+                set { name = value; OnPropertyChanged(nameof(Name)); }
+            }
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

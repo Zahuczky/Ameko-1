@@ -3,6 +3,7 @@ using Ameko.Services;
 using AssCS.IO;
 using Avalonia.Controls;
 using DynamicData;
+using ExCSS;
 using Holo;
 using ReactiveUI;
 using System;
@@ -19,6 +20,7 @@ namespace Ameko.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private int selectedTabIndex;
+    public Workspace Workspace { get; private set; }
 
     public string WindowTitle { get; } = $"Ameko {AmekoService.VERSION_BUG}";
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
@@ -39,7 +41,6 @@ public class MainViewModel : ViewModelBase
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<string> ScriptNames { get; }
-    public ObservableCollection<Holo.Workspace.Link> ReferencedFiles { get; }
 
     public int SelectedTabIndex
     {
@@ -52,8 +53,28 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    public void TryLoadReferenced(int fileId)
+    {
+        // Is the file already open?
+        if (Tabs.Where(t => t.ID == fileId).Any())
+        {
+            SelectedTabIndex = Tabs.IndexOf(Tabs.Where(t => t.ID == fileId).Single());
+            return;
+        }
+        // Open the file
+        int id = HoloContext.Instance.Workspace.OpenFileFromWorkspace(fileId);
+        var file = HoloContext.Instance.Workspace.GetFile(id);
+        // TODO: Real 
+        Tabs?.Add(new TabItemViewModel(
+            Path.GetFileNameWithoutExtension(file?.FilePath?.LocalPath ?? "Unnamed"),
+            HoloContext.Instance.Workspace.GetFile(id)
+        ));
+        SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol
+    }
+
     public MainViewModel()
     {
+        Workspace = HoloContext.Instance.Workspace;
         ShowAboutDialog = new Interaction<AboutWindowViewModel, AboutWindowViewModel?>();
         ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsFileDialog = new Interaction<FileWrapper, Uri?>();
@@ -78,8 +99,6 @@ public class MainViewModel : ViewModelBase
                 HoloContext.Instance.Workspace.GetFile(id)
             ));
             SelectedTabIndex = (Tabs?.Count ?? 1) - 1; // lol
-            ReferencedFiles?.Clear();
-            ReferencedFiles?.AddRange(HoloContext.Instance.Workspace.ReferencedFiles.Where(r => !r.Name.Equals(string.Empty)));
         });
 
         ShowSaveFileDialogCommand = ReactiveCommand.Create(async () =>
@@ -93,8 +112,6 @@ public class MainViewModel : ViewModelBase
                 uri = await ShowSaveAsFileDialog.Handle(workingFile);
                 if (uri == null) return;
                 HoloContext.Instance.Workspace.ReferencedFiles.Where(f => f.Id == workingFile.ID).Single().Path = uri.LocalPath;
-                ReferencedFiles?.Clear();
-                ReferencedFiles?.AddRange(HoloContext.Instance.Workspace.ReferencedFiles.Where(r => !r.Name.Equals(string.Empty)));
             }
             else
             {
@@ -119,8 +136,6 @@ public class MainViewModel : ViewModelBase
 
             var reffile = HoloContext.Instance.Workspace.ReferencedFiles.Where(f => f.Id == workingFile.ID).Single();
             reffile.Path = uri.LocalPath;
-            ReferencedFiles?.Clear();
-            ReferencedFiles?.AddRange(HoloContext.Instance.Workspace.ReferencedFiles.Where(r => !r.Name.Equals(string.Empty)));
         });
 
         ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(async () =>
@@ -146,9 +161,7 @@ public class MainViewModel : ViewModelBase
 
             // TODO: save prompts and stuff!
             Tabs?.Clear();
-            HoloContext.Instance.Workspace = new Workspace(uri);
-            ReferencedFiles?.Clear();
-            ReferencedFiles?.AddRange(HoloContext.Instance.Workspace.ReferencedFiles.Where(r => !r.Name.Equals(string.Empty)));
+            HoloContext.Instance.Workspace.OpenWorkspaceFile(uri);
         });
 
         CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>
@@ -175,7 +188,6 @@ public class MainViewModel : ViewModelBase
         });
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));
-        ReferencedFiles = new ObservableCollection<Workspace.Link>(HoloContext.Instance.Workspace.ReferencedFiles.Where(r => !r.Name.Equals(string.Empty)));
         ScriptNames = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts);
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
