@@ -23,6 +23,7 @@ namespace Ameko.ViewModels
         private FileWrapper _wrapper;
         private readonly int _id;
         private Event? _selectedEvent;
+        private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
         public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
@@ -62,7 +63,11 @@ namespace Ameko.ViewModels
 
         public Event? SelectedEvent
         {
-            get => _selectedEvent;
+            get
+            {
+                if (_selectedEvent != null) return _selectedEvent;
+                else return FALLBACK_EVENT;
+            }
             private set => this.RaiseAndSetIfChanged(ref _selectedEvent, value);
         }
 

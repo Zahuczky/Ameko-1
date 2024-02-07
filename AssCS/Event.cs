@@ -73,6 +73,7 @@ namespace AssCS
                 _text = value;
                 OnPropertyChanged(nameof(Text));
                 OnPropertyChanged(nameof(Cps));
+                OnPropertyChanged(nameof(MaxLineWidth));
             }
         }
         public List<int> LinkedExtradatas { get; set; }

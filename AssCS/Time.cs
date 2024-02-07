@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Xml.Linq;
 
 namespace AssCS
 {
@@ -9,9 +12,9 @@ namespace AssCS
     /// This API supports millisecond percision, but note that
     /// precision will be dropped to centiseconds for export.
     /// </summary>
-    public class Time : IAssComponent
+    public class Time : IAssComponent, INotifyPropertyChanged
     {
-        private readonly TimeSpan localTime;
+        private TimeSpan localTime;
 
         public long Hours
         {
@@ -100,6 +103,24 @@ namespace AssCS
             return FromMillis(millis);
         }
 
+        public string UpdatableText
+        {
+            get => AsAss();
+            set
+            {
+                var splits = value.Split(':', '.');
+                if (splits.Length != 4) throw new ArgumentException($"Time: {value} is an invalid timecode.");
+                long millis = 0;
+                int[] multiplier = { 3600 * 1000, 60 * 1000, 1000, 10 };
+                for (int i = 0; i < splits.Length; i++)
+                {
+                    millis += Convert.ToInt64(splits[i]) * multiplier[i];
+                }
+                localTime = TimeSpan.FromMilliseconds(millis);
+                OnPropertyChanged(nameof(UpdatableText));
+            }
+        }
+
         public override bool Equals(object? obj)
         {
             return obj is Time time &&
@@ -144,6 +165,12 @@ namespace AssCS
         public static bool operator !=(Time a, Time b)
         {
             return !a.localTime.Equals(b.localTime);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -10,6 +10,7 @@
              x:Class="Ameko.Views.TabView">
 	<UserControl.Resources>
 		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
+		<converters:EventEditEnabledConverter x:Key="EnabledConverter" />
 	</UserControl.Resources>
 	<Grid ColumnDefinitions="*, 2, *"
 		  RowDefinitions="*, 2, *, 2, 3*">
@@ -22,8 +23,48 @@
 			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Audio Area" />
 		</Panel>
 		<!-- Editor -->
-		<Panel Grid.Row="2" Grid.Column="2">
-			<TextBox Name="editBox" 
+		<DockPanel Grid.Row="2" Grid.Column="2" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}">
+			<StackPanel DockPanel.Dock="Top">
+				<Grid ColumnDefinitions="auto, *, *, *, auto">
+					<CheckBox Grid.Column="0"
+							  IsChecked="{Binding SelectedEvent.Comment}">
+						Comment
+					</CheckBox>
+					<!-- Style list -->
+					<TextBox AcceptsReturn="False"
+							 Text="{Binding SelectedEvent.Actor}"
+							 Watermark="Actor"
+							 Grid.Column="1"/>
+					<TextBox AcceptsReturn="False"
+							 Text="{Binding SelectedEvent.Effect}"
+							 Watermark="Effect"
+							 Grid.Column="2"/>
+					
+					<TextBox AcceptsReturn="False"
+							 IsEnabled="False"
+							 Text="{Binding SelectedEvent.MaxLineWidth}"
+							 Watermark="#"
+							 Grid.Column="5"/>
+				</Grid>
+				<Grid ColumnDefinitions="auto, auto, auto, auto">
+					<NumericUpDown Value="{Binding SelectedEvent.Layer}"
+								   Minimum="0"
+								   Increment="1"
+								   FormatString="0"
+								   ShowButtonSpinner="True"/>
+					<TextBox AcceptsReturn="False"
+							 Text="{Binding SelectedEvent.Start.UpdatableText}"
+							 Grid.Column="2"
+							 Name="startBox"/>
+					<TextBox AcceptsReturn="False"
+							 Grid.Column="3"
+							 Text="{Binding SelectedEvent.End.UpdatableText}"
+							 Name="endBox"/>
+				</Grid>
+			</StackPanel>
+			
+			<TextBox Name="editBox"
+					 DockPanel.Dock="Bottom"
 					 TextWrapping="Wrap"
 					 KeyDown="TextBox_KeyDown"
 					 FontSize="16"
@@ -33,7 +74,7 @@
 					<KeyBinding Gesture="Enter" Command="{Binding NextOrAddEventCommand}" />
 				</TextBox.KeyBindings>
 			</TextBox>
-		</Panel>
+		</DockPanel>
 		<!-- Splitters -->
 		<GridSplitter Grid.Row="1" Grid.Column="2" ResizeDirection="Rows" Background="Black" />
 		<GridSplitter Grid.Row="0" Grid.Column="1" ResizeDirection="Columns" Grid.RowSpan="3" Background="Black" />
@@ -50,8 +91,8 @@
 				  ItemsSource="{Binding Events}">
 			<DataGrid.Columns>
 				<DataGridTextColumn IsVisible="False" Header="ID" Binding="{Binding Id}" />
-				<DataGridTextColumn Header="Start" Binding="{Binding Start.TextContent}" />
-				<DataGridTextColumn Header="End" Binding="{Binding End.TextContent}" />
+				<DataGridTextColumn Header="Start" Binding="{Binding Start.UpdatableText}" />
+				<DataGridTextColumn Header="End" Binding="{Binding End.UpdatableText}" />
 
 				<DataGridTemplateColumn Header="CPS">
 					<DataGridTemplateColumn.CellTemplate>
@@ -131,11 +172,6 @@
 					</MenuItem>
 				</ContextMenu>
 			</DataGrid.ContextMenu>
-			<Interaction.Behaviors>
-				<EventTriggerBehavior EventName="SelectionChanged">
-					<InvokeCommandAction Command="" />
-				</EventTriggerBehavior>
-			</Interaction.Behaviors>
 		</DataGrid>
 	</Grid>
 </UserControl>
