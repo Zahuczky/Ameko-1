@@ -118,7 +118,8 @@
 
 		<TabControl ItemsSource="{Binding Tabs}"
 					SelectedIndex="{Binding SelectedTabIndex}"
-					TabStripPlacement="Bottom">
+					TabStripPlacement="Bottom"
+					SelectionChanged="TabControl_SelectionChanged">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">

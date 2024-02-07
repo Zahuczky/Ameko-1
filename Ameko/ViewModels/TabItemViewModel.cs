@@ -77,6 +77,10 @@ namespace Ameko.ViewModels
             Events.AddRange(Wrapper.File.EventManager.Ordered);
         }
 
+        public void UpdateSelectionsOutsideCallback()
+        {
+            SelectedEvent = Wrapper.SelectedEvent;
+        }
         private void UpdateSelectionsCallback(object? sender, EventArgs e)
         {
             SelectedEvent = Wrapper.SelectedEvent;
@@ -115,8 +119,8 @@ namespace Ameko.ViewModels
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
-            SelectedIndex = 0;
             Wrapper.Select([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
+            SelectedEvent = Wrapper.File.EventManager.Head;
         }
     }
 }

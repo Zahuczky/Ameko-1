@@ -45,8 +45,7 @@
 				  Grid.ColumnSpan="3"
 				  IsReadOnly="True"
 				  SelectionMode="Extended"
-				  SelectedItem="{Binding SelectedTab}"
-				  SelectedIndex="{Binding SelectedIndex}"
+				  SelectedItem="{Binding SelectedEvent}"
 				  VerticalScrollBarVisibility="Auto"
 				  ItemsSource="{Binding Events}">
 			<DataGrid.Columns>
@@ -132,6 +131,11 @@
 					</MenuItem>
 				</ContextMenu>
 			</DataGrid.ContextMenu>
+			<Interaction.Behaviors>
+				<EventTriggerBehavior EventName="SelectionChanged">
+					<InvokeCommandAction Command="" />
+				</EventTriggerBehavior>
+			</Interaction.Behaviors>
 		</DataGrid>
 	</Grid>
 </UserControl>
