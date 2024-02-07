@@ -204,19 +204,25 @@ namespace AssCS
                     }
                 }
                 // ----- Plain 2 electric boogaloo -----
-                endPlain = text.IndexOf('{', cur + 1);
-                if (endPlain == -1)
+                if (cur + 1 < text.Length)
                 {
-                    work = text.Substring(cur);
-                    cur = len;
-                }
-                else
+                    endPlain = text.IndexOf('{', cur + 1);
+                    if (endPlain == -1)
+                    {
+                        work = text.Substring(cur);
+                        cur = len;
+                    }
+                    else
+                    {
+                        work = text.Substring(cur, endPlain - cur);
+                        cur = endPlain;
+                    }
+                    if (drawingLevel == 0) blocks.Add(new PlainBlock(work));
+                    else blocks.Add(new DrawingBlock(work, drawingLevel));
+                } else
                 {
-                    work = text.Substring(cur, endPlain - cur);
-                    cur = endPlain;
+                    cur += 1;
                 }
-                if (drawingLevel == 0) blocks.Add(new PlainBlock(work));
-                else blocks.Add(new DrawingBlock(work, drawingLevel));
                 // ----- End Plain -----
             }
             return blocks;
