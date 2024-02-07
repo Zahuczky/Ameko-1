@@ -103,6 +103,8 @@ namespace AssCS.IO
         /// <param name="writer">StreamWriter instance writing the file</param>
         private void WriteExtradata(StreamWriter writer)
         {
+            if (!file.ExtradataManager.GetAll().Any()) return;
+
             writer.WriteLine("[Aegisub Extradata]");
             foreach (var extra in file.ExtradataManager.GetAll())
             {
