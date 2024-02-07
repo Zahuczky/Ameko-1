@@ -43,6 +43,7 @@
     <None Remove="Assets\B5\trash.svg" />
     <None Remove="Assets\B5\x-circle.svg" />
     <None Remove="Assets\Licensing.txt" />
+    <None Remove="Assets\migu-2m-regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>

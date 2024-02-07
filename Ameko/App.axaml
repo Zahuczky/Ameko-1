@@ -12,4 +12,7 @@
 			<Setter Property="(Svg.Css)" Value="path { fill: #FFFFFF; }" />
 		</Style>
     </Application.Styles>
+	<Application.Resources>
+		<FontFamily x:Key="Migu2MRegular">avares://Ameko/Assets/Fonts/migu-2m-regular.ttf#Migu 2M</FontFamily>
+	</Application.Resources>
 </Application>

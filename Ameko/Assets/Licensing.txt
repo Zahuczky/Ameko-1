@@ -3,8 +3,10 @@
 Ameko, Holo, AssCS, and related files and imagery are
 copyright © 2024 9volt and collaborators, and are licensed under the BSD-3-Clause license. See license.txt for more information.
 
-The Ameko logo is copyright © 2024 Zahuczky.
-Bootstrap icons used under license.
+Assets:
+- Ameko logo, copyright © 2024 Zahuczky.
+- Bootstrap icons used under license.
+- Migu 2M used under the IPA Font License (IPAフォントライセンス) v1.0
 
 The following libraries are property of their respective owners and may be licensed differently:
 - Avalonia
