@@ -102,112 +102,14 @@ namespace Ameko.ViewModels
                 Wrapper.Remove(Wrapper.SelectedEvents, Wrapper.SelectedEvent);
             });
 
-            CopySelectedEventsCommand = ReactiveCommand.Create(async () =>
-            {
-                await CopySelectedEvents.Handle(this);
-            });
-
-            CutSelectedEventsCommand = ReactiveCommand.Create(async () =>
-            {
-                await CutSelectedEvents.Handle(this);
-            });
-
-            PasteCommand = ReactiveCommand.Create(async () =>
-            {
-                await Paste.Handle(this);
-            });
-
-            DuplicateSelectedEventsCommand = ReactiveCommand.Create(() =>
-            {
-                if (Wrapper.SelectedEvents == null) return;
-                foreach (var evnt in Wrapper.SelectedEvents)
-                {
-                    var newEvnt = new Event(Wrapper.File.EventManager.NextId, evnt);
-                    Wrapper.File.EventManager.AddAfter(evnt.Id, newEvnt);
-                }
-            });
-
-            InsertBeforeCommand = ReactiveCommand.Create(() =>
-            {
-                if (Wrapper.SelectedEvent == null) return;
-                var newEvnt = new Event(Wrapper.File.EventManager.NextId);
-                var before = Wrapper.File.EventManager.GetBefore(Wrapper.SelectedEvent.Id);
-                if (before != null)
-                {
-                    if ((Wrapper.SelectedEvent.Start - before.End).TotalSeconds < 5)
-                        newEvnt.Start = before.End;
-                    else
-                        newEvnt.Start = Wrapper.SelectedEvent.Start - Time.FromSeconds(5);
-                }
-                newEvnt.End = Wrapper.SelectedEvent.Start;
-                newEvnt.Style = Wrapper.SelectedEvent.Style;
-
-                Wrapper.File.EventManager.AddBefore(Wrapper.SelectedEvent.Id, newEvnt);
-            });
-
-            InsertAfterCommand = ReactiveCommand.Create(() =>
-            {
-                if (Wrapper.SelectedEvent == null) return;
-                var newEvnt = new Event(Wrapper.File.EventManager.NextId);
-                var after = Wrapper.File.EventManager.GetAfter(Wrapper.SelectedEvent.Id);
-                if (after != null)
-                {
-                    if ((after.Start - Wrapper.SelectedEvent.End).TotalSeconds < 5)
-                        newEvnt.End = after.Start;
-                    else
-                        newEvnt.End = Wrapper.SelectedEvent.End + Time.FromSeconds(5);
-                }
-                newEvnt.Start = Wrapper.SelectedEvent.End;
-                newEvnt.Style = Wrapper.SelectedEvent.Style;
-
-                Wrapper.File.EventManager.AddAfter(Wrapper.SelectedEvent.Id, newEvnt);
-            });
-
-            SplitEventCommand = ReactiveCommand.Create(() =>
-            {
-                var original = Wrapper.SelectedEvent;
-                if (original == null) return;
-                var segments = original.Text.Split("\\N");
-                if (segments.Length == 0) return;
-
-                var rolling = original.Start;
-                var target = original.End;
-                foreach (var segment in segments)
-                {
-                    var newEvent = new Event(Wrapper.File.EventManager.NextId, original);
-                    var ratio = segment.Length / (double)original.Text.Replace("\\N", string.Empty).Length;
-                    newEvent.Text = segment;
-                    newEvent.Start = Time.FromTime(rolling);
-                    newEvent.End = rolling + Time.FromMillis(Convert.ToInt64((target.TotalMilliseconds - original.Start.TotalMilliseconds) * ratio));
-                    if (newEvent.End > target) newEvent.End = target;
-
-                    Wrapper.File.EventManager.AddAfter(Wrapper.SelectedEvent?.Id ?? original.Id, newEvent);
-                    Wrapper.Select([newEvent], newEvent);
-                    rolling = newEvent.End;
-                }
-                Wrapper.Remove([original], original);
-            });
-
-            NextOrAddEventCommand = ReactiveCommand.Create(() =>
-            {
-                if (SelectedEvent == null) return;
-                var next = Wrapper.File.EventManager.GetAfter(SelectedEvent.Id);
-                if (next != null)
-                {
-                    UpdateEventSelection([next], next);
-                }
-                else
-                {
-                    next = new Event(Wrapper.File.EventManager.NextId)
-                    {
-                        Style = SelectedEvent.Style,
-                        Start = new Time(SelectedEvent.End),
-                        End = new Time(SelectedEvent.End + Time.FromSeconds(5))
-                    };
-                    Wrapper.File.EventManager.AddLast(next);
-                    UpdateEventSelection([next], next);
-                }
-            });
+            CopySelectedEventsCommand = ReactiveCommand.Create(async () => { await CopySelectedEvents.Handle(this); });
+            CutSelectedEventsCommand = ReactiveCommand.Create(async () => { await CutSelectedEvents.Handle(this); });
+            PasteCommand = ReactiveCommand.Create(async () => { await Paste.Handle(this); });
+            DuplicateSelectedEventsCommand = ReactiveCommand.Create(Wrapper.DuplicateSelected);
+            InsertBeforeCommand = ReactiveCommand.Create(Wrapper.InsertBeforeSelected);
+            InsertAfterCommand = ReactiveCommand.Create(Wrapper.InsertAfterSelected);
+            SplitEventCommand = ReactiveCommand.Create(Wrapper.SplitSelected);
+            NextOrAddEventCommand = ReactiveCommand.Create(Wrapper.NextOrAdd);
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };

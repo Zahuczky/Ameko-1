@@ -134,6 +134,9 @@ namespace Holo
             if (loadedFiles.Remove(id))
             {
                 Files.Remove(Files.Where(f => f.ID == id).Single());
+                if (ReferencedFiles.Where(rf => rf.Id == id).Single().Path.Equals(string.Empty)) 
+                    ReferencedFiles.Remove(ReferencedFiles.Where(rf => rf.Id == id).Single());
+
                 if (replace)
                 {
                     if (loadedFiles.Count > 0) WorkingIndex = loadedFiles.Keys.Min();

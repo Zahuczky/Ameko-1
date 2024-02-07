@@ -89,90 +89,17 @@ public class MainViewModel : ViewModelBase
         ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
 
-        ShowAboutDialogCommand = ReactiveCommand.Create(async () =>
-        {
-            var about = new AboutWindowViewModel();
-            await ShowAboutDialog.Handle(about);
-        });
-
-        ShowOpenFileDialogCommand = ReactiveCommand.Create(async () =>
-        {
-            var uri = await ShowOpenFileDialog.Handle(this);
-            if (uri == null) return;
-
-            HoloContext.Instance.Workspace.AddFileToWorkspace(uri);
-        });
-
-        ShowSaveFileDialogCommand = ReactiveCommand.Create(async () =>
-        {
-            var workingFile = HoloContext.Instance.Workspace.WorkingFile;
-            if (workingFile == null) return;
-
-            Uri uri;
-            if (workingFile.FilePath == null)
-            {
-                uri = await ShowSaveAsFileDialog.Handle(workingFile);
-                if (uri == null) return;
-                HoloContext.Instance.Workspace.ReferencedFiles.Where(f => f.Id == workingFile.ID).Single().Path = uri.LocalPath;
-            }
-            else
-            {
-                uri = workingFile.FilePath;
-            }
-            var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
-            writer.Write(false);
-            workingFile.UpToDate = true;
-        });
-
-        ShowSaveAsFileDialogCommand = ReactiveCommand.Create(async () =>
-        {
-            var workingFile = HoloContext.Instance.Workspace.WorkingFile;
-            if (workingFile == null) return;
-
-            var uri = await ShowSaveAsFileDialog.Handle(workingFile);
-            if (uri == null) return;
-
-            var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
-            writer.Write(false);
-            workingFile.UpToDate = true;
-
-            var reffile = HoloContext.Instance.Workspace.ReferencedFiles.Where(f => f.Id == workingFile.ID).Single();
-            reffile.Path = uri.LocalPath;
-        });
-
-        ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(async () =>
-        {
-            var workspace = HoloContext.Instance.Workspace;
-            Uri uri;
-            if (workspace.FilePath == null)
-            {
-                uri = await ShowSaveAsWorkspaceDialog.Handle(workspace);
-                if (uri == null) return;
-            }
-            else
-            {
-                uri = workspace.FilePath;
-            }
-            workspace.WriteWorkspaceFile(uri);
-        });
-
-        ShowOpenWorkspaceDialogCommand = ReactiveCommand.Create(async () =>
-        {
-            var uri = await ShowOpenWorkspaceDialog.Handle(this);
-            if (uri == null) return;
-
-            // TODO: save prompts and stuff!
-            HoloContext.Instance.Workspace.OpenWorkspaceFile(uri);
-        });
+        ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
+        ShowOpenFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayOpenSubtitleFileDialog(ShowOpenFileDialog, this));
+        ShowSaveFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.SaveOrDisplaySaveAsDialog(ShowSaveAsFileDialog));
+        ShowSaveAsFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplaySaveAsDialog(ShowSaveAsFileDialog));
+        ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.WorkspaceSaveOrDisplaySaveAsDialog(ShowSaveAsWorkspaceDialog));
+        ShowOpenWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayWorkspaceOpenDialog(ShowOpenWorkspaceDialog, this));
 
         CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>
         {
             // TODO: Saving and stuff
             var closed = HoloContext.Instance.Workspace.CloseFileInWorkspace(fileId);
-            if (Tabs != null) {
-                var tab = Tabs.Where(t => t.ID == fileId).Single();
-                Tabs.Remove(tab);
-            }
         });
 
         RemoveFromWorkspaceCommand = ReactiveCommand.Create<int>((int fileId) =>

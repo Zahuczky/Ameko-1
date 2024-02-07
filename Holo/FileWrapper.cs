@@ -136,6 +136,93 @@ namespace Holo
             return want;
         }
 
+        #region Commands
+
+        /// <summary>
+        /// Duplicate the selected events.
+        /// Each event will be duplicated; ABC → AABBCC
+        /// </summary>
+        public void DuplicateSelected()
+        {
+            if (SelectedEvents == null) return;
+            foreach (var evnt in SelectedEvents)
+            {
+                File.EventManager.Duplicate(evnt);
+            }
+        }
+
+        /// <summary>
+        /// Insert a new event before the selected event
+        /// </summary>
+        public void InsertBeforeSelected()
+        {
+            if (SelectedEvent == null) return;
+            File.EventManager.InsertBefore(SelectedEvent);
+        }
+
+        /// <summary>
+        /// Insert a new event after the selected event
+        /// </summary>
+        public void InsertAfterSelected()
+        {
+            if (SelectedEvent == null) return;
+            File.EventManager.InsertAfter(SelectedEvent);
+        }
+
+        /// <summary>
+        /// Split an event on \N, CPS-adjusted
+        /// </summary>
+        public void SplitSelected()
+        {
+            var original = SelectedEvent;
+            if (original == null) return;
+            var segments = original.Text.Split("\\N");
+            if (segments.Length == 0) return;
+
+            var rollingTime = original.Start;
+            var goalTime = original.End;
+            foreach (var segment in segments)
+            {
+                var newEvent = new Event(File.EventManager.NextId, original);
+                var ratio = segment.Length / (double)original.Text.Replace("\\N", string.Empty).Length;
+                newEvent.Text = segment;
+                newEvent.Start = Time.FromTime(rollingTime);
+                newEvent.End = rollingTime + Time.FromMillis(Convert.ToInt64((goalTime.TotalMilliseconds - original.Start.TotalMilliseconds) * ratio));
+                if (newEvent.End > goalTime) newEvent.End = goalTime;
+
+                File.EventManager.AddAfter(SelectedEvent?.Id ?? original.Id, newEvent);
+                Select(new List<Event>() { newEvent }, newEvent);
+                rollingTime = newEvent.End;
+            }
+            Remove(new List<Event>() { original }, original);
+        }
+
+        /// <summary>
+        /// Select the next event, or create a new one if there is no subsequent event
+        /// </summary>
+        public void NextOrAdd()
+        {
+            if (SelectedEvent == null) return;
+            var next = File.EventManager.GetAfter(SelectedEvent.Id);
+            if (next != null)
+            {
+                Select(new List<Event>() { next }, next);
+            }
+            else
+            {
+                next = new Event(File.EventManager.NextId)
+                {
+                    Style = SelectedEvent.Style,
+                    Start = new Time(SelectedEvent.End),
+                    End = new Time(SelectedEvent.End + Time.FromSeconds(5))
+                };
+                File.EventManager.AddLast(next);
+                Select(new List<Event>() { next }, next);
+            }
+        }
+
+        #endregion
+
         public FileWrapper(File file, int id, Uri? filePath)
         {
             this.file = file;

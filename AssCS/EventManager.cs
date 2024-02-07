@@ -212,6 +212,64 @@ namespace AssCS
             AddFirst(new Event(NextId));
         }
 
+        #region Commands
+
+        /// <summary>
+        /// Duplicate an event
+        /// </summary>
+        /// <param name="target">Event to duplicate</param>
+        public void Duplicate(Event target)
+        {
+            var newEvnt = new Event(NextId, target);
+            AddAfter(target.Id, newEvnt);
+        }
+
+        /// <summary>
+        /// Insert a new event before the specified event.
+        /// The new event's length will be limited if there is a prior event.
+        /// </summary>
+        /// <param name="target">Target event</param>
+        public void InsertBefore(Event target)
+        {
+            var newEvnt = new Event(NextId);
+            var before = GetBefore(target.Id);
+            if (before != null)
+            {
+                if ((target.Start - before.End).TotalSeconds < 5)
+                    newEvnt.Start = before.End;
+                else
+                    newEvnt.Start = target.Start - Time.FromSeconds(5);
+            }
+            newEvnt.End = target.Start;
+            newEvnt.Style = target.Style;
+
+            AddBefore(target.Id, newEvnt);
+        }
+
+        /// <summary>
+        /// Insert a new event after the specified event.
+        /// The new event's length will be limited if there is a subsequent event.
+        /// </summary>
+        /// <param name="target">Target event</param>
+        public void InsertAfter(Event target)
+        {
+            var newEvnt = new Event(NextId);
+            var after = GetAfter(target.Id);
+            if (after != null)
+            {
+                if ((after.Start - target.End).TotalSeconds < 5)
+                    newEvnt.End = after.Start;
+                else
+                    newEvnt.End = target.End + Time.FromSeconds(5);
+            }
+            newEvnt.Start = target.End;
+            newEvnt.Style = target.Style;
+
+           AddAfter(target.Id, newEvnt);
+        }
+
+        #endregion Commands
+
         public EventManager(EventManager source)
         {
             chain = new LinkedList<int>(source.chain);
