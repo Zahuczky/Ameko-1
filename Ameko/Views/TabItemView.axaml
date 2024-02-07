@@ -80,7 +80,7 @@
 							<Svg Path="avares://Ameko/Assets/B5/files.svg" />
 						</MenuItem.Icon>
 					</MenuItem>
-					<MenuItem Header="Merge Lines" IsEnabled="False">
+					<MenuItem Header="Merge Lines" Command="{Binding MergeEventsCommand}">
 						<MenuItem.Icon>
 							<Svg Path="avares://Ameko/Assets/B5/arrows-collapse.svg" />
 						</MenuItem.Icon>

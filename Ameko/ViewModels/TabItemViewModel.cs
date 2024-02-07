@@ -37,6 +37,7 @@ namespace Ameko.ViewModels
         public ICommand InsertBeforeCommand { get; }
         public ICommand InsertAfterCommand { get; }
         public ICommand SplitEventCommand { get; }
+        public ICommand MergeEventsCommand { get; }
 
         public string Title
         {
@@ -109,6 +110,7 @@ namespace Ameko.ViewModels
             InsertBeforeCommand = ReactiveCommand.Create(Wrapper.InsertBeforeSelected);
             InsertAfterCommand = ReactiveCommand.Create(Wrapper.InsertAfterSelected);
             SplitEventCommand = ReactiveCommand.Create(Wrapper.SplitSelected);
+            MergeEventsCommand = ReactiveCommand.Create(Wrapper.MergeSelectedAdj);
             NextOrAddEventCommand = ReactiveCommand.Create(Wrapper.NextOrAdd);
 
             // TODO: Maybe not do this this way

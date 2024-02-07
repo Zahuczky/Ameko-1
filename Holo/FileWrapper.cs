@@ -197,6 +197,48 @@ namespace Holo
             Remove(new List<Event>() { original }, original);
         }
 
+        public void MergeSelectedAdj()
+        {
+            if (SelectedEvent == null || SelectedEvents == null) return;
+            if (SelectedEvents.Count != 2) return;
+
+            var one = SelectedEvents[0];
+            var two = SelectedEvents[1];
+
+            var afterOne = File.EventManager.GetAfter(one.Id);
+            var beforeOne = File.EventManager.GetBefore(one.Id);
+
+            if (afterOne != null && afterOne.Equals(two))
+            {
+                var result = new Event(File.EventManager.NextId, one)
+                {
+                    Start = one.Start,
+                    End = two.End,
+                    Text = $"{one.Text}\\N{two.Text}"
+                };
+                File.EventManager.AddAfter(two.Id, result);
+                Remove(SelectedEvents, SelectedEvent);
+                SelectedEvent = result;
+                SelectedEvents.Clear();
+                SelectedEvents.Add(result);
+            }
+            else if (beforeOne != null && beforeOne.Equals(two))
+            {
+                var result = new Event(File.EventManager.NextId, one)
+                {
+                    Start = two.Start,
+                    End = one.End,
+                    Text = $"{two.Text}\\N{one.Text}"
+                };
+                File.EventManager.AddAfter(one.Id, result);
+                Remove(SelectedEvents, SelectedEvent);
+                SelectedEvent = result;
+                SelectedEvents.Clear();
+                SelectedEvents.Add(result);
+            }
+            else return;
+        }
+
         /// <summary>
         /// Select the next event, or create a new one if there is no subsequent event
         /// </summary>
