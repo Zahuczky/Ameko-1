@@ -35,7 +35,7 @@ namespace Holo
         private Dictionary<int, FileWrapper> loadedFiles;
         
         public Uri? FilePath { get; private set; }
-        public ObservableCollection<Style> Styles { get; private set; }
+        private ObservableCollection<Style> Styles { get; set; }
         public ObservableCollection<string> StyleNames { get; private set; }
 
         /// <summary>
@@ -249,6 +249,11 @@ namespace Holo
         /// <param name="s">Style to add</param>
         public void AddStyle(Style s)
         {
+            var conflicts = Styles.Where(st => st.Name.Equals(s.Name)).ToList();
+            if (conflicts.Any())
+            {
+                Styles.Remove(conflicts.First());
+            }
             Styles.Add(s);
             StyleNames.Add(s.Name);
         }
@@ -260,13 +265,20 @@ namespace Holo
         /// <returns>True if the style was removed</returns>
         public bool RemoveStyle(string name)
         {
-            var styles = Styles.Where(s => s.Name.Equals(name));
-            if (styles.Any())
+            var results = Styles.Where(s => s.Name.Equals(name)).ToList();
+            if (results.Any())
             {
-                Styles.Remove(Styles.FirstOrDefault());
-                return StyleNames.Remove(styles.First().Name);
+                Styles.Remove(Styles.First());
+                return StyleNames.Remove(results.First().Name);
             }
             return false;
+        }
+
+        public Style? GetStyle(string name)
+        {
+            if (StyleNames.Contains(name))
+                return Styles.Where(s => s.Name.Equals(name)).First();
+            return null;
         }
 
         /// <summary>

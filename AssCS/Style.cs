@@ -12,7 +12,7 @@ namespace AssCS
     /// </summary>
     public class Style : IAssComponent, ICommitable
     {
-        public int Id { get; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Font {  get; set; }
         public double FontSize { get; set; }
