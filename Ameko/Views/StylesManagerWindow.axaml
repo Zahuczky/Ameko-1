@@ -8,9 +8,15 @@
         x:Class="Ameko.Views.StylesManagerWindow"
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="Styles Manager">
-	<Grid ColumnDefinitions="*, *, *, *">
+	<Grid ColumnDefinitions="*, *, *, 2*"
+		  RowDefinitions="auto, *">
 		<!-- Global -->
+		<TextBlock Grid.Column="0"
+				   Grid.Row="0"
+				   Text="Global Styles"
+				   HorizontalAlignment="Center" />
 		<Grid Grid.Column="0"
+			  Grid.Row="1"
 			  RowDefinitions="*, auto">
 			<ListBox Grid.Row="0"
 					 ItemsSource="{Binding GlobalStyles}">
@@ -18,20 +24,38 @@
 			</ListBox>
 		</Grid>
 		<!-- Workspace -->
+		<TextBlock Grid.Column="1"
+		   Grid.Row="0"
+		   Text="Workspace Styles"
+		   HorizontalAlignment="Center" />
 		<Grid Grid.Column="1"
+			  Grid.Row="1"
 			  RowDefinitions="*, auto">
 			<ListBox Grid.Row="0"
-					 ItemsSource="{Binding WorkspaceStyles}">
+					 ItemsSource="{Binding Workspace.StyleNames}">
 
 			</ListBox>
 		</Grid>
 		<!-- File -->
+		<TextBlock Grid.Column="2"
+		   Grid.Row="0"
+		   Text="File Styles"
+		   HorizontalAlignment="Center" />
 		<Grid Grid.Column="2"
+			  Grid.Row="1"
 			  RowDefinitions="*, auto">
 			<ListBox Grid.Row="0"
-					 ItemsSource="{Binding FileStyles}">
-
+					 ItemsSource="{Binding Workspace.WorkingFile.File.StyleManager.StyleNames}">
 			</ListBox>
 		</Grid>
+		<!-- Editor -->
+		<TextBlock Grid.Column="3"
+		   Grid.Row="0"
+		   Text="Style Editor"
+		   HorizontalAlignment="Center" />
+		<Panel Grid.Column="3"
+			   Grid.Row="1">
+			<Label Content="Editing, soon!" HorizontalAlignment="Center" VerticalAlignment="Center" />
+		</Panel>
 	</Grid>
 </Window>
