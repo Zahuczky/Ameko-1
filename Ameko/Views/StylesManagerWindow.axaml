@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+		xmlns:vm="using:Ameko.ViewModels"
+		x:DataType="vm:StylesWindowViewModel"
+        x:Class="Ameko.Views.StylesManagerWindow"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="Styles Manager">
+	<Grid ColumnDefinitions="*, *, *, *">
+		<!-- Global -->
+		<Grid Grid.Column="0"
+			  RowDefinitions="*, auto">
+			<ListBox Grid.Row="0"
+					 ItemsSource="{Binding GlobalStyles}">
+				
+			</ListBox>
+		</Grid>
+		<!-- Workspace -->
+		<Grid Grid.Column="1"
+			  RowDefinitions="*, auto">
+			<ListBox Grid.Row="0"
+					 ItemsSource="{Binding WorkspaceStyles}">
+
+			</ListBox>
+		</Grid>
+		<!-- File -->
+		<Grid Grid.Column="2"
+			  RowDefinitions="*, auto">
+			<ListBox Grid.Row="0"
+					 ItemsSource="{Binding FileStyles}">
+
+			</ListBox>
+		</Grid>
+	</Grid>
+</Window>

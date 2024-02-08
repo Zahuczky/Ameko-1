@@ -25,6 +25,7 @@
     <None Remove="Assets\B5\arrows-collapse.svg" />
     <None Remove="Assets\B5\arrows-expand.svg" />
     <None Remove="Assets\B5\braces.svg" />
+    <None Remove="Assets\B5\brush.svg" />
     <None Remove="Assets\B5\chat-left-dots.svg" />
     <None Remove="Assets\B5\clipboard-data.svg" />
     <None Remove="Assets\B5\clipboard.svg" />
@@ -39,6 +40,7 @@
     <None Remove="Assets\B5\folder-plus.svg" />
     <None Remove="Assets\B5\folder2-open.svg" />
     <None Remove="Assets\B5\hammer.svg" />
+    <None Remove="Assets\B5\palette.svg" />
     <None Remove="Assets\B5\pencil-square.svg" />
     <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\B5\scissors.svg" />
@@ -72,6 +74,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\StylesManagerWindow.axaml.cs">
+      <DependentUpon>StylesManagerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\TabItemView.axaml.cs">
       <DependentUpon>TabItemView.axaml</DependentUpon>
     </Compile>

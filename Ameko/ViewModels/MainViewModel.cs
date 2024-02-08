@@ -26,11 +26,13 @@ public class MainViewModel : ViewModelBase
 
     public string WindowTitle { get; } = $"Ameko {AmekoService.VERSION_BUG}";
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
+    public Interaction<StylesWindowViewModel, StylesWindowViewModel?> ShowStylesManager { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenFileDialog { get; }
     public Interaction<FileWrapper, Uri?> ShowSaveAsFileDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
+    public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
     public ICommand ShowOpenFileDialogCommand { get; }
     public ICommand ShowSaveFileDialogCommand { get; }
@@ -87,12 +89,14 @@ public class MainViewModel : ViewModelBase
     {
         Workspace = HoloContext.Instance.Workspace;
         ShowAboutDialog = new Interaction<AboutWindowViewModel, AboutWindowViewModel?>();
+        ShowStylesManager = new Interaction<StylesWindowViewModel, StylesWindowViewModel?>();
         ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsFileDialog = new Interaction<FileWrapper, Uri?>();
         ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
+        ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
         ShowOpenFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayOpenSubtitleFileDialog(ShowOpenFileDialog, this));
         ShowSaveFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.SaveOrDisplaySaveAsDialog(ShowSaveAsFileDialog));
         ShowSaveAsFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplaySaveAsDialog(ShowSaveAsFileDialog));

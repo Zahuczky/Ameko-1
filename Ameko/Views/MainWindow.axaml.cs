@@ -98,6 +98,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
 
+    private void DoShowStylesManager(InteractionContext<StylesWindowViewModel, StylesWindowViewModel?> interaction)
+    {
+        var manager = new StylesManagerWindow();
+        manager.DataContext = interaction.Input;
+        manager.Show();
+        interaction.SetOutput(null);
+    }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -110,6 +118,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowSaveAsFileDialog.RegisterHandler(DoShowSaveAsFileDialogAsync);
                 ViewModel.ShowSaveAsWorkspaceDialog.RegisterHandler(DoShowSaveAsWorkspaceDialogAsync);
                 ViewModel.ShowOpenWorkspaceDialog.RegisterHandler(DoShowOpenWorkspaceDialogAsync);
+                
+                ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
