@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -140,11 +142,26 @@ namespace AssCS
         }
     }
 
-    public class Margins
+    public class Margins : INotifyPropertyChanged
     {
-        public int Left { get; set; }
-        public int Right { get; set; }
-        public int Vertical { get; set; }
+        private int left;
+        private int right;
+        private int vertical;
+        public int Left
+        {
+            get => left;
+            set { left = value; OnPropertyChanged(nameof(Left)); }
+        }
+        public int Right
+        {
+            get => right;
+            set { right = value; OnPropertyChanged(nameof(Right)); }
+        }
+        public int Vertical
+        {
+            get => vertical;
+            set { vertical = value; OnPropertyChanged(nameof(Vertical)); }
+        }
 
         public Margins(int left, int right, int vertical)
         {
@@ -173,6 +190,12 @@ namespace AssCS
         public override int GetHashCode()
         {
             return HashCode.Combine(Left, Right, Vertical);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

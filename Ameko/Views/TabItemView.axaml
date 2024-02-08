@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
 			 xmlns:converters="using:Ameko.Converters"
 			 xmlns:vm="using:Ameko.ViewModels"
 			 xmlns:asscs="using:AssCS"
@@ -12,8 +12,8 @@
 		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
 		<converters:EventEditEnabledConverter x:Key="EnabledConverter" />
 	</UserControl.Resources>
-	<Grid ColumnDefinitions="*, 2, *"
-		  RowDefinitions="*, 2, *, 2, 3*">
+	<Grid ColumnDefinitions="*, 2, 1.25*"
+		  RowDefinitions="0.8*, 2, 1.2*, 2, 3*">
 		<!-- Video -->
 		<Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
 			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Video Area" />
@@ -23,48 +23,83 @@
 			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Audio Area" />
 		</Panel>
 		<!-- Editor -->
-		<DockPanel Grid.Row="2" Grid.Column="2" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}">
-			<StackPanel DockPanel.Dock="Top">
-				<Grid ColumnDefinitions="auto, *, *, *, auto">
-					<CheckBox Grid.Column="0"
-							  IsChecked="{Binding SelectedEvent.Comment}">
-						Comment
-					</CheckBox>
-					<!-- Style list -->
-					<TextBox AcceptsReturn="False"
-							 Text="{Binding SelectedEvent.Actor}"
-							 Watermark="Actor"
-							 Grid.Column="1"/>
-					<TextBox AcceptsReturn="False"
-							 Text="{Binding SelectedEvent.Effect}"
-							 Watermark="Effect"
-							 Grid.Column="2"/>
-					
-					<TextBox AcceptsReturn="False"
-							 IsEnabled="False"
-							 Text="{Binding SelectedEvent.MaxLineWidth}"
-							 Watermark="#"
-							 Grid.Column="5"/>
-				</Grid>
-				<Grid ColumnDefinitions="auto, auto, auto, auto">
-					<NumericUpDown Value="{Binding SelectedEvent.Layer}"
-								   Minimum="0"
-								   Increment="1"
-								   FormatString="0"
-								   ShowButtonSpinner="True"/>
-					<TextBox AcceptsReturn="False"
-							 Text="{Binding SelectedEvent.Start.UpdatableText}"
-							 Grid.Column="2"
-							 Name="startBox"/>
-					<TextBox AcceptsReturn="False"
-							 Grid.Column="3"
-							 Text="{Binding SelectedEvent.End.UpdatableText}"
-							 Name="endBox"/>
-				</Grid>
-			</StackPanel>
-			
+		<Grid Grid.Row="2" Grid.Column="2" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}" RowDefinitions="auto, auto, *">
+			<Grid Grid.Row="0" ColumnDefinitions="auto, *, *, *, auto">
+				<CheckBox Grid.Column="0"
+						  Margin="2"
+						  IsChecked="{Binding SelectedEvent.Comment}">
+					Comment
+				</CheckBox>
+				<!-- Style list -->
+				<TextBox AcceptsReturn="False"
+						 Text="{Binding SelectedEvent.Actor}"
+						 Watermark="Actor"
+						 Grid.Column="1"
+						 Margin="2"/>
+				<TextBox AcceptsReturn="False"
+						 Text="{Binding SelectedEvent.Effect}"
+						 Watermark="Effect"
+						 Grid.Column="2"
+						 Margin="2"/>
+
+				<TextBox AcceptsReturn="False"
+						 IsEnabled="False"
+						 Text="{Binding SelectedEvent.MaxLineWidth}"
+						 Watermark="#"
+						 Grid.Column="5"
+						 Margin="2"/>
+			</Grid>
+			<Grid Grid.Row="1" ColumnDefinitions="auto, auto, auto, auto, auto, auto, auto, *">
+				<NumericUpDown Value="{Binding SelectedEvent.Layer}"
+							   Minimum="0"
+							   Increment="1"
+							   FormatString="0"
+							   ShowButtonSpinner="False"
+							   Grid.Column="0"
+							   Padding="0,0,0,0"
+							   Margin="2"/>
+				<TextBox AcceptsReturn="False"
+						 Grid.Column="1"
+						 Text="{Binding SelectedEvent.Start.UpdatableText}"
+						 Name="startBox"
+						 Margin="2"/>
+				<TextBox AcceptsReturn="False"
+						 Grid.Column="2"
+						 Text="{Binding SelectedEvent.End.UpdatableText}"
+						 Name="endBox"
+						 Margin="2"/>
+				<NumericUpDown Value="{Binding SelectedEvent.Margins.Left}"
+							   Minimum="0"
+							   Increment="1"
+							   FormatString="0"
+							   ShowButtonSpinner="False"
+							   Grid.Column="3"
+							   Padding="0,0,0,0"
+							   Margin="2"/>
+				<NumericUpDown Value="{Binding SelectedEvent.Margins.Right}"
+							   Minimum="0"
+							   Increment="1"
+							   FormatString="0"
+							   ShowButtonSpinner="False"
+							   Grid.Column="4"
+							   Padding="0,0,0,0"
+							   Margin="2"/>
+				<NumericUpDown Value="{Binding SelectedEvent.Margins.Vertical}"
+							   Minimum="0"
+							   Increment="1"
+							   FormatString="0"
+							   ShowButtonSpinner="False"
+							   Grid.Column="5"
+							   Padding="0,0,0,0"
+							   Margin="2"/>
+				<StackPanel Orientation="Horizontal"
+							Grid.Column="7">
+					<Label Content="Text editing buttons coming soon!" HorizontalAlignment="Center" VerticalAlignment="Center" />
+				</StackPanel>
+			</Grid>
 			<TextBox Name="editBox"
-					 DockPanel.Dock="Bottom"
+					 Grid.Row="2"
+					 Margin="2 1"
 					 TextWrapping="Wrap"
 					 KeyDown="TextBox_KeyDown"
 					 FontSize="16"
@@ -74,7 +109,7 @@
 					<KeyBinding Gesture="Enter" Command="{Binding NextOrAddEventCommand}" />
 				</TextBox.KeyBindings>
 			</TextBox>
-		</DockPanel>
+		</Grid>
 		<!-- Splitters -->
 		<GridSplitter Grid.Row="1" Grid.Column="2" ResizeDirection="Rows" Background="Black" />
 		<GridSplitter Grid.Row="0" Grid.Column="1" ResizeDirection="Columns" Grid.RowSpan="3" Background="Black" />

@@ -85,8 +85,8 @@ namespace Ameko.Views
                     ViewModel.CutSelectedEvents.RegisterHandler(DoCutSelectedEventAsync);
                     ViewModel.Paste.RegisterHandler(DoPasteAsync);
 
-                    startBox.AddHandler(InputElement.KeyDownEvent, PreTimeBox_KeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
-                    endBox.AddHandler(InputElement.KeyDownEvent, PreTimeBox_KeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                    startBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                    endBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
                     eventsGrid.SelectionChanged += (o, e) =>
                     {
@@ -115,16 +115,11 @@ namespace Ameko.Views
         }
 
         /// <summary>
-        /// This override is needed to capture [BACKSPACE] and the arrow keys
+        /// This (pre)override is needed to capture [BACKSPACE] and the arrow keys
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PreTimeBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
-        {
-            TimeBox_KeyDown(sender, e);
-        }
-
-        private void TimeBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+        private void TimeBox_PreKeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
         {
             if (sender == null) return;
             var box = (TextBox)sender;
