@@ -24,29 +24,37 @@
 		</Panel>
 		<!-- Editor -->
 		<Grid Grid.Row="2" Grid.Column="2" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}" RowDefinitions="auto, auto, *">
-			<Grid Grid.Row="0" ColumnDefinitions="auto, *, *, *, auto">
+			<Grid Grid.Row="0" ColumnDefinitions="auto, *, auto, *, *, auto">
 				<CheckBox Grid.Column="0"
 						  Margin="2"
-						  IsChecked="{Binding SelectedEvent.Comment}">
+						  IsChecked="{Binding SelectedEvent.Comment}"
+						  ToolTip.Tip="Mark this line as a comment">
 					Comment
 				</CheckBox>
-				<!-- Style list -->
-				<TextBox AcceptsReturn="False"
+				<ComboBox Grid.Column="1"
+						  ItemsSource="{Binding Wrapper.File.StyleManager.StyleNames}"
+						  SelectedItem="{Binding SelectedEvent.Style}"
+						  Margin="2"/>
+				<Button Grid.Column="2"
+						Margin="2">
+					<Svg Path="avares://Ameko/Assets/B5/pencil-square.svg" />
+				</Button>
+				<TextBox Grid.Column="3"
+						 AcceptsReturn="False"
 						 Text="{Binding SelectedEvent.Actor}"
 						 Watermark="Actor"
-						 Grid.Column="1"
 						 Margin="2"/>
-				<TextBox AcceptsReturn="False"
+				<TextBox Grid.Column="4"
+						 AcceptsReturn="False"
 						 Text="{Binding SelectedEvent.Effect}"
 						 Watermark="Effect"
-						 Grid.Column="2"
 						 Margin="2"/>
 
-				<TextBox AcceptsReturn="False"
+				<TextBox Grid.Column="5"
+						 AcceptsReturn="False"
 						 IsEnabled="False"
 						 Text="{Binding SelectedEvent.MaxLineWidth}"
 						 Watermark="#"
-						 Grid.Column="5"
 						 Margin="2"/>
 			</Grid>
 			<Grid Grid.Row="1" ColumnDefinitions="auto, auto, auto, auto, auto, auto, auto, *">
@@ -140,6 +148,7 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
+				<DataGridTextColumn Header="Style" Binding="{Binding Style}" />
 				<DataGridTextColumn Header="Content" Binding="{Binding Text}" />
 			</DataGrid.Columns>
 			<DataGrid.Styles>

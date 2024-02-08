@@ -25,6 +25,7 @@
     <None Remove="Assets\B5\arrows-collapse.svg" />
     <None Remove="Assets\B5\arrows-expand.svg" />
     <None Remove="Assets\B5\braces.svg" />
+    <None Remove="Assets\B5\chat-left-dots.svg" />
     <None Remove="Assets\B5\clipboard-data.svg" />
     <None Remove="Assets\B5\clipboard.svg" />
     <None Remove="Assets\B5\code-slash.svg" />
@@ -38,6 +39,7 @@
     <None Remove="Assets\B5\folder-plus.svg" />
     <None Remove="Assets\B5\folder2-open.svg" />
     <None Remove="Assets\B5\hammer.svg" />
+    <None Remove="Assets\B5\pencil-square.svg" />
     <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\B5\scissors.svg" />
     <None Remove="Assets\B5\trash.svg" />
