@@ -22,8 +22,10 @@ namespace Holo
     public class Workspace : INotifyPropertyChanged
     {
         private int _id;
+        private int _styleId;
         public int NextId => _id++;
-        private int _workingIndex = 0;
+        public int NextStyleId => _styleId++;
+        private int _workingIndex = -1;
 
         private static readonly FileWrapper FALLBACK_WRAPPER = new FileWrapper(new AssCS.File(), -1, null);
 
@@ -37,7 +39,8 @@ namespace Holo
         public ObservableCollection<string> StyleNames { get; private set; }
 
         /// <summary>
-        /// Index of the currently selected open file in the workspace
+        /// Index of the currently selected open file in the workspace.
+        /// Index is based from the ReferencedFiles, NOT LoadedFiles.
         /// </summary>
         public int WorkingIndex
         {
@@ -53,7 +56,18 @@ namespace Holo
         /// <summary>
         /// The currently selected open file
         /// </summary>
-        public FileWrapper WorkingFile => loadedFiles.Count > WorkingIndex ? loadedFiles[WorkingIndex] : FALLBACK_WRAPPER;
+        public FileWrapper WorkingFile
+        {
+            get
+            {
+                if (ReferencedFiles.Count >= WorkingIndex && WorkingIndex != -1)
+                {
+                    var reference = ReferencedFiles.Where(r => r.Id == WorkingIndex).Single();
+                    return loadedFiles[reference.Id];
+                }
+                return FALLBACK_WRAPPER;
+            }
+        }
 
         public FileWrapper GetFile(int id) => loadedFiles[id];
 
@@ -176,7 +190,7 @@ namespace Holo
                     WorkspaceVersion = 1.0,
                     // Relative the paths going in
                     ReferencedFiles = this.ReferencedFiles.Where(f => !f.Path.Equals(string.Empty)).Select(f => Path.GetRelativePath(dir, f.Path)).ToList(),
-                    Styles = this.Styles.ToDictionary(s => s.Id, s => s.AsAss())
+                    Styles = this.Styles.Select(s => s.AsAss()).ToList()
                 };
 
                 using var writer = new StreamWriter(fp, false);
@@ -212,6 +226,7 @@ namespace Holo
                 var configContents = reader.ReadToEnd();
                 WorkspaceModel space = TomletMain.To<WorkspaceModel>(configContents);
                 _id = 0;
+                _styleId = 0;
                 ReferencedFiles.Clear();
                 Files.Clear();
                 // De-relative the paths coming out of the workspace
@@ -219,7 +234,7 @@ namespace Holo
                 {
                     ReferencedFiles.Add(rf);
                 }
-                Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(s.Key, s.Value)));
+                Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(NextStyleId, s)));
                 StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
                 loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
@@ -290,7 +305,7 @@ namespace Holo
             /// <summary>
             /// List of workspace styles
             /// </summary>
-            public Dictionary<int, string>? Styles;
+            public List<string>? Styles;
         }
 
         /// <summary>

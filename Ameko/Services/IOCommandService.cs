@@ -30,7 +30,7 @@ namespace Ameko.Services
         /// <param name="interaction"></param>
         public static async void DisplayStylesManager(Interaction<StylesWindowViewModel, StylesWindowViewModel?> interaction, MainViewModel vm)
         {
-            var manager = new StylesWindowViewModel(vm.Workspace);
+            var manager = new StylesWindowViewModel();
             await interaction.Handle(manager);
         }
 

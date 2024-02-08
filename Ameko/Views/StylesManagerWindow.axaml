@@ -2,13 +2,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+        mc:Ignorable="d" d:DesignWidth="775" d:DesignHeight="525"
 		xmlns:vm="using:Ameko.ViewModels"
 		x:DataType="vm:StylesWindowViewModel"
         x:Class="Ameko.Views.StylesManagerWindow"
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		Width="775"
+		Height="525"
         Title="Styles Manager">
-	<Grid ColumnDefinitions="*, *, *, 2*"
+	<Grid ColumnDefinitions="*, *, *"
 		  RowDefinitions="auto, *">
 		<!-- Global -->
 		<TextBlock Grid.Column="0"
@@ -22,6 +24,24 @@
 					 ItemsSource="{Binding GlobalStyles}">
 				
 			</ListBox>
+			<Grid Grid.Row="1"
+				  ColumnDefinitions="*, *, *, *"
+				  RowDefinitions="auto, auto">
+				<Button Grid.Column="0" Grid.Row="0"
+						Grid.ColumnSpan="2"
+						Margin="2">Copy to Workspace</Button>
+				<Button Grid.Column="2" Grid.Row="0"
+						Grid.ColumnSpan="2"
+						Margin="2">Copy to File</Button>
+				<Button Grid.Column="0" Grid.Row="1"
+						Margin="2">New</Button>
+				<Button Grid.Column="1" Grid.Row="1"
+						Margin="2">Edit</Button>
+				<Button Grid.Column="2" Grid.Row="1"
+						Margin="2">Copy</Button>
+				<Button Grid.Column="3" Grid.Row="1"
+						Margin="2">Delete</Button>
+			</Grid>
 		</Grid>
 		<!-- Workspace -->
 		<TextBlock Grid.Column="1"
@@ -35,6 +55,24 @@
 					 ItemsSource="{Binding Workspace.StyleNames}">
 
 			</ListBox>
+			<Grid Grid.Row="1"
+				  ColumnDefinitions="*, *, *, *"
+				  RowDefinitions="auto, auto">
+				<Button Grid.Column="0" Grid.Row="0"
+						Grid.ColumnSpan="2"
+						Margin="2">Copy to Global</Button>
+				<Button Grid.Column="2" Grid.Row="0"
+						Grid.ColumnSpan="2"
+						Margin="2">Copy to File</Button>
+				<Button Grid.Column="0" Grid.Row="1"
+						Margin="2">New</Button>
+				<Button Grid.Column="1" Grid.Row="1"
+						Margin="2">Edit</Button>
+				<Button Grid.Column="2" Grid.Row="1"
+						Margin="2">Copy</Button>
+				<Button Grid.Column="3" Grid.Row="1"
+						Margin="2">Delete</Button>
+			</Grid>
 		</Grid>
 		<!-- File -->
 		<TextBlock Grid.Column="2"
@@ -47,15 +85,24 @@
 			<ListBox Grid.Row="0"
 					 ItemsSource="{Binding Workspace.WorkingFile.File.StyleManager.StyleNames}">
 			</ListBox>
+			<Grid Grid.Row="1"
+				  ColumnDefinitions="*, *, *, *"
+				  RowDefinitions="auto, auto">
+				<Button Grid.Column="0" Grid.Row="0"
+						Grid.ColumnSpan="2"
+						Margin="2">Copy to Global</Button>
+				<Button Grid.Column="2" Grid.Row="0"
+						Grid.ColumnSpan="2"
+						Margin="2">Copy to Workspace</Button>
+				<Button Grid.Column="0" Grid.Row="1"
+						Margin="2">New</Button>
+				<Button Grid.Column="1" Grid.Row="1"
+						Margin="2">Edit</Button>
+				<Button Grid.Column="2" Grid.Row="1"
+						Margin="2">Copy</Button>
+				<Button Grid.Column="3" Grid.Row="1"
+						Margin="2">Delete</Button>
+			</Grid>
 		</Grid>
-		<!-- Editor -->
-		<TextBlock Grid.Column="3"
-		   Grid.Row="0"
-		   Text="Style Editor"
-		   HorizontalAlignment="Center" />
-		<Panel Grid.Column="3"
-			   Grid.Row="1">
-			<Label Content="Editing, soon!" HorizontalAlignment="Center" VerticalAlignment="Center" />
-		</Panel>
 	</Grid>
 </Window>

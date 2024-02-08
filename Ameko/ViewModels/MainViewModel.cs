@@ -55,7 +55,10 @@ public class MainViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref selectedTabIndex, value);
             if (value >= 0)
-                HoloContext.Instance.Workspace.WorkingIndex = Tabs[value].ID;
+            {
+                var tab = Tabs[value];
+                HoloContext.Instance.Workspace.WorkingIndex = tab.ID;
+            }
         }
     }
 

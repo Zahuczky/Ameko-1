@@ -20,9 +20,9 @@ namespace Ameko.ViewModels
 
         public ObservableCollection<string> GlobalStyles { get; private set; }
         
-        public StylesWindowViewModel(Workspace workspace)
+        public StylesWindowViewModel()
         {
-            _workspace = workspace;
+            _workspace = HoloContext.Instance.Workspace;
 
             GlobalStyles = new ObservableCollection<string>(); // TODO
         }
