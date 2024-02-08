@@ -11,7 +11,7 @@
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
-				<MenuItem Header="_New">
+				<MenuItem Header="_New" Command="{Binding NewFileCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/file-earmark.svg" />
 					</MenuItem.Icon>
@@ -44,7 +44,7 @@
 					</MenuItem.Icon>
 				</MenuItem>
 				<Separator />
-				<MenuItem Header="_Quit">
+				<MenuItem Header="_Quit" Command="{Binding QuitCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/door-open.svg" />
 					</MenuItem.Icon>

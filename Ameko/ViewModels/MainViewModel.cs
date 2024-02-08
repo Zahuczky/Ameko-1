@@ -1,7 +1,9 @@
 ﻿using Ameko.DataModels;
 using Ameko.Services;
 using AssCS.IO;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using DynamicData;
 using ExCSS;
 using Holo;
@@ -29,16 +31,17 @@ public class MainViewModel : ViewModelBase
     public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
+    public ICommand NewFileCommand { get; }
     public ICommand ShowOpenFileDialogCommand { get; }
     public ICommand ShowSaveFileDialogCommand { get; }
     public ICommand ShowSaveAsFileDialogCommand { get; }
     public ICommand ShowOpenWorkspaceDialogCommand { get; }
     public ICommand ShowSaveWorkspaceDialogCommand { get; }
-
     public ICommand CloseTabCommand { get; }
     public ICommand RemoveFromWorkspaceCommand { get; }
     public ICommand ActivateScriptCommand { get; }
     public ICommand ReloadScriptsCommand { get; }
+    public ICommand QuitCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<string> ScriptNames { get; }
@@ -96,6 +99,11 @@ public class MainViewModel : ViewModelBase
         ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.WorkspaceSaveOrDisplaySaveAsDialog(ShowSaveAsWorkspaceDialog));
         ShowOpenWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayWorkspaceOpenDialog(ShowOpenWorkspaceDialog, this));
 
+        NewFileCommand = ReactiveCommand.Create(() =>
+        {
+            Workspace.AddFileToWorkspace();
+        });
+
         CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>
         {
             // TODO: Saving and stuff
@@ -105,6 +113,15 @@ public class MainViewModel : ViewModelBase
         RemoveFromWorkspaceCommand = ReactiveCommand.Create<int>((int fileId) =>
         {
             HoloContext.Instance.Workspace.RemoveFileFromWorkspace(fileId);
+        });
+
+        QuitCommand = ReactiveCommand.Create(() =>
+        {
+            // TODO saving and stuff
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
+            {
+                desktopApp.Shutdown();
+            }
         });
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
