@@ -124,7 +124,7 @@ namespace Ameko.ViewModels
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
-            Wrapper.Select([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
+            Wrapper.Select(new List<Event>() { Wrapper.File.EventManager.Head }, Wrapper.File.EventManager.Head);
             SelectedEvent = Wrapper.File.EventManager.Head;
         }
     }
