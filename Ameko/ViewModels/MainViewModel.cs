@@ -47,6 +47,7 @@ public class MainViewModel : ViewModelBase
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<string> ScriptNames { get; }
+    public bool HasScripts { get; set; }
 
     public int SelectedTabIndex
     {
@@ -146,12 +147,15 @@ public class MainViewModel : ViewModelBase
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));
         ScriptNames = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts);
+        HasScripts = ScriptNames.Any();
 
         HoloContext.Instance.Workspace.Files.CollectionChanged += UpdateLoadedTabsCallback;
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
             ScriptNames.Clear();
             ScriptNames.AddRange(ScriptService.Instance.LoadedScripts);
+            HasScripts = ScriptNames.Any();
+            this.RaisePropertyChanged(nameof(HasScripts));
         };
     }
 }
