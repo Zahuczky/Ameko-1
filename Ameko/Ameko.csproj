@@ -52,6 +52,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.0.7" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.7" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />

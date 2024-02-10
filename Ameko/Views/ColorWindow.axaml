@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:Ameko.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="500"
+		xmlns:converters="using:Ameko.Converters"
+        x:Class="Ameko.Views.ColorWindow"
+		x:DataType="vm:ColorWindowViewModel"
+		CanResize="False"
+        Title="Colors">
+	<Window.Resources>
+		<converters:ColorRingConverter x:Key="RingConverter" />
+	</Window.Resources>
+	<DockPanel>
+		<ColorView DockPanel.Dock="Top"
+				   IsColorPaletteVisible="False"
+				   ColorSpectrumShape="{Binding UseRing, Converter={StaticResource RingConverter}}"/>
+		<WrapPanel DockPanel.Dock="Bottom">
+			<CheckBox IsChecked="{Binding UseRing}">Use Ring</CheckBox>
+		</WrapPanel>
+	</DockPanel>
+</Window>
