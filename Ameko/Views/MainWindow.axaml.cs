@@ -98,7 +98,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
 
-    private void DoShowStylesManager(InteractionContext<StylesWindowViewModel, StylesWindowViewModel?> interaction)
+    private void DoShowStylesManager(InteractionContext<StylesManagerViewModel, StylesManagerViewModel?> interaction)
     {
         var manager = new StylesManagerWindow();
         manager.DataContext = interaction.Input;

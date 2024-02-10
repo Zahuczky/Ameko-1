@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="775" d:DesignHeight="525"
 		xmlns:vm="using:Ameko.ViewModels"
-		x:DataType="vm:StylesWindowViewModel"
+		x:DataType="vm:StylesManagerViewModel"
         x:Class="Ameko.Views.StylesManagerWindow"
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
 		Width="775"
@@ -115,7 +115,7 @@
 						IsEnabled="False"
 						Margin="2">New</Button>
 				<Button Grid.Column="1" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding EditFileStyleCommand}"
 						Margin="2">Edit</Button>
 				<Button Grid.Column="2" Grid.Row="1"
 						IsEnabled="False"

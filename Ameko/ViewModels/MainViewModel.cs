@@ -26,7 +26,7 @@ public class MainViewModel : ViewModelBase
 
     public string WindowTitle { get; } = $"Ameko {AmekoService.VERSION_BUG}";
     public Interaction<AboutWindowViewModel, AboutWindowViewModel?> ShowAboutDialog { get; }
-    public Interaction<StylesWindowViewModel, StylesWindowViewModel?> ShowStylesManager { get; }
+    public Interaction<StylesManagerViewModel, StylesManagerViewModel?> ShowStylesManager { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenFileDialog { get; }
     public Interaction<FileWrapper, Uri?> ShowSaveAsFileDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
@@ -93,7 +93,7 @@ public class MainViewModel : ViewModelBase
     {
         Workspace = HoloContext.Instance.Workspace;
         ShowAboutDialog = new Interaction<AboutWindowViewModel, AboutWindowViewModel?>();
-        ShowStylesManager = new Interaction<StylesWindowViewModel, StylesWindowViewModel?>();
+        ShowStylesManager = new Interaction<StylesManagerViewModel, StylesManagerViewModel?>();
         ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsFileDialog = new Interaction<FileWrapper, Uri?>();
         ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();

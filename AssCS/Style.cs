@@ -117,7 +117,7 @@ namespace AssCS
             Font = "Arial";
             FontSize = 48.0;
             Primary = new Color(255, 255, 255);
-            Secondary = new Color(0, 0, 255); // Red
+            Secondary = new Color(255, 0, 0); // Red
             Outline = new Color(0, 0, 0);
             Shadow = new Color(0, 0, 0);
             Bold = false;

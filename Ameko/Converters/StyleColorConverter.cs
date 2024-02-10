@@ -14,9 +14,16 @@ namespace Ameko.Converters
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value == null) return null;
-            AssCS.Color color = (AssCS.Color)value;
+            bool opacity = false;
+            if (parameter != null) opacity = System.Convert.ToBoolean(parameter);
 
-            return new SolidColorBrush(new Color(255, (byte)color.Red, (byte)color.Green, (byte)color.Blue), color.Alpha);
+            AssCS.Color assColor = (AssCS.Color)value;
+            Color color;
+            if (opacity)
+                color = new Color((byte)(255 - assColor.Alpha), (byte)assColor.Red, (byte)assColor.Green, (byte)assColor.Blue);
+            else
+                color = new Color(255, (byte)assColor.Red, (byte)assColor.Green, (byte)assColor.Blue);
+            return new SolidColorBrush(color);
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

@@ -13,6 +13,9 @@ namespace AssCS
         public uint Red { get; set; }
         public uint Green { get; set; }
         public uint Blue { get; set; }
+        /// <summary>
+        /// It should be noted that 0xFF is transparent, and 0x00 is opaque
+        /// </summary>
         public uint Alpha { get; set; }
 
         public double Luminance => (((0.2126 * Red) + (0.7152 * Green) + (0.0722 * Blue)) / 255) * Alpha;
@@ -44,7 +47,7 @@ namespace AssCS
             }
             else
             {
-                Alpha = 255;
+                Alpha = 0;
                 Blue = Convert.ToUInt32(rgbMatch.Groups[1].Value, 16);
                 Green = Convert.ToUInt32(rgbMatch.Groups[2].Value, 16);
                 Red = Convert.ToUInt32(rgbMatch.Groups[3].Value, 16);
@@ -84,7 +87,7 @@ namespace AssCS
             Red = red;
             Green = green;
             Blue = blue;
-            Alpha = 255;
+            Alpha = 0;
         }
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace AssCS
             Red = 0;
             Green = 0;
             Blue = 0;
-            Alpha = 255;
+            Alpha = 0;
         }
 
         public static Color operator +(Color a, Color b)

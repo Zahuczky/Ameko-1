@@ -7,51 +7,72 @@
 		xmlns:vm="using:Ameko.ViewModels"
         x:Class="Ameko.Views.StyleEditorWindow"
 		x:DataType="vm:StyleEditorViewModel"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
 		Width="375" Height="600"
         Title="Style Editor">
 	<Window.Resources>
 		<converters:StyleColorConverter x:Key="ColorConverter" />
+		<converters:StyleAlignmentConverter x:Key="AlignmentConverter" />
+		<converters:StyleBoxConverter x:Key="BoxConverter" />
 	</Window.Resources>
 	<StackPanel Margin="5">
 		<HeaderedContentControl Header="Basic Info" Background="Black" Margin="0 -10 0 0">
-			<TextBox Watermark="Style Name" />
+			<TextBox Text="{Binding Style.Name}" Watermark="Style Name" IsEnabled="False" /> <!-- TODO: get live updating of name working -->
 		</HeaderedContentControl>
 		<HeaderedContentControl Header="Font" Background="Black">
 			<Grid ColumnDefinitions=" *, *, *, *"
-					RowDefinitions="*, *">
+					RowDefinitions="auto, *">
 				<TextBox Grid.Column="0"
-							Grid.Row="0"
-							Grid.ColumnSpan="3"
-							Margin="0 0 2 2"
-							Watermark="Font Name" />
+						 Grid.Row="0"
+						 Grid.ColumnSpan="3"
+						 Margin="0 0 2 2"
+						 Text="{Binding Style.Font}"
+						 Watermark="Font Name" />
 				<NumericUpDown Grid.Column="3"
-								Grid.Row="0"
-								Margin="2 0 0 2"
-								FormatString="0"
-								Increment="1"
-								Minimum="0"
-								AllowSpin="True" />
+							   Grid.Row="0"
+							   Margin="2 0 0 2"
+							   FormatString="0"
+							   Increment="1"
+							   Minimum="0"
+							   AllowSpin="True"
+							   Value="{Binding Style.FontSize}"/>
 				<CheckBox Grid.Column="0"
-							Grid.Row="1">Bold</CheckBox>
+						  Grid.Row="1"
+						  IsChecked="{Binding Style.Bold}">Bold</CheckBox>
 				<CheckBox Grid.Column="1"
-							Grid.Row="1">Italic</CheckBox>
+						  Grid.Row="1"
+						  IsChecked="{Binding Style.Italic}">Italic</CheckBox>
 				<CheckBox Grid.Column="2"
-							Grid.Row="1">Underline</CheckBox>
+						  IsChecked="{Binding Style.Underline}"
+						  Grid.Row="1">Underline</CheckBox>
 				<CheckBox Grid.Column="3"
-							Grid.Row="1">Strikeout</CheckBox>
+						  IsChecked="{Binding Style.Strikeout}"
+						  Grid.Row="1">Strikeout</CheckBox>
 			</Grid>
 		</HeaderedContentControl>
 		<HeaderedContentControl Header="Colors" Background="Black">
 			<Grid ColumnDefinitions=" *, *, *, *"
-					RowDefinitions="*, *">
+					RowDefinitions="*, *, *">
 				<Label Grid.Column="0" Grid.Row="0" Content="Primary" HorizontalAlignment="Center" />
-				<Panel Grid.Column="0" Grid.Row="1" Height="20" Margin="3 1 3 0"  Background="{Binding Style.Primary, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="0" Grid.Row="1" Height="10" Margin="3 1 3 0"  Background="{Binding Style.Primary, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="0" Grid.Row="2" Height="10" Margin="3 0 3 0"  Background="White">
+					<Panel Height="10" Background="{Binding Style.Primary, Converter={StaticResource ColorConverter}, ConverterParameter=true}" />
+				</Panel>
 				<Label Grid.Column="1" Grid.Row="0" Content="Secondary" HorizontalAlignment="Center" />
-				<Panel Grid.Column="1" Grid.Row="1" Height="20" Margin="3 1 3 0"  Background="{Binding Style.Secondary, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="1" Grid.Row="1" Height="10" Margin="3 1 3 0"  Background="{Binding Style.Secondary, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="1" Grid.Row="2" Height="10" Margin="3 0 3 0"  Background="White">
+					<Panel Height="10" Background="{Binding Style.Secondary, Converter={StaticResource ColorConverter}, ConverterParameter=true}" />
+				</Panel>
 				<Label Grid.Column="2" Grid.Row="0" Content="Outline" HorizontalAlignment="Center" />
-				<Panel Grid.Column="2" Grid.Row="1" Height="20" Margin="3 1 3 0"  Background="{Binding Style.Outline, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="2" Grid.Row="1" Height="10" Margin="3 1 3 0"  Background="{Binding Style.Outline, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="2" Grid.Row="2" Height="10" Margin="3 0 3 0"  Background="White">
+					<Panel Height="10" Background="{Binding Style.Outline, Converter={StaticResource ColorConverter}, ConverterParameter=true}" />
+				</Panel>
 				<Label Grid.Column="3" Grid.Row="0" Content="Shadow" HorizontalAlignment="Center" />
-				<Panel Grid.Column="3" Grid.Row="1" Height="20" Margin="3 1 3 0"  Background="{Binding Style.Shadow, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="3" Grid.Row="1" Height="10" Margin="3 1 3 0"  Background="{Binding Style.Shadow, Converter={StaticResource ColorConverter}}" />
+				<Panel Grid.Column="3" Grid.Row="2" Height="10" Margin="3 0 3 0"  Background="White">
+					<Panel Height="10" Background="{Binding Style.Shadow, Converter={StaticResource ColorConverter}, ConverterParameter=true}" />
+				</Panel>
 			</Grid>
 		</HeaderedContentControl>
 		<HeaderedContentControl Header="Positioning" Background="Black">
@@ -63,66 +84,76 @@
 						RowDefinitions="auto, *">
 					<Label Grid.Column="0" Grid.Row="1" Content="Left" HorizontalAlignment="Center" />
 					<NumericUpDown Grid.Column="0"
-									Grid.Row="2"
-									Margin="2 0 0 2"
-									FormatString="0"
-									Increment="1"
-									Minimum="0"
-									AllowSpin="True"
-									VerticalAlignment="Center"/>
+								   Grid.Row="2"
+								   Margin="2 0 0 2"
+								   FormatString="0"
+								   Increment="1"
+								   Minimum="0"
+								   AllowSpin="True"
+								   VerticalAlignment="Center"
+								   Value="{Binding Style.Margins.Left}"/>
 					<Label Grid.Column="1" Grid.Row="1" Content="Right" HorizontalAlignment="Center" />
 					<NumericUpDown Grid.Column="1"
-									Grid.Row="2"
-									Margin="2 0 0 2"
-									FormatString="0"
-									Increment="1"
-									Minimum="0"
-									AllowSpin="True"
-									VerticalAlignment="Center"/>
+								   Grid.Row="2"
+								   Margin="2 0 0 2"
+								   FormatString="0"
+								   Increment="1"
+								   Minimum="0"
+								   AllowSpin="True"
+								   VerticalAlignment="Center"
+								   Value="{Binding Style.Margins.Right}"/>
 					<Label Grid.Column="2" Grid.Row="1" Content="Center" HorizontalAlignment="Center" />
 					<NumericUpDown Grid.Column="3"
-									Grid.Row="2"
-									Margin="2 0 0 2"
-									FormatString="0"
-									Increment="1"
-									Minimum="0"
-									AllowSpin="True"
-									VerticalAlignment="Center"/>
+								   Grid.Row="2"
+								   Margin="2 0 0 2"
+								   FormatString="0"
+								   Increment="1"
+								   Minimum="0"
+								   AllowSpin="True"
+								   VerticalAlignment="Center"
+								   Value="{Binding Style.Margins.Vertical}"/>
 				</Grid>
 				<Label Grid.Column="1" Grid.Row="0" FontWeight="Bold" Content="Alignment" HorizontalAlignment="Center" />
 				<Grid Grid.Column="1"
-						Grid.Row="1"
-						ColumnDefinitions="*, *, *"
-						RowDefinitions="*, *, *">
-					<RadioButton Grid.Column="0" Grid.Row="2" Margin="3" GroupName="Align" Content="1" />
-					<RadioButton Grid.Column="1" Grid.Row="2" Margin="5" GroupName="Align" Content="2" />
-					<RadioButton Grid.Column="2" Grid.Row="2" Margin="5" GroupName="Align" Content="3" />
-					<RadioButton Grid.Column="0" Grid.Row="1" Margin="5" GroupName="Align" Content="4" />
-					<RadioButton Grid.Column="1" Grid.Row="1" Margin="5" GroupName="Align" Content="5" />
-					<RadioButton Grid.Column="2" Grid.Row="1" Margin="5" GroupName="Align" Content="6" />
-					<RadioButton Grid.Column="0" Grid.Row="0" Margin="5" GroupName="Align" Content="7" />
-					<RadioButton Grid.Column="1" Grid.Row="0" Margin="5" GroupName="Align" Content="8" />
-					<RadioButton Grid.Column="2" Grid.Row="0" Margin="5" GroupName="Align" Content="9" />
+					  Grid.Row="1"
+					  ColumnDefinitions="*, *, *"
+					  RowDefinitions="*, *, *">
+					<RadioButton Grid.Column="0" Grid.Row="2" Margin="5" GroupName="Align" Content="1" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=1, Mode=TwoWay}" />
+					<RadioButton Grid.Column="1" Grid.Row="2" Margin="5" GroupName="Align" Content="2" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=2, Mode=TwoWay}" />
+					<RadioButton Grid.Column="2" Grid.Row="2" Margin="5" GroupName="Align" Content="3" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=3, Mode=TwoWay}" />
+					<RadioButton Grid.Column="0" Grid.Row="1" Margin="5" GroupName="Align" Content="4" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=4, Mode=TwoWay}" />
+					<RadioButton Grid.Column="1" Grid.Row="1" Margin="5" GroupName="Align" Content="5" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=5, Mode=TwoWay}" />
+					<RadioButton Grid.Column="2" Grid.Row="1" Margin="5" GroupName="Align" Content="6" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=6, Mode=TwoWay}" />
+					<RadioButton Grid.Column="0" Grid.Row="0" Margin="5" GroupName="Align" Content="7" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=7, Mode=TwoWay}" />
+					<RadioButton Grid.Column="1" Grid.Row="0" Margin="5" GroupName="Align" Content="8" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=8, Mode=TwoWay}" />
+					<RadioButton Grid.Column="2" Grid.Row="0" Margin="5" GroupName="Align" Content="9" IsChecked="{Binding Style.Alignment, Converter={StaticResource AlignmentConverter}, ConverterParameter=9, Mode=TwoWay}" />
 				</Grid>
 			</Grid>
 		</HeaderedContentControl>
 		<HeaderedContentControl Header="Decoration" Background="Black">
-			<Grid ColumnDefinitions="auto, *, auto, *, auto">
-				<Label Grid.Column="0" VerticalAlignment="Center" Content="Outline" />
+			<Grid ColumnDefinitions="auto, *, auto, *"
+				  RowDefinitions="auto, auto">
+				<Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Content="Outline" />
 				<NumericUpDown Grid.Column="1"
 							   Margin="4 2"
 							   FormatString="0.00"
 							   Increment="0.10"
 							   Minimum="0"
-							   AllowSpin="True"/>
-				<Label Grid.Column="2" VerticalAlignment="Center" Content="Shadow" />
+							   AllowSpin="True"
+							   Value="{Binding Style.BorderThickness}"/>
+				<Label Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" Content="Shadow" />
 				<NumericUpDown Grid.Column="3"
 							   Margin="4 2"
 							   FormatString="0.00"
 							   Increment="0.10"
 							   Minimum="0"
-							   AllowSpin="True"/>
-				<CheckBox Grid.Column="4" Margin="2 0 0 0">Opaque Box</CheckBox>
+							   AllowSpin="True"
+							   Value="{Binding Style.ShadowDistance}"/>
+				<StackPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Orientation="Horizontal">
+					<RadioButton GroupName="BorderStyle" Margin="2 0 10 1" Content="Outline + Shadow" IsChecked="{Binding Style.BorderStyle, Converter={StaticResource BoxConverter}, ConverterParameter=1, Mode=TwoWay}" />
+					<RadioButton GroupName="BorderStyle" Margin="2 1 10 1" Content="Box (Line)" IsChecked="{Binding Style.BorderStyle, Converter={StaticResource BoxConverter}, ConverterParameter=3, Mode=TwoWay}" />
+					<RadioButton GroupName="BorderStyle" Margin="2 1 0 0" Content="Box (Event)" IsChecked="{Binding Style.BorderStyle, Converter={StaticResource BoxConverter}, ConverterParameter=4, Mode=TwoWay}" />
+				</StackPanel>
 			</Grid>
 		</HeaderedContentControl>
 		<HeaderedContentControl Header="Extras" Background="Black">
@@ -134,7 +165,8 @@
 							   FormatString="0.00"
 							   Increment="1.00"
 							   Minimum="0"
-							   AllowSpin="True"/>
+							   AllowSpin="True"
+							   Value="{Binding Style.ScaleX}"/>
 				<Label Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" Content="Y Scale %" />
 				<NumericUpDown Grid.Column="3"
 							   Grid.Row="0"
@@ -142,7 +174,8 @@
 							   FormatString="0.00"
 							   Increment="1.00"
 							   Minimum="0"
-							   AllowSpin="True"/>
+							   AllowSpin="True"
+							   Value="{Binding Style.ScaleY}"/>
 				<Label Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Content="Rotation (deg)" />
 				<NumericUpDown Grid.Column="1"
 							   Grid.Row="1"
@@ -151,41 +184,41 @@
 							   Increment="1.00"
 							   Maximum="360"
 							   Minimum="-360"
-							   AllowSpin="True"/>
+							   AllowSpin="True"
+							   Value="{Binding Style.Angle}"/>
 				<Label Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" Content="Spacing" />
 				<NumericUpDown Grid.Column="3"
 							   Grid.Row="1"
 							   Margin="4 2"
 							   FormatString="0.00"
 							   Increment="1.000"
-							   Minimum="0"
-							   AllowSpin="True"/>
+							   AllowSpin="True"
+							   Value="{Binding Style.Spacing}"/>
 			</Grid>
 		</HeaderedContentControl>
 	</StackPanel>
-  
-  <Window.Styles>
-	  <Style Selector="HeaderedContentControl">
-		  <Setter Property="Template">
-			  <Setter.Value>
-				  <ControlTemplate>
-					  <Border>
-						  <StackPanel>
-							  <ContentPresenter FontWeight="Bold"
-												Margin="0 10 0 2"
-												Content="{TemplateBinding Header}" />
-							  <Border
-								  BorderBrush="{TemplateBinding Background}"
-								  BorderThickness="2"
-								  CornerRadius="5">
-								  <ContentPresenter Content="{TemplateBinding Content}"
-													Padding="5"/>
-							  </Border>
-						  </StackPanel>
-					  </Border>
-				  </ControlTemplate>
-			  </Setter.Value>
-		  </Setter>
-	  </Style>
-  </Window.Styles>
+
+	<Window.Styles>
+		<Style Selector="HeaderedContentControl">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border>
+							<StackPanel>
+								<ContentPresenter FontWeight="Bold"
+												  Margin="0 10 0 2"
+												  Content="{TemplateBinding Header}" />
+								<Border BorderBrush="{TemplateBinding Background}"
+										BorderThickness="2"
+										CornerRadius="5">
+									<ContentPresenter Content="{TemplateBinding Content}"
+													  Padding="5"/>
+								</Border>
+							</StackPanel>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Styles>
 </Window>

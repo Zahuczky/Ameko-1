@@ -28,9 +28,9 @@ namespace Ameko.Services
         /// Display the Styles Manager
         /// </summary>
         /// <param name="interaction"></param>
-        public static async void DisplayStylesManager(Interaction<StylesWindowViewModel, StylesWindowViewModel?> interaction, MainViewModel vm)
+        public static async void DisplayStylesManager(Interaction<StylesManagerViewModel, StylesManagerViewModel?> interaction, MainViewModel vm)
         {
-            var manager = new StylesWindowViewModel();
+            var manager = new StylesManagerViewModel();
             await interaction.Handle(manager);
         }
 
