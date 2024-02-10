@@ -19,7 +19,7 @@ namespace AssCS
 
         public string AsAss()
         {
-            return $"&H{Alpha:X2}{Blue:X2}{Green:X2}{Red:X2}&";
+            return $"&H{Alpha:X2}{Blue:X2}{Green:X2}{Red:X2}";
         }
 
         public string AsOverride()
