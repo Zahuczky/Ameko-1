@@ -32,6 +32,7 @@ namespace Ameko.ViewModels
 
         public ICommand CopyFromWorkspaceToFileCommand { get; }
         public ICommand DeleteWorkspaceStyleCommand { get; }
+        public ICommand EditWorkspaceStyleCommand { get; }
 
         public ObservableCollection<string> GlobalStyles { get; private set; }
         
@@ -76,6 +77,15 @@ namespace Ameko.ViewModels
             {
                 if (SelectedWorkspaceStyleName == null) return;
                 Workspace.RemoveStyle(SelectedWorkspaceStyleName);
+            });
+
+            EditWorkspaceStyleCommand = ReactiveCommand.Create(async () =>
+            {
+                if (SelectedWorkspaceStyleName == null) return;
+                var style = Workspace.GetStyle(SelectedWorkspaceStyleName);
+                if (style == null) return;
+                var editor = new StyleEditorViewModel(style);
+                await ShowStyleEditor.Handle(editor);
             });
 
             GlobalStyles = new ObservableCollection<string>(); // TODO

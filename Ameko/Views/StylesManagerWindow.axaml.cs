@@ -30,5 +30,30 @@ namespace Ameko.Views
                 Disposable.Create(() => { }).DisposeWith(disposables);
             });
         }
+
+        private void FileListBox_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+        {
+            if (sender == null || ViewModel == null) return;
+            var box = (ListBox)sender;
+            if (box.SelectedItem != null)
+                ViewModel.EditFileStyleCommand.Execute(null);
+        }
+
+        private void WorkspaceListBox_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+        {
+            if (sender == null || ViewModel == null) return;
+            var box = (ListBox)sender;
+            if (box.SelectedItem != null)
+                ViewModel.EditWorkspaceStyleCommand.Execute(null);
+        }
+
+        private void GlobalListBox_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+        {
+            // TODO
+            //if (sender == null || ViewModel == null) return;
+            //var box = (ListBox)sender;
+            //if (box.SelectedItem != null)
+            //    ViewModel.EditGlobalStyleCommand.Execute(null);
+        }
     }
 }
