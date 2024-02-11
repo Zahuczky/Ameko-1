@@ -9,6 +9,7 @@
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
 		Width="775"
 		Height="525"
+		Topmost="True"
         Title="Styles Manager">
 	<Grid ColumnDefinitions="*, *, *"
 		  RowDefinitions="auto, *">

@@ -7,7 +7,9 @@
 		xmlns:converters="using:Ameko.Converters"
         x:Class="Ameko.Views.ColorWindow"
 		x:DataType="vm:ColorWindowViewModel"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
 		CanResize="False"
+		Topmost="True"
         Title="Colors">
 	<Window.Resources>
 		<converters:ColorRingConverter x:Key="RingConverter" />

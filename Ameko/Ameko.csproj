@@ -44,6 +44,7 @@
     <None Remove="Assets\B5\pencil-square.svg" />
     <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\B5\scissors.svg" />
+    <None Remove="Assets\B5\search.svg" />
     <None Remove="Assets\B5\trash.svg" />
     <None Remove="Assets\B5\x-circle.svg" />
     <None Remove="Assets\Licensing.txt" />

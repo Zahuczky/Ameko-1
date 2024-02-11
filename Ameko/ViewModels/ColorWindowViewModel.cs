@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Ameko.ViewModels
 {
-    internal class ColorWindowViewModel : ViewModelBase
+    public class ColorWindowViewModel : ViewModelBase
     {
         public bool UseRing { get; set; }
 

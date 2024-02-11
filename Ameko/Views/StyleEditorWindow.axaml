@@ -9,6 +9,8 @@
 		x:DataType="vm:StyleEditorViewModel"
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
 		Width="375" Height="620"
+		Topmost="True"
+		CanResize="False"
         Title="Style Editor">
 	<Window.Resources>
 		<converters:StyleColorConverter x:Key="ColorConverter" />

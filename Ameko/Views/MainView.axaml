@@ -50,6 +50,13 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
+			<MenuItem Header="_Edit">
+				<MenuItem Header="_Search" Command="{Binding ShowSearchDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/search.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
 			<MenuItem Header="_Subtitle">
 				<MenuItem Header="_Styles Manager" Command="{Binding ShowStylesManagerCommand}">
 					<MenuItem.Icon>
@@ -153,7 +160,7 @@
 			</TabControl.ItemTemplate>
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<views:TabView />
+					<views:TabView  />
 				</DataTemplate>
 			</TabControl.ContentTemplate>
 			<TabControl.Styles>

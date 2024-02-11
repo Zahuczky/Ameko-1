@@ -12,6 +12,23 @@ namespace Ameko.Views;
 
 public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
+    private SearchWindow _searchWindow;
+    private bool _isSearching = false;
+
+    public void DoShowSearchWindow(InteractionContext<SearchWindowViewModel, string?> interaction)
+    {
+        if (_searchWindow == null) return;
+        _searchWindow.DataContext ??= interaction.Input;
+
+        if (_isSearching)
+            _searchWindow?.Activate();
+        else
+        {
+            _isSearching = true;
+            _searchWindow?.Show();
+        }
+    }
+
     private async Task DoShowAboutDialogAsync(InteractionContext<AboutWindowViewModel, AboutWindowViewModel?> interaction)
     {
         var dialog = new AboutWindow();
@@ -109,6 +126,16 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     public MainWindow()
     {
         InitializeComponent();
+
+        _searchWindow = new SearchWindow();
+        // _searchWindow.Unloaded += (o, e) => _isSearching = false;
+        _searchWindow.Closing += (o, e) => { 
+            if (o == null) return; 
+            ((SearchWindow)o).Hide();
+            _isSearching = false;
+            e.Cancel = true; 
+        };
+
         this.WhenActivated((CompositeDisposable disposables) =>
         {
             if (ViewModel != null)
@@ -120,6 +147,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowOpenWorkspaceDialog.RegisterHandler(DoShowOpenWorkspaceDialogAsync);
                 
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
+                ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
