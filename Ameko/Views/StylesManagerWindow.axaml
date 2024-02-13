@@ -22,7 +22,7 @@
 			  Grid.Row="1"
 			  RowDefinitions="*, auto">
 			<ListBox Grid.Row="0"
-					 ItemsSource="{Binding GlobalStyles}"
+					 ItemsSource="{Binding GlobalsManager.StyleNames}"
 					 SelectedItem="{Binding SelectedGlobalStyleName}"
 					 DoubleTapped="GlobalListBox_DoubleTapped">
 				
@@ -32,23 +32,23 @@
 				  RowDefinitions="auto, auto">
 				<Button Grid.Column="0" Grid.Row="0"
 						Grid.ColumnSpan="2"
-						IsEnabled="False"
+						Command="{Binding CopyFromGlobalsToWorkspaceCommand}"
 						Margin="2">Copy to Workspace</Button>
 				<Button Grid.Column="2" Grid.Row="0"
 						Grid.ColumnSpan="2"
-						IsEnabled="False"
+						Command="{Binding CopyFromGlobalsToFileCommand}"
 						Margin="2">Copy to File</Button>
 				<Button Grid.Column="0" Grid.Row="1"
 						IsEnabled="False"
 						Margin="2">New</Button>
 				<Button Grid.Column="1" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding EditGlobalsStyleCommand}"
 						Margin="2">Edit</Button>
 				<Button Grid.Column="2" Grid.Row="1"
 						IsEnabled="False"
 						Margin="2">Copy</Button>
 				<Button Grid.Column="3" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding DeleteGlobalsStyleCommand}"
 						Margin="2">Delete</Button>
 			</Grid>
 		</Grid>
@@ -71,11 +71,11 @@
 				  RowDefinitions="auto, auto">
 				<Button Grid.Column="0" Grid.Row="0"
 						Grid.ColumnSpan="2"
-						IsEnabled="False"
+						Command="{Binding CopyFromWorkspaceToGlobalsCommand}"
 						Margin="2">Copy to Global</Button>
 				<Button Grid.Column="2" Grid.Row="0"
 						Grid.ColumnSpan="2"
-					Command="{Binding CopyFromWorkspaceToFileCommand}"
+						Command="{Binding CopyFromWorkspaceToFileCommand}"
 						Margin="2">Copy to File</Button>
 				<Button Grid.Column="0" Grid.Row="1"
 						IsEnabled="False"
@@ -109,7 +109,7 @@
 				  RowDefinitions="auto, auto">
 				<Button Grid.Column="0" Grid.Row="0"
 						Grid.ColumnSpan="2"
-						IsEnabled="False"
+						Command="{Binding CopyFromFileToGlobalsCommand}"
 						Margin="2">Copy to Global</Button>
 				<Button Grid.Column="2" Grid.Row="0"
 						Grid.ColumnSpan="2"

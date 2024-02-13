@@ -49,11 +49,10 @@ namespace Ameko.Views
 
         private void GlobalListBox_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
         {
-            // TODO
-            //if (sender == null || ViewModel == null) return;
-            //var box = (ListBox)sender;
-            //if (box.SelectedItem != null)
-            //    ViewModel.EditGlobalStyleCommand.Execute(null);
+            if (sender == null || ViewModel == null) return;
+            var box = (ListBox)sender;
+            if (box.SelectedItem != null)
+                ViewModel.EditGlobalsStyleCommand.Execute(null);
         }
     }
 }

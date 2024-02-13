@@ -68,7 +68,7 @@ namespace Holo
             return null;
         }
 
-        public bool Write()
+        public async void Write()
         {
             try
             {
@@ -82,10 +82,9 @@ namespace Holo
 
                 using var writer = new StreamWriter(_globalsFilePath, false);
                 string m = TomletMain.TomlStringFrom(file);
-                writer.Write(m);
-                return true;
+                await writer.WriteAsync(m);
             }
-            catch { return false; }
+            catch { return; }
         }
 
         public void Read()
