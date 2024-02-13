@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:Ameko.ViewModels"
+		xmlns:dm="using:Ameko.DataModels"
+		xmlns:converters="using:Ameko.Converters"
+        mc:Ignorable="d" d:DesignWidth="325" d:DesignHeight="55"
+        x:Class="Ameko.Views.SearchWindow"
+		x:DataType="vm:SearchWindowViewModel"
+		Width="325"
+		Height="55"
+		Topmost="True"
+		CanResize="False"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="{Binding WindowTitle}">
+	<Window.Resources>
+		<converters:SearchFilterConverter x:Key="FilterConverter" />
+	</Window.Resources>
+	<StackPanel>
+		<Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto">
+			<Label Grid.Column="0" Grid.Row="0" Margin="2" HorizontalAlignment="Center" Content="Find:" />
+			<TextBox Grid.Column="1" Grid.Row="0" Margin="2" Text="{Binding Query}" Watermark="Query..." Name="queryBox" />
+			<Button Grid.Column="2" Grid.Row="0" Margin="2" IsDefault="True" Command="{Binding FindNextCommand}">Find</Button>
+		</Grid>
+		<StackPanel Orientation="Horizontal">
+			<RadioButton GroupName="FilterGroup" Margin="2" Content="Text" IsChecked="{Binding Filter, Converter={StaticResource FilterConverter}, ConverterParameter={x:Static dm:SearchFilter.TEXT}}" />
+			<RadioButton GroupName="FilterGroup" Margin="2" Content="Style" IsChecked="{Binding Filter, Converter={StaticResource FilterConverter}, ConverterParameter={x:Static dm:SearchFilter.STYLE}}" />
+			<RadioButton GroupName="FilterGroup" Margin="2" Content="Actor" IsChecked="{Binding Filter, Converter={StaticResource FilterConverter}, ConverterParameter={x:Static dm:SearchFilter.ACTOR}}" />
+			<RadioButton GroupName="FilterGroup" Margin="2" Content="Effect" IsChecked="{Binding Filter, Converter={StaticResource FilterConverter}, ConverterParameter={x:Static dm:SearchFilter.EFFECT}}" />
+		</StackPanel>
+	</StackPanel>
+</Window>

@@ -25,6 +25,7 @@
     <None Remove="Assets\B5\arrows-collapse.svg" />
     <None Remove="Assets\B5\arrows-expand.svg" />
     <None Remove="Assets\B5\braces.svg" />
+    <None Remove="Assets\B5\brush.svg" />
     <None Remove="Assets\B5\chat-left-dots.svg" />
     <None Remove="Assets\B5\clipboard-data.svg" />
     <None Remove="Assets\B5\clipboard.svg" />
@@ -39,9 +40,11 @@
     <None Remove="Assets\B5\folder-plus.svg" />
     <None Remove="Assets\B5\folder2-open.svg" />
     <None Remove="Assets\B5\hammer.svg" />
+    <None Remove="Assets\B5\palette.svg" />
     <None Remove="Assets\B5\pencil-square.svg" />
     <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\B5\scissors.svg" />
+    <None Remove="Assets\B5\search.svg" />
     <None Remove="Assets\B5\trash.svg" />
     <None Remove="Assets\B5\x-circle.svg" />
     <None Remove="Assets\Licensing.txt" />
@@ -50,6 +53,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.0.7" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.7" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
@@ -72,6 +76,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\StylesManagerWindow.axaml.cs">
+      <DependentUpon>StylesManagerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\TabItemView.axaml.cs">
       <DependentUpon>TabItemView.axaml</DependentUpon>
     </Compile>

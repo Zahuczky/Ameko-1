@@ -26,3 +26,6 @@ I would strongly recommend using either Visual Studio or Jetbrains Rider for dev
 - To build, either click the `Build` button in your IDE, or run `dotnet build` in the project root directory.
 - The final output for debugging and running is the `Ameko.Desktop` project
 - Holo reads from `LocalApplicationData/Ameko/Holo`. On Windows, this directory is in `%localappdata%`.
+
+- Ameko and Ameko.Desktop use `.NET 7.0`
+- AssCS and Holo use `.NET Standard 2.1`

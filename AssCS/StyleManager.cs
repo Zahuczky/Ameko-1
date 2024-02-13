@@ -32,6 +32,21 @@ namespace AssCS
             return s.Id;
         }
 
+        public int SetOrReplace(Style s)
+        {
+            if (StyleNames.Contains(s.Name))
+            {
+                var ov = styles.Values.Where(st => st.Name.Equals(s.Name)).ToList().First();
+                s.Id = ov.Id;
+                styles[s.Id] = s;
+                return s.Id;
+            }
+            else
+            {
+                return Set(s.Id, s);
+            }
+        }
+
         public Style? Get(string name)
         {
             foreach (Style style in styles.Values)

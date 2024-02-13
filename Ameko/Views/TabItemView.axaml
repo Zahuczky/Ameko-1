@@ -113,9 +113,6 @@
 					 FontSize="16"
 					 FontFamily="{StaticResource Migu2MRegular}"
 					 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
-				<TextBox.KeyBindings>
-					<KeyBinding Gesture="Enter" Command="{Binding NextOrAddEventCommand}" />
-				</TextBox.KeyBindings>
 			</TextBox>
 		</Grid>
 		<!-- Splitters -->

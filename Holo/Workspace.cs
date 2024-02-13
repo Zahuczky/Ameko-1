@@ -22,8 +22,12 @@ namespace Holo
     public class Workspace : INotifyPropertyChanged
     {
         private int _id;
+        private int _styleId;
         public int NextId => _id++;
-        private int _workingIndex = 0;
+        public int NextStyleId => _styleId++;
+        private int _workingIndex = -1;
+
+        private static readonly FileWrapper FALLBACK_WRAPPER = new FileWrapper(new AssCS.File(), -1, null);
 
         public ObservableCollection<Link> ReferencedFiles { get; set; }
         public ObservableCollection<FileWrapper> Files { get; set; }
@@ -31,21 +35,39 @@ namespace Holo
         private Dictionary<int, FileWrapper> loadedFiles;
         
         public Uri? FilePath { get; private set; }
-        public ObservableCollection<Style> Styles { get; private set; }
+        private ObservableCollection<Style> Styles { get; set; }
+        public ObservableCollection<string> StyleNames { get; private set; }
 
         /// <summary>
-        /// Index of the currently selected open file in the workspace
+        /// Index of the currently selected open file in the workspace.
+        /// Index is based from the ReferencedFiles, NOT LoadedFiles.
         /// </summary>
         public int WorkingIndex
         {
             get { return _workingIndex; }
-            set { _workingIndex = value; OnPropertyChanged(nameof(WorkingIndex)); }
+            set
+            {
+                _workingIndex = value;
+                OnPropertyChanged(nameof(WorkingIndex));
+                OnPropertyChanged(nameof(WorkingFile)); 
+            }
         }
 
         /// <summary>
         /// The currently selected open file
         /// </summary>
-        public FileWrapper WorkingFile => loadedFiles[WorkingIndex];
+        public FileWrapper WorkingFile
+        {
+            get
+            {
+                if (ReferencedFiles.Count >= WorkingIndex && WorkingIndex != -1)
+                {
+                    var reference = ReferencedFiles.Where(r => r.Id == WorkingIndex).Single();
+                    return loadedFiles[reference.Id];
+                }
+                return FALLBACK_WRAPPER;
+            }
+        }
 
         public FileWrapper GetFile(int id) => loadedFiles[id];
 
@@ -95,10 +117,15 @@ namespace Holo
         /// <returns>True if the file was removed</returns>
         public bool RemoveFileFromWorkspace(int id)
         {
+            var unsaved = ReferencedFiles.Where(rf => rf.Id == id).Single().Path.Equals(string.Empty);
             CloseFileInWorkspace(id);
-            var removable = ReferencedFiles.Where(f => f.Id == id).Single();
-            var removed = ReferencedFiles.Remove(removable);
-            return removed;
+            if (!unsaved)
+            {
+                var removable = ReferencedFiles.Where(f => f.Id == id).Single();
+                var removed = ReferencedFiles.Remove(removable);
+                return removed;
+            }
+            return true;
         }
 
         /// <summary>
@@ -163,8 +190,9 @@ namespace Holo
                     WorkspaceVersion = 1.0,
                     // Relative the paths going in
                     ReferencedFiles = this.ReferencedFiles.Where(f => !f.Path.Equals(string.Empty)).Select(f => Path.GetRelativePath(dir, f.Path)).ToList(),
-                    Styles = this.Styles.Select(s => new Tuple<int, string>(s.Id, s.AsAss())).ToList()
+                    Styles = this.Styles.Select(s => s.AsAss()).ToList()
                 };
+
                 using var writer = new StreamWriter(fp, false);
                 string m = TomletMain.TomlStringFrom(file);
                 writer.Write(m);
@@ -198,6 +226,7 @@ namespace Holo
                 var configContents = reader.ReadToEnd();
                 WorkspaceModel space = TomletMain.To<WorkspaceModel>(configContents);
                 _id = 0;
+                _styleId = 0;
                 ReferencedFiles.Clear();
                 Files.Clear();
                 // De-relative the paths coming out of the workspace
@@ -205,12 +234,51 @@ namespace Holo
                 {
                     ReferencedFiles.Add(rf);
                 }
-                Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(s.Item1, s.Item2)));
+                Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(NextStyleId, s)));
+                StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
                 loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
                 FilePath = filePath;
             }
             catch { throw new IOException($"An error occured while loading workspace file {filePath}"); }
+        }
+
+        /// <summary>
+        /// Add a style to the workspace
+        /// </summary>
+        /// <param name="s">Style to add</param>
+        public void AddStyle(Style s)
+        {
+            var conflicts = Styles.Where(st => st.Name.Equals(s.Name)).ToList();
+            if (conflicts.Any())
+            {
+                Styles.Remove(conflicts.First());
+            }
+            Styles.Add(s);
+            StyleNames.Add(s.Name);
+        }
+
+        /// <summary>
+        /// Remove a style from the workspace
+        /// </summary>
+        /// <param name="name">Name of the style to remove</param>
+        /// <returns>True if the style was removed</returns>
+        public bool RemoveStyle(string name)
+        {
+            var results = Styles.Where(s => s.Name.Equals(name)).ToList();
+            if (results.Any())
+            {
+                Styles.Remove(Styles.First());
+                return StyleNames.Remove(results.First().Name);
+            }
+            return false;
+        }
+
+        public Style? GetStyle(string name)
+        {
+            if (StyleNames.Contains(name))
+                return Styles.Where(s => s.Name.Equals(name)).First();
+            return null;
         }
 
         /// <summary>
@@ -222,6 +290,7 @@ namespace Holo
             loadedFiles = new Dictionary<int, FileWrapper>();
             Files = new ObservableCollection<FileWrapper>();
             Styles = new ObservableCollection<Style>();
+            StyleNames = new ObservableCollection<string>();
             AddFileToWorkspace();
             WorkingIndex = 0;
         }
@@ -248,7 +317,7 @@ namespace Holo
             /// <summary>
             /// List of workspace styles
             /// </summary>
-            public List<Tuple<int,string>>? Styles;
+            public List<string>? Styles;
         }
 
         /// <summary>

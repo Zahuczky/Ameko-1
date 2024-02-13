@@ -28,6 +28,7 @@ namespace Ameko.ViewModels
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
         public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
         public Interaction<TabItemViewModel, string?> Paste { get; }
+        public Interaction<Event, Unit> ScrollIntoViewInteraction { get; }
 
         public ICommand DeleteSelectedCommand { get; }
         public ICommand CutSelectedEventsCommand { get; }
@@ -104,6 +105,7 @@ namespace Ameko.ViewModels
             CopySelectedEvents = new Interaction<TabItemViewModel, string?>();
             CutSelectedEvents = new Interaction<TabItemViewModel, string?>();
             Paste = new Interaction<TabItemViewModel, string?>();
+            ScrollIntoViewInteraction = new Interaction<Event, Unit>();
 
             DeleteSelectedCommand = ReactiveCommand.Create(() =>
             {
@@ -112,7 +114,9 @@ namespace Ameko.ViewModels
                 Wrapper.Remove(Wrapper.SelectedEvents, Wrapper.SelectedEvent);
             });
 
-            CopySelectedEventsCommand = ReactiveCommand.Create(async () => { await CopySelectedEvents.Handle(this); });
+            CopySelectedEventsCommand = ReactiveCommand.Create(async () => { 
+                await CopySelectedEvents.Handle(this); 
+            });
             CutSelectedEventsCommand = ReactiveCommand.Create(async () => { await CutSelectedEvents.Handle(this); });
             PasteCommand = ReactiveCommand.Create(async () => { await Paste.Handle(this); });
             DuplicateSelectedEventsCommand = ReactiveCommand.Create(Wrapper.DuplicateSelected);
@@ -124,7 +128,7 @@ namespace Ameko.ViewModels
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
-            Wrapper.Select([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
+            Wrapper.Select(new List<Event>() { Wrapper.File.EventManager.Head }, Wrapper.File.EventManager.Head);
             SelectedEvent = Wrapper.File.EventManager.Head;
         }
     }

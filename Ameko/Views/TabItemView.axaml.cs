@@ -1,5 +1,6 @@
 using Ameko.ViewModels;
 using AssCS;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
@@ -17,6 +18,8 @@ namespace Ameko.Views
 {
     public partial class TabView : ReactiveUserControl<TabItemViewModel>
     {
+        private List<TabItemViewModel> previousVMs;
+
         private async Task DoCopySelectedEventAsync(InteractionContext<TabItemViewModel, string?> interaction)
         {
             var window = TopLevel.GetTopLevel(this);
@@ -73,32 +76,49 @@ namespace Ameko.Views
             interaction.SetOutput(result);
         }
 
+        private void DoScrollIntoView(InteractionContext<Event, Unit> interaction)
+        {
+            if (interaction == null) return;
+            eventsGrid.SelectedItem = interaction.Input;
+            eventsGrid.ScrollIntoView(interaction.Input, null);
+            interaction.SetOutput(Unit.Default);
+        }
+
         public TabView()
         {
             InitializeComponent();
+            previousVMs = new List<TabItemViewModel>();
 
             this.WhenActivated((CompositeDisposable disposables) =>
             {
-                if (ViewModel != null)
+                this.GetObservable(ViewModelProperty).WhereNotNull()
+                .Subscribe(vm =>
                 {
-                    ViewModel.CopySelectedEvents.RegisterHandler(DoCopySelectedEventAsync);
-                    ViewModel.CutSelectedEvents.RegisterHandler(DoCutSelectedEventAsync);
-                    ViewModel.Paste.RegisterHandler(DoPasteAsync);
+                    // Skip if already subscribed
+                    if (previousVMs.Contains(vm)) return;
+                    previousVMs.Add(vm);
+
+                    vm.CopySelectedEvents.RegisterHandler(DoCopySelectedEventAsync);
+                    vm.CutSelectedEvents.RegisterHandler(DoCutSelectedEventAsync);
+                    vm.Paste.RegisterHandler(DoPasteAsync);
+                    vm.ScrollIntoViewInteraction.RegisterHandler(DoScrollIntoView);
 
                     startBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                     endBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
-                    eventsGrid.SelectionChanged += (o, e) =>
-                    {
-                        List<Event> list = eventsGrid.SelectedItems.Cast<Event>().ToList();
-                        Event recent = (Event)eventsGrid.SelectedItem;
-                        ViewModel?.UpdateEventSelection(list, recent);
-                        eventsGrid.ScrollIntoView(eventsGrid.SelectedItem, null);
-                    };
-                }
-
-                Disposable.Create(() => { }).DisposeWith(disposables);
+                    eventsGrid.SelectionChanged += EventsGrid_SelectionChanged;
+                })
+                .DisposeWith(disposables);
             });
+        }
+
+        private void EventsGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            List<Event> list = eventsGrid.SelectedItems.Cast<Event>().ToList();
+            Event recent = (Event)eventsGrid.SelectedItem;
+            ViewModel?.UpdateEventSelection(list, recent);
+            eventsGrid.ScrollIntoView(eventsGrid.SelectedItem, null);
+            editBox.Focus();
         }
 
         private void TextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
@@ -110,6 +130,10 @@ namespace Ameko.Views
                     int idx = editBox.CaretIndex;
                     editBox.Text = editBox.Text?.Insert(idx, "\\N");
                     editBox.CaretIndex += 2;
+                } else
+                {
+                    ViewModel?.NextOrAddEventCommand.Execute(Unit.Default);
+                    editBox.Focus();
                 }
             }
         }

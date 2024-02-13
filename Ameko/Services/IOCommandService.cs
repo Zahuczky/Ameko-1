@@ -25,6 +25,16 @@ namespace Ameko.Services
         }
 
         /// <summary>
+        /// Display the Styles Manager
+        /// </summary>
+        /// <param name="interaction"></param>
+        public static async void DisplayStylesManager(Interaction<StylesManagerViewModel, StylesManagerViewModel?> interaction, MainViewModel vm)
+        {
+            var manager = new StylesManagerViewModel();
+            await interaction.Handle(manager);
+        }
+
+        /// <summary>
         /// Display the Open Subtitle file dialog
         /// </summary>
         /// <param name="interaction"></param>
