@@ -10,30 +10,141 @@ namespace AssCS
     /// <summary>
     /// Represents a style that can be applied to an event
     /// </summary>
-    public class Style : IAssComponent, ICommitable
+    public class Style : IAssComponent, ICommitable, INotifyPropertyChanged
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Font {  get; set; }
-        public double FontSize { get; set; }
-        public Color Primary {  get; set; }
-        public Color Secondary { get; set; }
-        public Color Outline { get; set; }
-        public Color Shadow { get; set; }
-        public bool Bold { get; set; }
-        public bool Italic { get; set; }
-        public bool Underline { get; set; }
-        public bool Strikeout { get; set; }
-        public double ScaleX { get; set; }
-        public double ScaleY { get; set; }
-        public double Spacing {  get; set; }
-        public double Angle { get; set; }
-        public int BorderStyle { get; set; }
-        public double BorderThickness { get; set; }
-        public double ShadowDistance { get; set; }
-        public int Alignment { get; set; }
-        public Margins Margins { get; set; }
-        int Encoding { get; set; }
+        private int _id;
+        private string _name;
+        private string _font;
+        private double _fontSize;
+        private Color _primary;
+        private Color _secondary;
+        private Color _outline;
+        private Color _shadow;
+        private bool _bold;
+        private bool _italic;
+        private bool _underline;
+        private bool _strikeout;
+        private double _scaleX;
+        private double _scaleY;
+        private double _spacing;
+        private double _angle;
+        private int _borderStyle;
+        private double _borderThickness;
+        private double _shadowDistance;
+        private int _alignment;
+        private Margins _margins;
+        private int _encoding;
+
+        public int Id
+        {
+            get => _id;
+            set { _id = value; OnPropertyChanged(nameof(Id)); }
+        }
+        public string Name
+        {
+            get => _name;
+            set { _name = value; OnPropertyChanged(nameof(Name)); }
+        }
+        public string Font
+        {
+            get => _font;
+            set { _font = value; OnPropertyChanged(nameof(Font)); }
+        }
+        public double FontSize
+        {
+            get => _fontSize;
+            set { _fontSize = value; OnPropertyChanged(nameof(FontSize)); }
+        }
+        public Color Primary
+        {
+            get => _primary;
+            set { _primary = value; OnPropertyChanged(nameof(Primary)); }
+        }
+        public Color Secondary
+        {
+            get => _secondary;
+            set { _secondary = value; OnPropertyChanged(nameof(Secondary)); }
+        }
+        public Color Outline
+        {
+            get => _outline;
+            set { _outline = value; OnPropertyChanged(nameof(Outline)); }
+        }
+        public Color Shadow
+        {
+            get => _shadow;
+            set { _shadow = value; OnPropertyChanged(nameof(Shadow)); }
+        }
+        public bool Bold
+        {
+            get => _bold;
+            set { _bold = value; OnPropertyChanged(nameof(Bold)); }
+        }
+        public bool Italic
+        {
+            get => _italic;
+            set { _italic = value; OnPropertyChanged(nameof(Italic)); }
+        }
+        public bool Underline
+        {
+            get => _underline;
+            set { _underline = value; OnPropertyChanged(nameof(Underline)); }
+        }
+        public bool Strikeout
+        {
+            get => _strikeout;
+            set { _strikeout = value; OnPropertyChanged(nameof(Strikeout)); }
+        }
+        public double ScaleX
+        {
+            get => _scaleX;
+            set { _scaleX = value; OnPropertyChanged(nameof(ScaleX)); }
+        }
+        public double ScaleY
+        {
+            get => _scaleY;
+            set { _scaleY = value; OnPropertyChanged(nameof(ScaleY)); }
+        }
+        public double Spacing
+        {
+            get => _spacing;
+            set { _spacing = value; OnPropertyChanged(nameof(Spacing)); }
+        }
+        public double Angle
+        {
+            get => _angle;
+            set { _angle = value; OnPropertyChanged(nameof(Angle)); }
+        }
+        public int BorderStyle
+        {
+            get => _borderStyle;
+            set { _borderStyle = value; OnPropertyChanged(nameof(BorderStyle)); }
+        }
+        public double BorderThickness
+        {
+            get => _borderThickness;
+            set { _borderThickness = value; OnPropertyChanged(nameof(BorderThickness)); }
+        }
+        public double ShadowDistance
+        {
+            get => _shadowDistance;
+            set { _shadowDistance = value; OnPropertyChanged(nameof(ShadowDistance)); }
+        }
+        public int Alignment
+        {
+            get => _alignment;
+            set { _alignment = value; OnPropertyChanged(nameof(Alignment)); }
+        }
+        public Margins Margins
+        {
+            get => _margins;
+            set { _margins = value; OnPropertyChanged(nameof(Margins)); }
+        }
+        public int Encoding
+        {
+            get => _encoding;
+            set { _encoding = value; OnPropertyChanged(nameof(Encoding)); }
+        }
 
         /// <summary>
         /// Bootstrap this style from its representation in a file
@@ -86,59 +197,65 @@ namespace AssCS
 
         public Style (int id, Style s)
         {
-            Id = id;
-            Name = s.Name;
-            Font = s.Font;
-            FontSize = s.FontSize;
-            Primary = new Color(s.Primary);
-            Secondary = new Color(s.Secondary);
-            Outline = new Color(s.Outline);
-            Shadow = new Color(s.Shadow);
-            Bold = s.Bold;
-            Italic = s.Italic;
-            Underline = s.Underline;
-            Strikeout = s.Strikeout;
-            ScaleX = s.ScaleX;
-            ScaleY = s.ScaleY;
-            Spacing = s.Spacing;
-            Angle = s.Angle;
-            BorderStyle = s.BorderStyle;
-            BorderThickness = s.BorderThickness;
-            ShadowDistance = s.ShadowDistance;
-            Alignment = s.Alignment;
-            Margins = new Margins(s.Margins);
-            Encoding = s.Encoding;
+            _id = id;
+            _name = s.Name;
+            _font = s.Font;
+            _fontSize = s.FontSize;
+            _primary = new Color(s.Primary);
+            _secondary = new Color(s.Secondary);
+            _outline = new Color(s.Outline);
+            _shadow = new Color(s.Shadow);
+            _bold = s.Bold;
+            _italic = s.Italic;
+            _underline = s.Underline;
+            _strikeout = s.Strikeout;
+            _scaleX = s.ScaleX;
+            _scaleY = s.ScaleY;
+            _spacing = s.Spacing;
+            _angle = s.Angle;
+            _borderStyle = s.BorderStyle;
+            _borderThickness = s.BorderThickness;
+            _shadowDistance = s.ShadowDistance;
+            _alignment = s.Alignment;
+            _margins = new Margins(s.Margins);
+            _encoding = s.Encoding;
         }
 
         public Style(int id)
         {
-            Id = id;
-            Name = "Default";
-            Font = "Arial";
-            FontSize = 48.0;
-            Primary = new Color(255, 255, 255);
-            Secondary = new Color(255, 0, 0); // Red
-            Outline = new Color(0, 0, 0);
-            Shadow = new Color(0, 0, 0);
-            Bold = false;
-            Italic = false;
-            Underline = false;
-            Strikeout = false;
-            ScaleX = 100.0;
-            ScaleY = 100.0;
-            Spacing = 0.0;
-            Angle = 0.0;
-            BorderStyle = 1;
-            BorderThickness = 2.0;
-            ShadowDistance = 2.0;
-            Alignment = 2;
-            Margins = new Margins(0, 0, 0);
-            Encoding = 1;
+            _id = id;
+            _name = "Default";
+            _font = "Arial";
+            _fontSize = 48.0;
+            _primary = new Color(255, 255, 255);
+            _secondary = new Color(255, 0, 0); // Red
+            _outline = new Color(0, 0, 0);
+            _shadow = new Color(0, 0, 0);
+            _bold = false;
+            _italic = false;
+            _underline = false;
+            _strikeout = false;
+            _scaleX = 100.0;
+            _scaleY = 100.0;
+            _spacing = 0.0;
+            _angle = 0.0;
+            _borderStyle = 1;
+            _borderThickness = 2.0;
+            _shadowDistance = 2.0;
+            _alignment = 2;
+            _margins = new Margins(0, 0, 0);
+            _encoding = 1;
         }
 
         public Style(int id, string data) : this(id)
         {
             FromAss(data);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
