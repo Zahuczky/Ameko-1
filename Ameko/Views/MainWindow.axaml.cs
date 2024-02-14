@@ -1,10 +1,12 @@
 ﻿using Ameko.ViewModels;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Holo;
 using ReactiveUI;
 using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
     private SearchWindow _searchWindow;
     private bool _isSearching = false;
+    private static string[] DragDropExtensions = { ".ass" };
 
     public void DoShowSearchWindow(InteractionContext<SearchWindowViewModel, string?> interaction)
     {
@@ -135,6 +138,19 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             _isSearching = false;
             e.Cancel = true; 
         };
+
+        AddHandler(DragDrop.DropEvent, (s, e) =>
+        {
+            if (e.Data.GetFiles() is { } files && ViewModel != null)
+            {
+                foreach (var file in files)
+                {
+                    var lp = file.Path.LocalPath;
+                    if (DragDropExtensions.Contains(System.IO.Path.GetExtension(lp)))
+                        HoloContext.Instance.Workspace.AddFileToWorkspace(file.Path);
+                }
+            }
+        });
 
         this.WhenActivated((CompositeDisposable disposables) =>
         {

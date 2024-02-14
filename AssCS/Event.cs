@@ -335,6 +335,7 @@ namespace AssCS
             if (obj == null) return false;
             if (!obj.GetType().Equals(typeof(Event))) return false;
             Event e = (Event)obj;
+            if (Style == null || e.Style == null) return false;
             return Id == e.Id
                 && Comment == e.Comment
                 && Layer == e.Layer

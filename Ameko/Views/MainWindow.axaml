@@ -20,5 +20,5 @@
         <KeyBinding Gesture="Ctrl+Q" Command="{Binding QuitCommand}" />
 	</Window.KeyBindings>
 	
-	<views:MainView />
+	<views:MainView DragDrop.AllowDrop="True" />
 </Window>
