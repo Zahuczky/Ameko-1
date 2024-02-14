@@ -27,6 +27,8 @@ namespace Holo
         public int NextStyleId => _styleId++;
         private int _workingIndex = -1;
 
+        private int _cps;
+
         private static readonly FileWrapper FALLBACK_WRAPPER = new FileWrapper(new AssCS.File(), -1, null);
 
         public ObservableCollection<Link> ReferencedFiles { get; set; }
@@ -37,6 +39,15 @@ namespace Holo
         public Uri? FilePath { get; private set; }
         private ObservableCollection<Style> Styles { get; set; }
         public ObservableCollection<string> StyleNames { get; private set; }
+
+        /// <summary>
+        /// Workspace CPS threshold
+        /// </summary>
+        public int Cps
+        {
+            get => _cps;
+            set { _cps = value; OnPropertyChanged(nameof(Cps)); }
+        }
 
         /// <summary>
         /// Index of the currently selected open file in the workspace.
@@ -190,7 +201,8 @@ namespace Holo
                     WorkspaceVersion = 1.0,
                     // Relative the paths going in
                     ReferencedFiles = this.ReferencedFiles.Where(f => !f.Path.Equals(string.Empty)).Select(f => Path.GetRelativePath(dir, f.Path)).ToList(),
-                    Styles = this.Styles.Select(s => s.AsAss()).ToList()
+                    Styles = this.Styles.Select(s => s.AsAss()).ToList(),
+                    Cps = this.Cps
                 };
 
                 using var writer = new StreamWriter(fp, false);
@@ -236,6 +248,7 @@ namespace Holo
                 }
                 Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(NextStyleId, s)));
                 StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
+                Cps = space.Cps;
                 loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
                 FilePath = filePath;
@@ -291,6 +304,7 @@ namespace Holo
             Files = new ObservableCollection<FileWrapper>();
             Styles = new ObservableCollection<Style>();
             StyleNames = new ObservableCollection<string>();
+            Cps = 0;
             AddFileToWorkspace();
             WorkingIndex = 0;
         }
@@ -318,6 +332,10 @@ namespace Holo
             /// List of workspace styles
             /// </summary>
             public List<string>? Styles;
+            /// <summary>
+            /// CPS threshold for this workspace
+            /// </summary>
+            public int Cps;
         }
 
         /// <summary>
