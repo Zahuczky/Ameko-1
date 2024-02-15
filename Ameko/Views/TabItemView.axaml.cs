@@ -52,8 +52,6 @@ namespace Ameko.Views
 
         private async Task DoPasteAsync(InteractionContext<TabItemViewModel, string?> interaction)
         {
-            // TODO: Distinguish between lines and raw text
-
             var window = TopLevel.GetTopLevel(this);
             var file = interaction.Input.Wrapper.File;
             var selectedId = interaction.Input.Wrapper.SelectedEvent?.Id ?? -1;
@@ -69,7 +67,18 @@ namespace Ameko.Views
                 {
                     if (linedata.Trim().Equals(string.Empty)) continue;
 
-                    var line = new Event(file.EventManager.NextId, linedata.Trim());
+                    Event line;
+                    if (linedata.StartsWith("Dialogue:") || linedata.StartsWith("Comment:"))
+                    {
+                        line = new Event(file.EventManager.NextId, linedata.Trim());
+                    } else
+                    {
+                        line = new Event(file.EventManager.NextId)
+                        {
+                            Text = linedata
+                        };
+                    }
+
                     selectedId = file.EventManager.AddAfter(selectedId, line);
                 }
             }
