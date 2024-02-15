@@ -27,7 +27,7 @@ namespace Ameko.ViewModels
 
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
         public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
-        public Interaction<TabItemViewModel, string?> Paste { get; }
+        public Interaction<TabItemViewModel, string[]?> Paste { get; }
         public Interaction<Event, Unit> ScrollIntoViewInteraction { get; }
 
         public ICommand DeleteSelectedCommand { get; }
@@ -104,7 +104,7 @@ namespace Ameko.ViewModels
 
             CopySelectedEvents = new Interaction<TabItemViewModel, string?>();
             CutSelectedEvents = new Interaction<TabItemViewModel, string?>();
-            Paste = new Interaction<TabItemViewModel, string?>();
+            Paste = new Interaction<TabItemViewModel, string[]?>();
             ScrollIntoViewInteraction = new Interaction<Event, Unit>();
 
             DeleteSelectedCommand = ReactiveCommand.Create(() =>
@@ -118,7 +118,7 @@ namespace Ameko.ViewModels
                 await CopySelectedEvents.Handle(this); 
             });
             CutSelectedEventsCommand = ReactiveCommand.Create(async () => { await CutSelectedEvents.Handle(this); });
-            PasteCommand = ReactiveCommand.Create(async () => { await Paste.Handle(this); });
+            PasteCommand = ReactiveCommand.Create(() => IOCommandService.PasteLines(Paste, this));
             DuplicateSelectedEventsCommand = ReactiveCommand.Create(Wrapper.DuplicateSelected);
             InsertBeforeCommand = ReactiveCommand.Create(Wrapper.InsertBeforeSelected);
             InsertAfterCommand = ReactiveCommand.Create(Wrapper.InsertAfterSelected);

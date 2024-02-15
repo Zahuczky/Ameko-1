@@ -1,5 +1,6 @@
 ﻿using Ameko.DataModels;
 using Ameko.ViewModels;
+using AssCS;
 using AssCS.IO;
 using Holo;
 using ReactiveUI;
@@ -123,6 +124,34 @@ namespace Ameko.Services
                 uri = workspace.FilePath;
             }
             workspace.WriteWorkspaceFile(uri);
+        }
+
+        public static async void PasteLines(Interaction<TabItemViewModel, string[]?> interaction, TabItemViewModel vm)
+        {
+            string[] lines = await interaction.Handle(vm);
+            var file = vm.Wrapper.File;
+            var selectedId = vm.Wrapper.SelectedEvent?.Id ?? -1;
+            if (selectedId == -1) return;
+
+            foreach (var linedata in lines)
+            {
+                if (linedata.Trim().Equals(string.Empty)) continue;
+
+                Event line;
+                if (linedata.StartsWith("Dialogue:") || linedata.StartsWith("Comment:"))
+                {
+                    line = new Event(file.EventManager.NextId, linedata.Trim());
+                }
+                else
+                {
+                    line = new Event(file.EventManager.NextId)
+                    {
+                        Text = linedata
+                    };
+                }
+
+                selectedId = file.EventManager.AddAfter(selectedId, line);
+            }
         }
     }
 }

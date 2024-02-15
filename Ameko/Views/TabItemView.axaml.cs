@@ -50,39 +50,22 @@ namespace Ameko.Views
             interaction.SetOutput(result);
         }
 
-        private async Task DoPasteAsync(InteractionContext<TabItemViewModel, string?> interaction)
+        private async Task DoPasteAsync(InteractionContext<TabItemViewModel, string[]?> interaction)
         {
             var window = TopLevel.GetTopLevel(this);
-            var file = interaction.Input.Wrapper.File;
-            var selectedId = interaction.Input.Wrapper.SelectedEvent?.Id ?? -1;
-            if (window == null || selectedId == -1)
+            if (window == null)
             {
-                interaction.SetOutput("");
+                interaction.SetOutput([]);
                 return;
             }
             var result = await window.Clipboard!.GetTextAsync();
             if (result != null)
             {
-                foreach (var linedata in result.Split("\n"))
-                {
-                    if (linedata.Trim().Equals(string.Empty)) continue;
-
-                    Event line;
-                    if (linedata.StartsWith("Dialogue:") || linedata.StartsWith("Comment:"))
-                    {
-                        line = new Event(file.EventManager.NextId, linedata.Trim());
-                    } else
-                    {
-                        line = new Event(file.EventManager.NextId)
-                        {
-                            Text = linedata
-                        };
-                    }
-
-                    selectedId = file.EventManager.AddAfter(selectedId, line);
-                }
+                interaction.SetOutput(result.Split("\n"));
+                return;
             }
-            interaction.SetOutput(result);
+            else
+                interaction.SetOutput([]);
         }
 
         private void DoScrollIntoView(InteractionContext<Event, Unit> interaction)
