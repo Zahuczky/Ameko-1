@@ -1,3 +1,4 @@
+using Ameko.DataModels;
 using Ameko.ViewModels;
 using AssCS;
 using Avalonia;
@@ -68,6 +69,21 @@ namespace Ameko.Views
                 interaction.SetOutput([]);
         }
 
+        private async Task DoShowPasteOverDialogAsync(InteractionContext<PasteOverWindowViewModel, PasteOverField> interaction)
+        {
+            var window = TopLevel.GetTopLevel(this);
+            if (window == null)
+            {
+                interaction.SetOutput(PasteOverField.None);
+                return;
+            }
+            var dialog = new PasteOverWindow();
+            dialog.DataContext = interaction.Input;
+            var result = await dialog.ShowDialog<PasteOverField>((Window)window);
+            // thonk
+            interaction.SetOutput(interaction.Input.Fields);
+        }
+
         private void DoScrollIntoView(InteractionContext<Event, Unit> interaction)
         {
             if (interaction == null) return;
@@ -94,6 +110,7 @@ namespace Ameko.Views
                     vm.CutSelectedEvents.RegisterHandler(DoCutSelectedEventAsync);
                     vm.Paste.RegisterHandler(DoPasteAsync);
                     vm.ScrollIntoViewInteraction.RegisterHandler(DoScrollIntoView);
+                    vm.ShowPasteOverFieldDialog.RegisterHandler(DoShowPasteOverDialogAsync);
 
                     startBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                     endBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);

@@ -153,5 +153,81 @@ namespace Ameko.Services
                 selectedId = file.EventManager.AddAfter(selectedId, line);
             }
         }
+
+        public static async void PasteOverLines(Interaction<TabItemViewModel, string[]?> pasteInteraction,
+                                                Interaction<PasteOverWindowViewModel, PasteOverField> fieldsInteraction, TabItemViewModel vm)
+        {
+            var powvm = new PasteOverWindowViewModel();
+            PasteOverField fields = await fieldsInteraction.Handle(powvm);
+            if (fields == PasteOverField.None) return;
+
+            string[] lines = await pasteInteraction.Handle(vm);
+            var file = vm.Wrapper.File;
+            var selectedId = vm.Wrapper.SelectedEvent?.Id ?? -1;
+            if (selectedId == -1) return;
+
+            Event? oldLine = file.EventManager.Get(selectedId);
+
+            foreach (var linedata in lines)
+            {
+                if (linedata.Trim().Equals(string.Empty)) continue;
+                if (!linedata.StartsWith("Comment:") && !linedata.StartsWith("Dialogue:")) return;
+                var newLine = new Event(-1, linedata.Trim());
+
+                if (file.EventManager.Has(selectedId)) oldLine = file.EventManager.Get(selectedId);
+                else
+                {
+                    var cleanEvent = new Event(file.EventManager.NextId);
+                    file.EventManager.AddAfter(oldLine.Id, cleanEvent);
+                    oldLine = cleanEvent;
+                }
+
+                foreach (PasteOverField field in Helpers.GetFlags(fields))
+                {
+                    switch (field)
+                    {
+                        case PasteOverField.Comment:
+                            oldLine.Comment = newLine.Comment;
+                            break;
+                        case PasteOverField.Layer:
+                            oldLine.Layer = newLine.Layer;
+                            break;
+                        case PasteOverField.StartTime:
+                            oldLine.Start = newLine.Start;
+                            break;
+                        case PasteOverField.EndTime:
+                            oldLine.End = newLine.End;
+                            break;
+                        case PasteOverField.Actor:
+                            oldLine.Actor = newLine.Actor;
+                            break;
+                        case PasteOverField.Style:
+                            oldLine.Style = newLine.Style;
+                            break;
+                        case PasteOverField.MarginLeft:
+                            oldLine.Margins.Left = newLine.Margins.Left;
+                            break;
+                        case PasteOverField.MarginRight:
+                            oldLine.Margins.Right = newLine.Margins.Right;
+                            break;
+                        case PasteOverField.MarginVertical:
+                            oldLine.Margins.Vertical = newLine.Margins.Vertical;
+                            break;
+                        case PasteOverField.Effect:
+                            oldLine.Effect = newLine.Effect;
+                            break;
+                        case PasteOverField.Text:
+                            oldLine.Text = newLine.Text;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                var next = file.EventManager.GetAfter(oldLine.Id);
+                if (next != null) selectedId = next.Id;
+                else selectedId = -1;
+            }
+        }
     }
 }

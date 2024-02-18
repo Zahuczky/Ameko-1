@@ -13,7 +13,7 @@ namespace Ameko.Views
         {
             var editor = new StyleEditorWindow();
             editor.DataContext = interaction.Input;
-            editor.Show();
+            editor.ShowDialog(this);
             interaction.SetOutput(null);
         }
 

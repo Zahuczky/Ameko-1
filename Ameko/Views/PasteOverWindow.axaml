@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="325"
+		xmlns:converters="using:Ameko.Converters"
+		xmlns:vm="using:Ameko.ViewModels"
+		xmlns:dm="using:Ameko.DataModels"
+        x:Class="Ameko.Views.PasteOverWindow"
+		x:DataType="vm:PasteOverWindowViewModel"
+		Width="300"
+		Height="325"
+        Topmost="True"
+		CanResize="False"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="Paste Over">
+	<Window.Resources>
+		<converters:PasteOverFieldConverter x:Key="FieldConverter" />
+	</Window.Resources>
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Top">
+			<Label Content="Select fields to paste over:" />
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.Comment}}" Name="commentBox">Comment</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.Layer}}" Name="layerBox">Layer</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.StartTime}}" Name="startBox">Start Time</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.EndTime}}" Name="endBox">End Time</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.Style}}" Name="styleBox">Style</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.Actor}}" Name="actorBox">Actor</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.MarginLeft}}" Name="leftBox">Margin Left</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.MarginRight}}" Name="rightBox">Margin Right</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.MarginVertical}}" Name="verticalBox">Margin Vertical</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.Effect}}" Name="effectBox">Effect</CheckBox>
+			<CheckBox Margin="2" IsChecked="{Binding Fields, Converter={StaticResource FieldConverter}, ConverterParameter={x:Static dm:PasteOverField.Text}}" Name="textBox">Text</CheckBox>
+		</StackPanel>
+		<Grid DockPanel.Dock="Bottom"
+			  ColumnDefinitions="*, *, *, *"
+			  RowDefinitions="auto, auto">
+			<Button Grid.Column="0" Grid.Row="0" Margin="2" Content="All" Click="AllButton_Click" />
+			<Button Grid.Column="1" Grid.Row="0" Margin="2" Content="None" Click="NoneButton_Click" />
+			<Button Grid.Column="2" Grid.Row="0" Margin="2" Content="Times" Click="TimeButton_Click" />
+			<Button Grid.Column="3" Grid.Row="0" Margin="2" Content="Text" Click="TextButton_Click" />
+			<Button Grid.Column="3" Grid.Row="1" Margin="2" Content="OK" Command="{Binding SelectFieldsCommand}" />
+		</Grid>
+	</DockPanel>
+</Window>

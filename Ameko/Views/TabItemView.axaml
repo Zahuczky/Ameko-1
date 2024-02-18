@@ -200,7 +200,7 @@
 							<Svg Path="avares://Ameko/Assets/B5/clipboard.svg" />
 						</MenuItem.Icon>
 					</MenuItem>
-					<MenuItem Header="Paste Over..." IsEnabled="False">
+					<MenuItem Header="Paste Over..." Command="{Binding PasteOverCommand}">
 						<MenuItem.Icon>
 							<Svg Path="avares://Ameko/Assets/B5/clipboard-data.svg" />
 						</MenuItem.Icon>
