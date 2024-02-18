@@ -15,7 +15,7 @@
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}">
 	<Window.Resources>
-		<converters:SearchFilterConverter x:Key="FilterConverter" />
+		<converters:EnumConverter x:Key="FilterConverter" />
 	</Window.Resources>
 	<StackPanel>
 		<Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto">

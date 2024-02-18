@@ -1,4 +1,5 @@
 using Ameko.DataModels;
+using Ameko.Services;
 using Ameko.ViewModels;
 using AssCS;
 using Avalonia;
@@ -112,8 +113,8 @@ namespace Ameko.Views
                     vm.ScrollIntoViewInteraction.RegisterHandler(DoScrollIntoView);
                     vm.ShowPasteOverFieldDialog.RegisterHandler(DoShowPasteOverDialogAsync);
 
-                    startBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
-                    endBox.AddHandler(InputElement.KeyDownEvent, TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                    startBox.AddHandler(InputElement.KeyDownEvent, Helpers.TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+                    endBox.AddHandler(InputElement.KeyDownEvent, Helpers.TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
                     eventsGrid.SelectionChanged += EventsGrid_SelectionChanged;
                 })
@@ -145,81 +146,6 @@ namespace Ameko.Views
                     editBox.Focus();
                 }
             }
-        }
-
-        /// <summary>
-        /// This (pre)override is needed to capture [BACKSPACE] and the arrow keys
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TimeBox_PreKeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
-        {
-            if (sender == null) return;
-            var box = (TextBox)sender;
-            if (box.Text == null) return;
-
-            // TODO: cut/copy/insert handling
-
-            // Movement Keys
-            switch (e.Key)
-            {
-                case Avalonia.Input.Key.Back:
-                case Avalonia.Input.Key.Left:
-                case Avalonia.Input.Key.Down:
-                    box.CaretIndex -= 1;
-                    e.Handled = true;
-                    return;
-                case Avalonia.Input.Key.Home:
-                    box.CaretIndex = 0;
-                    e.Handled = true;
-                    return;
-                case Avalonia.Input.Key.End:
-                    box.CaretIndex = box.Text.Length;
-                    e.Handled = true;
-                    return;
-                case Avalonia.Input.Key.Right:
-                case Avalonia.Input.Key.Up:
-                    box.CaretIndex += 1;
-                    e.Handled = true;
-                    return;
-                default:
-                    break;
-            }
-
-            // Discard if at the end
-            if (box.CaretIndex >= box.Text.Length)
-            {
-                e.Handled = true;
-                return;
-            }
-
-            // Discard if invalid character
-            var key = Convert.ToChar(e.KeySymbol ?? "a");
-            if ((key < '0' || key > '9') && key != ';' && key != '.' && key != ',' && key != ':')
-            {
-                e.Handled = true;
-                return;
-            }
-
-            // Move forward if at punctuation
-            var next = box.Text?[box.CaretIndex] ?? '-';
-            if (next == ':' || next == '.' || next == ',')
-            {
-                box.CaretIndex += 1;
-            }
-
-            // Nothing more needed for punctuation
-            if (key == ';' || key == '.' || key == ',' || key == ':')
-            {
-                e.Handled = true;
-                return;
-            }
-
-            box.Text = box.Text?.Remove(box.CaretIndex, 1)
-                .Insert(box.CaretIndex, Convert.ToString(key));
-            box.CaretIndex += 1;
-            e.Handled = true;
-            return;
         }
     }
 }

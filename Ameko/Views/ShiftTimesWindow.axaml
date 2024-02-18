@@ -1,0 +1,90 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="350"
+        x:Class="Ameko.Views.ShiftTimesWindow"
+		xmlns:vm="using:Ameko.ViewModels"
+		xmlns:dm="using:Ameko.DataModels"
+		xmlns:converters="using:Ameko.Converters"
+		x:DataType="vm:ShiftTimesWindowViewModel"
+		Topmost="True"
+		CanResize="False"
+		Width="300"
+		Height="350"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="Shift Times">
+	<Window.Resources>
+		<converters:EnumConverter x:Key="EnumConverter" />
+	</Window.Resources>
+	<StackPanel>
+		<HeaderedContentControl Header="Shift by" Background="Black">
+			<Grid ColumnDefinitions="*, *" RowDefinitions="auto, auto, auto">
+				<RadioButton Grid.Column="0" Margin="2" Grid.Row="0" GroupName="ShiftType" Content="Time"
+							 IsChecked="{Binding ShiftTimesType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesType.TIME}}"/>
+				<TextBox Name="timeBox"
+						 AcceptsReturn="False"
+						 Grid.Column="1"
+						 Grid.Row="0"
+						 Text="{Binding ShiftTime.UpdatableText}"
+						 Margin="2" />
+				<RadioButton Grid.Column="0" Margin="2" Grid.Row="1" GroupName="ShiftType" IsEnabled="False" Content="Frames" 
+							 IsChecked="{Binding ShiftTimesType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesType.FRAMES}}"/>
+				<TextBox Name="frameBox"
+						 AcceptsReturn="False"
+						 Grid.Column="1"
+						 Grid.Row="1"
+						 Margin="2"
+						 IsEnabled="False"
+						 Text="0" />
+				<RadioButton Grid.Column="0" Margin="2" Grid.Row="2" GroupName="ShiftDirection" Content="Forward" 
+							 IsChecked="{Binding ShiftTimesDirection, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesDirection.FORWARD}}"/>
+				<RadioButton Grid.Column="1" Margin="2" Grid.Row="2" GroupName="ShiftDirection" Content="Backward"
+							 IsChecked="{Binding ShiftTimesDirection, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesDirection.BACKWARD}}"/>
+			</Grid>
+		</HeaderedContentControl>
+		<HeaderedContentControl Header="Affect" Background="Black">
+			<StackPanel>
+				<RadioButton Margin="2" GroupName="Affect" Content="All rows"
+							 IsChecked="{Binding ShiftTimesFilter, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesFilter.ALL_ROWS}}"/>
+				<RadioButton Margin="2" GroupName="Affect" Content="Selected rows"
+							 IsChecked="{Binding ShiftTimesFilter, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesFilter.SELECTED_ROWS}}"/>
+			</StackPanel>
+		</HeaderedContentControl>
+		<HeaderedContentControl Header="Times" Background="Black">
+			<StackPanel>
+				<RadioButton Margin="2" GroupName="Times" Content="Start and End times"
+							 IsChecked="{Binding ShiftTimesTarget, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesTarget.BOTH}}"/>
+				<RadioButton Margin="2" GroupName="Times" Content="Start times"
+							 IsChecked="{Binding ShiftTimesTarget, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesTarget.START}}"/>
+				<RadioButton Margin="2" GroupName="Times" Content="End times"
+							 IsChecked="{Binding ShiftTimesTarget, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesTarget.END}}"/>
+			</StackPanel>
+		</HeaderedContentControl>
+			<Button Margin="2">OK</Button>
+	</StackPanel>
+
+	<Window.Styles>
+		<Style Selector="HeaderedContentControl">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border>
+							<StackPanel>
+								<ContentPresenter FontWeight="Bold"
+												  Margin="0 10 0 2"
+												  Content="{TemplateBinding Header}" />
+								<Border BorderBrush="{TemplateBinding Background}"
+										BorderThickness="2"
+										CornerRadius="5">
+									<ContentPresenter Content="{TemplateBinding Content}"
+													  Padding="5"/>
+								</Border>
+							</StackPanel>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Styles>
+</Window>

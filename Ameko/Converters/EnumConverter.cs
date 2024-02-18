@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Ameko.Converters
 {
-    public class SearchFilterConverter : IValueConverter
+    public class EnumConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
