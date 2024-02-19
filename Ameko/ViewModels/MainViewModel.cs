@@ -100,14 +100,9 @@ public class MainViewModel : ViewModelBase
     private void GenerateScriptsMenu()
     {
         ScriptMenuItems.Clear();
-        var scriptSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/code-slash.svg"))
-        {
-            Path = new Uri("avares://Ameko/Assets/B5/code-slash.svg").LocalPath
-        };
-        var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg"))
-        {
-            Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath
-        };
+        var scriptSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/code-slash.svg")) { Path = new Uri("avares://Ameko/Assets/B5/code-slash.svg").LocalPath };
+        var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg")) { Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath };
+        var dcSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/globe.svg")) { Path = new Uri("avares://Ameko/Assets/B5/globe.svg").LocalPath };
 
         foreach (var script in ScriptService.Instance.LoadedScripts)
         {
@@ -127,6 +122,12 @@ public class MainViewModel : ViewModelBase
             Header = "_Reload Scripts",
             Command = ReloadScriptsCommand,
             Icon = reloadSvg
+        });
+        ScriptMenuItems.Add(new MenuItem
+        {
+            Header = "_Dependency Control",
+            // Command = ReloadScriptsCommand,
+            Icon = dcSvg
         });
     }
 
