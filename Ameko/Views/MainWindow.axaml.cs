@@ -1,4 +1,5 @@
-﻿using Ameko.ViewModels;
+﻿using Ameko.Services;
+using Ameko.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
@@ -18,6 +19,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     private SearchWindow _searchWindow;
     private bool _isSearching = false;
     private static string[] DragDropExtensions = { ".ass" };
+
+    private bool _canClose = false;
 
     public void DoShowSearchWindow(InteractionContext<SearchWindowViewModel, string?> interaction)
     {
@@ -160,6 +163,23 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 }
             }
         });
+
+        this.Closing += async (o, e) =>
+        {
+            if (!_canClose)
+            {
+                e.Cancel = true;
+                if (ViewModel != null)
+                {
+                    var toClose = await IOCommandService.CloseWindow(ViewModel.ShowSaveAsFileDialog, ViewModel);
+                    if (toClose)
+                    {
+                        _canClose = true;
+                        Close();
+                    }
+                }
+            }
+        };
 
         this.WhenActivated((CompositeDisposable disposables) =>
         {

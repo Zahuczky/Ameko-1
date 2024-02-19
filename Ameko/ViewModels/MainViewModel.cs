@@ -118,11 +118,7 @@ public class MainViewModel : ViewModelBase
             Workspace.AddFileToWorkspace();
         });
 
-        CloseTabCommand = ReactiveCommand.Create<int>((int fileId) =>
-        {
-            // TODO: Saving and stuff
-            var closed = HoloContext.Instance.Workspace.CloseFileInWorkspace(fileId);
-        });
+        CloseTabCommand = ReactiveCommand.Create<int>(async (fileId) => await IOCommandService.CloseTab(fileId, ShowSaveAsFileDialog));
 
         RemoveFromWorkspaceCommand = ReactiveCommand.Create<int>((int fileId) =>
         {

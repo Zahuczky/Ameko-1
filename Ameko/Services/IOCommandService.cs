@@ -3,6 +3,7 @@ using Ameko.ViewModels;
 using AssCS;
 using AssCS.IO;
 using Holo;
+using MsBox.Avalonia;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -51,16 +52,18 @@ namespace Ameko.Services
         /// Save the file, or display the Save As dialog
         /// </summary>
         /// <param name="interaction"></param>
-        public static async void SaveOrDisplaySaveAsDialog(Interaction<FileWrapper, Uri?> interaction)
+        public static async Task<bool> SaveOrDisplaySaveAsDialog(Interaction<FileWrapper, Uri?> interaction, FileWrapper? specifiedFile = null)
         {
-            var workingFile = HoloContext.Instance.Workspace.WorkingFile;
-            if (workingFile == null) return;
+            FileWrapper workingFile;
+            if (specifiedFile == null) workingFile = HoloContext.Instance.Workspace.WorkingFile;
+            else workingFile = specifiedFile;
+            if (workingFile == null) return false;
 
             Uri uri;
             if (workingFile.FilePath == null)
             {
                 uri = await interaction.Handle(workingFile);
-                if (uri == null) return;
+                if (uri == null) return false;
                 HoloContext.Instance.Workspace.ReferencedFiles.Where(f => f.Id == workingFile.ID).Single().Path = uri.LocalPath;
             }
             else
@@ -70,6 +73,7 @@ namespace Ameko.Services
             var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
             writer.Write(false);
             workingFile.UpToDate = true;
+            return true;
         }
 
         /// <summary>
@@ -228,6 +232,62 @@ namespace Ameko.Services
                 if (next != null) selectedId = next.Id;
                 else selectedId = -1;
             }
+        }
+
+        /// <summary>
+        /// Safely close a tab
+        /// </summary>
+        /// <param name="fileId">ID to close</param>
+        /// <param name="interaction">SaveAsFileDialog interaction</param>
+        public static async Task<bool> CloseTab(int fileId, Interaction<FileWrapper, Uri?> interaction)
+        {
+            var file = HoloContext.Instance.Workspace.GetFile(fileId);
+            if (file.UpToDate)
+            {
+                HoloContext.Instance.Workspace.CloseFileInWorkspace(fileId);
+                return true;
+            }
+
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                "Save work?",
+                $"{file.Title} contains unsaved work. Do you want to save?",
+                MsBox.Avalonia.Enums.ButtonEnum.YesNoCancel
+            );
+            var result = await box.ShowAsync();
+
+            switch (result)
+            {
+                case MsBox.Avalonia.Enums.ButtonResult.Yes:
+                    var saved = await SaveOrDisplaySaveAsDialog(interaction, file);
+                    if (!saved) return false;
+
+                    HoloContext.Instance.Workspace.CloseFileInWorkspace(fileId);
+                    return true;
+                case MsBox.Avalonia.Enums.ButtonResult.No:
+                    HoloContext.Instance.Workspace.CloseFileInWorkspace(fileId);
+                    return true;
+                default:  // Cancel
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Try to close all the tabs
+        /// </summary>
+        /// <param name="interaction">SaveAsFileDialog interaction</param>
+        /// <param name="vm">View Model</param>
+        /// <returns>True if the closing can continue, False if canceled</returns>
+        public static async Task<bool> CloseWindow(Interaction<FileWrapper, Uri?> interaction, MainViewModel vm)
+        {
+            var ids = vm.Tabs.Select(t => t.ID).ToList();
+
+            foreach (var id in ids)
+            {
+                var closed = await CloseTab(id, interaction);
+                if (!closed) return false;
+            }
+
+            return true;
         }
     }
 }
