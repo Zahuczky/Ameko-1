@@ -4,10 +4,14 @@ using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Primitives;
+using Avalonia.Platform;
+using Avalonia.Svg.Skia;
 using DynamicData;
 using ExCSS;
 using Holo;
 using ReactiveUI;
+using Svg.Skia;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -50,7 +54,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowShiftTimesDialogCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
-    public ObservableCollection<string> ScriptNames { get; }
+    public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
     public bool HasScripts { get; set; }
 
     public int SelectedTabIndex
@@ -91,6 +95,39 @@ public class MainViewModel : ViewModelBase
             {
                 Tabs?.Remove(Tabs.Where(t => t.ID == oi.ID).Single());
             }
+    }
+
+    private void GenerateScriptsMenu()
+    {
+        ScriptMenuItems.Clear();
+        var scriptSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/code-slash.svg"))
+        {
+            Path = new Uri("avares://Ameko/Assets/B5/code-slash.svg").LocalPath
+        };
+        var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg"))
+        {
+            Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath
+        };
+
+        foreach (var script in ScriptService.Instance.LoadedScripts)
+        {
+            var mi = new MenuItem
+            {
+                Header = script.Item2,
+                Command = ActivateScriptCommand,
+                CommandParameter = script.Item1,
+                Icon = scriptSvg
+            };
+            ScriptMenuItems.Add(mi);
+        }
+
+        ScriptMenuItems.Add(new Separator());
+        ScriptMenuItems.Add(new MenuItem
+        {
+            Header = "_Reload Scripts",
+            Command = ReloadScriptsCommand,
+            Icon = reloadSvg
+        });
     }
 
     public MainViewModel()
@@ -160,15 +197,16 @@ public class MainViewModel : ViewModelBase
         });
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));
-        ScriptNames = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts);
-        HasScripts = ScriptNames.Any();
+
+        ScriptMenuItems = new ObservableCollection<TemplatedControl>();
+        GenerateScriptsMenu();
+        HasScripts = ScriptMenuItems.Any();
 
         HoloContext.Instance.Workspace.Files.CollectionChanged += UpdateLoadedTabsCallback;
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
-            ScriptNames.Clear();
-            ScriptNames.AddRange(ScriptService.Instance.LoadedScripts);
-            HasScripts = ScriptNames.Any();
+            GenerateScriptsMenu();
+            HasScripts = ScriptMenuItems.Any();
             this.RaisePropertyChanged(nameof(HasScripts));
         };
     }

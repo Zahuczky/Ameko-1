@@ -71,28 +71,10 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="Scri_pts" ItemsSource="{Binding ScriptNames}" IsEnabled="{Binding HasScripts}">
-				<MenuItem.Styles>
-					<!-- This whole thing is cursed but apparently its best practice??? -->
-					<!-- It works so... -->
-					<Style Selector="MenuItem">
-						<Setter Property="Header" Value="{Binding .}" />
-						<Setter Property="Icon">
-							<Template>
-								<Svg Path="avares://Ameko/Assets/B5/code-slash.svg" />
-							</Template>
-						</Setter>
-						<Setter Property="Command" Value="{Binding #main((vm:MainViewModel)DataContext).ActivateScriptCommand}" />
-						<Setter Property="CommandParameter" Value="{Binding .}" />
-					</Style>
-				</MenuItem.Styles>
+			<MenuItem Header="Scri_pts" ItemsSource="{Binding ScriptMenuItems}" IsEnabled="{Binding HasScripts}">
+				
 			</MenuItem>
 			<MenuItem Header="_Help">
-				<MenuItem Header="_Reload Scripts" Command="{Binding ReloadScriptsCommand}">
-					<MenuItem.Icon>
-						<Svg Path="avares://Ameko/Assets/B5/arrow-clockwise.svg" />
-					</MenuItem.Icon>
-				</MenuItem>
 				<MenuItem Header="About _Ameko" Command="{Binding ShowAboutDialogCommand}">
 					<MenuItem.Icon>
 						<Image Width="16" Height="16" Source="avares://Ameko/Assets/Ameko-Simplified-BG-64.ico" />

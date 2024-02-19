@@ -15,6 +15,12 @@ namespace Holo
         /// </summary>
         public string Name { get; }
         /// <summary>
+        /// A unique name for identifying the script.
+        /// Usually takes the form of <c>author.scriptname</c>, but this isn't a requirement.
+        /// Script file name should be the qualified name.
+        /// </summary>
+        public string QualifiedName { get; }
+        /// <summary>
         /// Short description of the functionality provided by the script
         /// </summary>
         public string Description { get; }
@@ -33,13 +39,14 @@ namespace Holo
         /// <returns>Result of the script's execution</returns>
         public abstract Task<ExecutionResult> Execute();
 
-        public HoloScript() : this("", "", "", 1.0)
+        public HoloScript() : this("", "", "", "", -1.0)
         {
 
         }
-        protected HoloScript(string name, string description, string author, double version)
+        protected HoloScript(string name, string qualifiedName, string description, string author, double version)
         {
             Name = name;
+            QualifiedName = qualifiedName;
             Description = description;
             Author = author;
             Version = version;
