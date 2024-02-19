@@ -213,6 +213,14 @@
 					</MenuItem>
 				</ContextMenu>
 			</DataGrid.ContextMenu>
+			<DataGrid.KeyBindings>
+				<KeyBinding Gesture="Ctrl+D" Command="{Binding DuplicateSelectedEventsCommand}" />
+				<KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelectedEventsCommand}" />
+				<KeyBinding Gesture="Ctrl+X" Command="{Binding CutSelectedEventsCommand}" />
+				<KeyBinding Gesture="Ctrl+V" Command="{Binding PasteCommand}" />
+				<KeyBinding Gesture="Ctrl+Shift+V" Command="{Binding PasteOverCommand}" />
+				<KeyBinding Gesture="Shift+Delete" Command="{Binding DeleteSelectedCommand}" />
+			</DataGrid.KeyBindings>
 		</DataGrid>
 	</Grid>
 </UserControl>

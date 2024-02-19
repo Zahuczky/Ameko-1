@@ -139,7 +139,9 @@ namespace AssCS
 
         public static Time operator -(Time a, Time b)
         {
-            return new Time(a.localTime - b.localTime);
+            var temp = new Time(a.localTime - b.localTime);
+            if (temp.TotalMilliseconds < 0) temp = new Time();
+            return temp;
         }
 
         public static bool operator >(Time a, Time b)

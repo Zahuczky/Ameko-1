@@ -1,9 +1,11 @@
 ﻿using Ameko.DataModels;
 using AssCS;
+using Holo;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -19,7 +21,41 @@ namespace Ameko.ViewModels
         public ShiftTimesFilter ShiftTimesFilter { get; set; }
         public ShiftTimesTarget ShiftTimesTarget { get; set; }
 
-        public ICommand ShiftTimesCommand { get; }
+        public ReactiveCommand<Unit, Unit> ShiftTimesCommand { get; }
+
+        private void DoShiftTimes()
+        {
+            List<Event> events;
+            if (ShiftTimesFilter == ShiftTimesFilter.ALL_ROWS) events = HoloContext.Instance.Workspace.WorkingFile.File.EventManager.Ordered;
+            else events = HoloContext.Instance.Workspace.WorkingFile.SelectedEvents ?? new List<Event>();
+
+            switch (ShiftTimesType)
+            {
+                case ShiftTimesType.TIME:
+                    foreach (var evt in events)
+                    {
+                        if (ShiftTimesTarget == ShiftTimesTarget.START || ShiftTimesTarget == ShiftTimesTarget.BOTH)
+                        {
+                            if (ShiftTimesDirection == ShiftTimesDirection.FORWARD)
+                                evt.Start += ShiftTime;
+                            else
+                                evt.Start -= ShiftTime;
+                        }
+                        if (ShiftTimesTarget == ShiftTimesTarget.END || ShiftTimesTarget == ShiftTimesTarget.BOTH)
+                        {
+                            if (ShiftTimesDirection == ShiftTimesDirection.FORWARD)
+                                evt.End += ShiftTime;
+                            else
+                                evt.End -= ShiftTime;
+                        }
+                    }
+                    break;
+
+                // TODO: Frames
+                default:
+                    return;
+            }
+        }
 
         public ShiftTimesWindowViewModel()
         {
@@ -29,10 +65,7 @@ namespace Ameko.ViewModels
             ShiftTimesFilter = ShiftTimesFilter.SELECTED_ROWS;
             ShiftTimesTarget = ShiftTimesTarget.BOTH;
 
-            ShiftTimesCommand = ReactiveCommand.Create(() =>
-            {
-
-            });
+            ShiftTimesCommand = ReactiveCommand.Create(DoShiftTimes);
         }
     }
 }

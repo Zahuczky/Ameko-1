@@ -7,6 +7,7 @@ using Holo;
 using ReactiveUI;
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 
@@ -30,6 +31,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             _isSearching = true;
             _searchWindow?.Show();
         }
+    }
+
+    private async Task DoShowShiftTimesDialog(InteractionContext<ShiftTimesWindowViewModel, Unit> interaction)
+    {
+        var dialog = new ShiftTimesWindow();
+        dialog.DataContext = interaction.Input;
+        await dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
     }
 
     private async Task DoShowAboutDialogAsync(InteractionContext<AboutWindowViewModel, AboutWindowViewModel?> interaction)
@@ -164,6 +173,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
+                ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialog);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

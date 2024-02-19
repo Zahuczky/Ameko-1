@@ -16,6 +16,7 @@
         <KeyBinding Gesture="Ctrl+S" Command="{Binding ShowSaveFileDialogCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding ShowSaveAsFileDialogCommand}" />
         <KeyBinding Gesture="Ctrl+F" Command="{Binding ShowSearchDialogCommand}" />
+        <KeyBinding Gesture="Ctrl+I" Command="{Binding ShowShiftTimesDialogCommand}" />
         <KeyBinding Gesture="Shift+F1" Command="{Binding ShowAboutDialogCommand}" />
         <KeyBinding Gesture="Ctrl+Q" Command="{Binding QuitCommand}" />
 	</Window.KeyBindings>

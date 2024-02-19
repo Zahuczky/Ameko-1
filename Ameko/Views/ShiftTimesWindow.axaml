@@ -61,7 +61,7 @@
 							 IsChecked="{Binding ShiftTimesTarget, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static dm:ShiftTimesTarget.END}}"/>
 			</StackPanel>
 		</HeaderedContentControl>
-			<Button Margin="2">OK</Button>
+			<Button Margin="2" Command="{Binding ShiftTimesCommand}">OK</Button>
 	</StackPanel>
 
 	<Window.Styles>

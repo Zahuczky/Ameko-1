@@ -32,6 +32,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
+    public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
@@ -46,6 +47,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ReloadScriptsCommand { get; }
     public ICommand QuitCommand { get; }
     public ICommand ShowSearchDialogCommand { get; }
+    public ICommand ShowShiftTimesDialogCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<string> ScriptNames { get; }
@@ -101,6 +103,7 @@ public class MainViewModel : ViewModelBase
         ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
+        ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
         ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
@@ -139,6 +142,12 @@ public class MainViewModel : ViewModelBase
         {
             var vm = new SearchWindowViewModel(this);
             await ShowSearchDialog.Handle(vm);
+        });
+
+        ShowShiftTimesDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new ShiftTimesWindowViewModel();
+            await ShowShiftTimesDialog.Handle(vm);
         });
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>

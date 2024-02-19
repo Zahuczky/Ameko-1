@@ -64,6 +64,13 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
+			<MenuItem Header="_Timing">
+				<MenuItem Header="S_hift Times" Command="{Binding ShowShiftTimesDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/arrow-left-right.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
 			<MenuItem Header="Scri_pts" ItemsSource="{Binding ScriptNames}" IsEnabled="{Binding HasScripts}">
 				<MenuItem.Styles>
 					<!-- This whole thing is cursed but apparently its best practice??? -->
