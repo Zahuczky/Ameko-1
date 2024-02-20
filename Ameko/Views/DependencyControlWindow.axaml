@@ -11,60 +11,114 @@
         Title="Dependency Control">
 	<DockPanel>
 		<Label DockPanel.Dock="Top" Content="Welcome to Ameko Dependency Control" />
-		<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, *" RowDefinitions="2*, 3*">
+		<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, *" RowDefinitions="*, *, *">
+			<!-- Repositories -->
 			<DockPanel Grid.Column="0" Grid.Row="0">
 				<TextBlock DockPanel.Dock="Top" Margin="2" Text="Repositories" />
-				<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto" RowDefinitions="auto, auto">
+				<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto, auto" RowDefinitions="auto">
 					<Button Grid.Column="1" Grid.Row="0" Margin="2">Remove</Button>
-					<TextBox Grid.Column="0" Grid.Row="1" Margin="2" />
-					<Button Grid.Column="1" Grid.Row="1" Margin="2">Add</Button>
+					<Button Grid.Column="2" Grid.Row="0" Margin="2">Add</Button>
 				</Grid>
-				<ListBox Margin="2" VerticalAlignment="Stretch">
-
+				<ListBox Margin="2" VerticalAlignment="Stretch" ItemsSource="{Binding Repositories}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<ListBoxItem Content="{Binding Name}">
+								<ToolTip.Tip>
+									<TextBlock Text="{Binding Description}" />
+								</ToolTip.Tip>
+							</ListBoxItem>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
 				</ListBox>
 			</DockPanel>
-			<DockPanel Grid.Column="0" Grid.Row="1">
+			
+			<!-- Available Scripts -->
+			<DockPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="2">
 				<TextBlock DockPanel.Dock="Top" Margin="2" Text="Available Scripts" />
 				<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto">
 					<Button Grid.Column="1" Margin="2">Install</Button>
 				</Grid>
-				<ListBox Margin="2" VerticalAlignment="Stretch">
-
+				<ListBox Margin="2" VerticalAlignment="Stretch" ItemsSource="{Binding RepoScripts}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<ListBoxItem>
+								<ListBoxItem.Content>
+									<Grid ColumnDefinitions="*, auto, auto">
+										<TextBlock Grid.Column="0" Text="{Binding Name}" />
+										<TextBlock Grid.Column="1" Text="{Binding CurrentVersion, StringFormat='v{0}'}" Margin="4 0" />
+										<TextBlock Grid.Column="2" Text="{Binding Author, StringFormat='by {0}'}" Margin="4 0 0 0" />
+									</Grid>
+								</ListBoxItem.Content>
+								<ToolTip.Tip>
+									<StackPanel>
+										<TextBlock Text="{Binding Description}" />
+										<TextBlock Text="{Binding QualifiedName, StringFormat='[{0}]'}" />
+									</StackPanel>
+								</ToolTip.Tip>
+							</ListBoxItem>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
 				</ListBox>
 			</DockPanel>
+			
+			<!-- Installed Scripts -->
 			<DockPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
 				<TextBlock DockPanel.Dock="Top" Margin="2" Text="Installed Scripts" />
 				<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto">
 					<Button Grid.Column="1" Margin="2">Uninstall</Button>
 				</Grid>
-				<ListBox Margin="2" VerticalAlignment="Stretch">
-
+				<ListBox Margin="2" VerticalAlignment="Stretch" ItemsSource="{Binding InstalledScripts}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<ListBoxItem>
+								<ListBoxItem.Content>
+									<Grid ColumnDefinitions="*, auto, auto">
+										<TextBlock Grid.Column="0" Text="{Binding Name}" />
+										<TextBlock Grid.Column="1" Text="{Binding CurrentVersion, StringFormat='v{0}'}" Margin="4 0" />
+										<TextBlock Grid.Column="2" Text="{Binding Author, StringFormat='by {0}'}" Margin="4 0 0 0" />
+									</Grid>
+								</ListBoxItem.Content>
+								<ToolTip.Tip>
+									<StackPanel>
+										<TextBlock Text="{Binding Description}" />
+										<TextBlock Text="{Binding QualifiedName, StringFormat='[{0}]'}" />
+									</StackPanel>
+								</ToolTip.Tip>
+							</ListBoxItem>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</DockPanel>
+			
+			<!-- Available Updates -->
+			<DockPanel Grid.Column="1" Grid.Row="3" Grid.RowSpan="2">
+				<TextBlock DockPanel.Dock="Top" Margin="2" Text="Available Updates" />
+				<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto, auto">
+					<Button Grid.Column="2" Margin="2">Install All</Button>
+					<Button Grid.Column="1" Margin="2">Install Selected</Button>
+				</Grid>
+				<ListBox Margin="2" VerticalAlignment="Stretch"> <!-- TODO -->
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<ListBoxItem>
+								<ListBoxItem.Content>
+									<Grid ColumnDefinitions="*, auto, auto">
+										<TextBlock Grid.Column="0" Text="{Binding Name}" />
+										<TextBlock Grid.Column="1" Text="{Binding CurrentVersion, StringFormat='v{0}'}" Margin="4 0" />
+										<TextBlock Grid.Column="2" Text="{Binding Author, StringFormat='by {0}'}" Margin="4 0 0 0" />
+									</Grid>
+								</ListBoxItem.Content>
+								<ToolTip.Tip>
+									<StackPanel>
+										<TextBlock Text="{Binding Description}" />
+										<TextBlock Text="{Binding QualifiedName, StringFormat='[{0}]'}" />
+									</StackPanel>
+								</ToolTip.Tip>
+							</ListBoxItem>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
 				</ListBox>
 			</DockPanel>
 		</Grid>
 	</DockPanel>
-
-	<Window.Styles>
-		<Style Selector="HeaderedContentControl">
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate>
-						<Border>
-							<StackPanel>
-								<ContentPresenter FontWeight="Bold"
-												  Margin="0 10 0 2"
-												  Content="{TemplateBinding Header}" />
-								<Border BorderBrush="{TemplateBinding Background}"
-										BorderThickness="2"
-										CornerRadius="5">
-									<ContentPresenter Content="{TemplateBinding Content}"
-													  Padding="5"/>
-								</Border>
-							</StackPanel>
-						</Border>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-	</Window.Styles>
 </Window>

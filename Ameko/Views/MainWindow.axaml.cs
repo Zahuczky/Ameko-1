@@ -22,6 +22,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
 
     private bool _canClose = false;
 
+    public async void DoShowDependencyControlWindow(InteractionContext<DependencyControlWindowViewModel, Unit> interaction)
+    {
+        var dialog = new DependencyControlWindow();
+        dialog.DataContext = interaction.Input;
+        await dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     public void DoShowSearchWindow(InteractionContext<SearchWindowViewModel, string?> interaction)
     {
         if (_searchWindow == null) return;
@@ -194,6 +202,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialog);
+                ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

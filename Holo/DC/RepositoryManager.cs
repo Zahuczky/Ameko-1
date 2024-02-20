@@ -2,30 +2,60 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Holo.DC
 {
     public class RepositoryManager
     {
-        private Repository BaseRepository;
-        private readonly Dictionary<string, Repository> Repositories;
+        private Repository? BaseRepository;
+        private readonly Dictionary<string, Repository> RepositoryMap;
 
-        public void GatherRepositories(Repository repo)
+        public readonly ObservableCollection<ScriptEntity> RepoScripts;
+        public readonly ObservableCollection<Repository> Repositories;
+
+        public async void GatherRepositories(Repository repo)
         {
-            foreach (string url in repo.Repositories)
+            if (!RepositoryMap.ContainsKey(repo.Name!))
             {
-                var r = Repository.Build(url);
-                if (!Repositories.ContainsKey(r.Name))
-                    GatherRepositories(r);
+                RepositoryMap.Add(repo.Name!, repo);
+                Repositories.Add(repo);
             }
+
+            foreach (string url in repo.Repositories!)
+            {
+                var r = await Repository.Build(url);
+                if (!RepositoryMap.ContainsKey(r!.Name!))
+                {
+                    GatherRepositories(r);
+                }
+            }
+        }
+
+        public void GatherRepoScripts()
+        {
+            RepoScripts.Clear();
+            foreach (var repo in RepositoryMap.Values)
+                if (repo.Scripts != null)
+                    foreach (var script in repo.Scripts)
+                        RepoScripts.Add(script);
+        }
+
+        private async void SetUpBaseRepository()
+        {
+            BaseRepository = await Repository.Build("https://gist.githubusercontent.com/9vult/f48f3d03f6b0b913299f27eb0b3a122c/raw/c7d3d917b4fa45c8d061b594cabb792507d3a1b7/ameko-base-depctl.json");
+            if (BaseRepository == null) return;
+            GatherRepositories(BaseRepository);
+            GatherRepoScripts();
         }
 
         public RepositoryManager()
         {
-            Repositories = new Dictionary<string, Repository>();
-            BaseRepository = new Repository(); // TODO
-            Repositories.Add(BaseRepository.Name!, BaseRepository);
-            GatherRepositories(BaseRepository);
+            RepositoryMap = new Dictionary<string, Repository>();
+            Repositories = new ObservableCollection<Repository>();
+            RepoScripts = new ObservableCollection<ScriptEntity>();
+            SetUpBaseRepository();
         }
     }
 }

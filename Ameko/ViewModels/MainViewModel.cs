@@ -37,6 +37,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
+    public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
@@ -52,10 +53,10 @@ public class MainViewModel : ViewModelBase
     public ICommand QuitCommand { get; }
     public ICommand ShowSearchDialogCommand { get; }
     public ICommand ShowShiftTimesDialogCommand { get; }
+    public ICommand ShowDependencyControlWindowCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
-    public bool HasScripts { get; set; }
 
     public int SelectedTabIndex
     {
@@ -126,7 +127,7 @@ public class MainViewModel : ViewModelBase
         ScriptMenuItems.Add(new MenuItem
         {
             Header = "_Dependency Control",
-            // Command = ReloadScriptsCommand,
+            Command = ShowDependencyControlWindowCommand,
             Icon = dcSvg
         });
     }
@@ -142,6 +143,7 @@ public class MainViewModel : ViewModelBase
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
+        ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
         ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
@@ -184,6 +186,12 @@ public class MainViewModel : ViewModelBase
             await ShowShiftTimesDialog.Handle(vm);
         });
 
+        ShowDependencyControlWindowCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new DependencyControlWindowViewModel();
+            await ShowDependencyControlWindow.Handle(vm);
+        });
+
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
         {
             var script = ScriptService.Instance.Get(scriptName);
@@ -201,14 +209,11 @@ public class MainViewModel : ViewModelBase
 
         ScriptMenuItems = new ObservableCollection<TemplatedControl>();
         GenerateScriptsMenu();
-        HasScripts = ScriptMenuItems.Any();
 
         HoloContext.Instance.Workspace.Files.CollectionChanged += UpdateLoadedTabsCallback;
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
             GenerateScriptsMenu();
-            HasScripts = ScriptMenuItems.Any();
-            this.RaisePropertyChanged(nameof(HasScripts));
         };
     }
 }

@@ -71,9 +71,7 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="Scri_pts" ItemsSource="{Binding ScriptMenuItems}" IsEnabled="{Binding HasScripts}">
-				
-			</MenuItem>
+			<MenuItem Header="Scri_pts" ItemsSource="{Binding ScriptMenuItems}" />
 			<MenuItem Header="_Help">
 				<MenuItem Header="About _Ameko" Command="{Binding ShowAboutDialogCommand}">
 					<MenuItem.Icon>
