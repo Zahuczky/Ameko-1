@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,6 +88,29 @@ namespace Holo.DC
         public static bool IsDCScriptInstalled(string qualifiedName)
         {
             return File.Exists(ScriptPath(qualifiedName));
+        }
+
+        /// <summary>
+        /// Get the candidate scripts for updating
+        /// </summary>
+        /// <param name="serverScripts">List of scripts on the server</param>
+        /// <param name="localScripts">List of installed scripts</param>
+        /// <returns>List of server scripts that are update candidates</returns>
+        public static List<ScriptEntity> GetUpdateCandidates(List<ScriptEntity> serverScripts, List<ScriptEntity> localScripts)
+        {
+            var updates = new List<ScriptEntity>();
+
+            foreach (var script in localScripts)
+            {
+                var matches = serverScripts.Where(s => s.QualifiedName!.Equals(script.QualifiedName));
+                if (matches.Any())
+                {
+                    var serverScript = matches.First();
+                    if (serverScript.CurrentVersion > script.CurrentVersion)
+                        updates.Add(serverScript);
+                }
+            }
+            return updates;
         }
 
         /// <summary>
