@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Holo.DC
 {
@@ -19,17 +20,19 @@ namespace Holo.DC
         /// <param name="qualifiedName">Name of the script</param>
         /// <param name="updateUrl">Location of the script file on the Internet</param>
         /// <returns>True if installation was successful</returns>
-        public static bool InstallDCScript(string qualifiedName, string updateUrl)
+        public static async Task<bool> InstallDCScript(string qualifiedName, string updateUrl)
         {
+            if (IsDCScriptInstalled(qualifiedName)) return false;
+
             using (var client = new HttpClient())
             {
                 try
                 {
-                    using (var stream = client.GetStreamAsync(updateUrl))
+                    using (var stream = await client.GetStreamAsync(updateUrl))
                     { 
                         using (var fs = new FileStream(ScriptPath(qualifiedName), FileMode.OpenOrCreate))
                         {
-                            stream.Result.CopyTo(fs);
+                            await stream.CopyToAsync(fs);
                         }
                     }
                     return true;
@@ -69,10 +72,10 @@ namespace Holo.DC
         /// <param name="qualifiedName">Name of the script</param>
         /// <param name="updateUrl">Location of the script file on the Internet</param>
         /// <returns></returns>
-        public static bool UpdateDCScript(string qualifiedName, string updateUrl)
+        public static async Task<bool> UpdateDCScript(string qualifiedName, string updateUrl)
         {
             if (UninstallDCScript(qualifiedName))
-                return InstallDCScript(qualifiedName, updateUrl);
+                return await InstallDCScript(qualifiedName, updateUrl);
             return false;
         }
 
