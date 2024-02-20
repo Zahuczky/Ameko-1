@@ -101,21 +101,10 @@ public class MainViewModel : ViewModelBase
     private void GenerateScriptsMenu()
     {
         ScriptMenuItems.Clear();
-        var scriptSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/code-slash.svg")) { Path = new Uri("avares://Ameko/Assets/B5/code-slash.svg").LocalPath };
         var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg")) { Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath };
         var dcSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/globe.svg")) { Path = new Uri("avares://Ameko/Assets/B5/globe.svg").LocalPath };
 
-        foreach (var script in ScriptService.Instance.LoadedScripts)
-        {
-            var mi = new MenuItem
-            {
-                Header = script.Item2,
-                Command = ActivateScriptCommand,
-                CommandParameter = script.Item1,
-                Icon = scriptSvg
-            };
-            ScriptMenuItems.Add(mi);
-        }
+        ScriptMenuItems.AddRange(ScriptService.Instance.GetScriptsMenuItems(ActivateScriptCommand));
 
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(new MenuItem

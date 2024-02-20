@@ -33,23 +33,26 @@ namespace Holo
         /// Will be used for updates via Dependency Control
         /// </summary>
         public double Version { get; }
+
+        public string? SubmenuName { get; }
         /// <summary>
         /// Entry point
         /// </summary>
         /// <returns>Result of the script's execution</returns>
         public abstract Task<ExecutionResult> Execute();
 
-        public HoloScript() : this("", "", "", "", -1.0)
+        public HoloScript() : this("", "", "", "", -1.0, null)
         {
 
         }
-        protected HoloScript(string name, string qualifiedName, string description, string author, double version)
+        protected HoloScript(string name, string qualifiedName, string description, string author, double version, string? submenuName = null)
         {
             Name = name;
             QualifiedName = qualifiedName;
             Description = description;
             Author = author;
             Version = version;
+            SubmenuName = submenuName;
         }
     }
 
