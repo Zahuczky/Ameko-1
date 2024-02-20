@@ -11,13 +11,14 @@
 		Height="300"
 		CanResize="False"
 		Topmost="True"
+		WindowStartupLocation="CenterOwner"
         Title="Manage Repositories">
 	<DockPanel>
 		<TextBlock DockPanel.Dock="Top" Text="Source Repositories" />
 		<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto" RowDefinitions="auto, auto">
 			<TextBlock Grid.Column="0" Grid.Row="0" Margin="2" Text="Note: Restart Ameko after removing repositories to clean sub-repositories." TextWrapping="Wrap" />
 			<Button Grid.Column="1" Grid.Row="0" Margin="2" Content="Remove" Command="{Binding RemoveRepositoryCommand}" />
-			<TextBox Grid.Column="0" Grid.Row="1" Margin="2" Watermark="url..." />
+			<TextBox Grid.Column="0" Grid.Row="1" Margin="2" Watermark="url..." Text="{Binding RepoTextBoxText}" />
 			<Button Grid.Column="1" Grid.Row="1" Margin="2" Content="Add" Command="{Binding AddRepositoryCommand}" />
 		</Grid>
 		<ListBox Margin="2" VerticalAlignment="Stretch"

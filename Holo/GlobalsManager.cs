@@ -27,6 +27,7 @@ namespace Holo
         public void AddRepository(string repoUrl)
         {
             Repositories.Add(repoUrl);
+            Write();
         }
 
         /// <summary>
@@ -36,7 +37,9 @@ namespace Holo
         /// <returns>True if it was removed</returns>
         public bool RemoveRepository(string repoUrl)
         {
-            return Repositories.Remove(repoUrl);
+            var removed = Repositories.Remove(repoUrl);
+            if (removed) Write();
+            return removed;
         }
 
         /// <summary>
@@ -47,6 +50,7 @@ namespace Holo
         public void SetSubmenuOverride(string qualifiedName, string value)
         {
             SubmenuOverrides[qualifiedName] = value;
+            Write();
         }
 
         /// <summary>
@@ -56,7 +60,9 @@ namespace Holo
         /// <returns>True if it was removed</returns>
         public bool RemoveSubmenuOverride(string qualifiedName)
         {
-            return SubmenuOverrides.Remove(qualifiedName);
+            var removed =  SubmenuOverrides.Remove(qualifiedName);
+            if (removed) Write();
+            return removed;
         }
 
         /// <summary>

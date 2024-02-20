@@ -13,6 +13,7 @@
 		Topmost="True"
 		CanResize="False"
         Title="Dependency Control"
+		WindowStartupLocation="CenterOwner"
 		x:Name="dcw">
 	<Window.Resources>
 		<converters:DCScriptUpdateVersionConverter x:Key="VersionConverter" />

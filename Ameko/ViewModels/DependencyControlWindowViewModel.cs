@@ -105,7 +105,7 @@ namespace Ameko.ViewModels
             SelectedInstalledScripts = new List<ScriptEntity>();
             SelectedRepos = new List<Repository>();
 
-            Repositories = HoloContext.Instance.RepositoryManager.Repositories;
+            Repositories = new ObservableCollection<Repository>(HoloContext.Instance.RepositoryManager.Repositories);
 
             RepoScripts = new ObservableCollection<ScriptEntity>();
             InstalledScripts = new ObservableCollection<ScriptEntity>();
@@ -168,6 +168,8 @@ namespace Ameko.ViewModels
 
                 Repositories.Clear();
                 Repositories.AddRange(HoloContext.Instance.RepositoryManager.Repositories);
+                HoloContext.Instance.RepositoryManager.GatherRepoScripts();
+                PopulateRepoScriptsList();
             });
 
             RemoveRepositoryCommand = ReactiveCommand.Create(() =>
@@ -177,7 +179,10 @@ namespace Ameko.ViewModels
                     HoloContext.Instance.RepositoryManager.RemoveRepository(repo);
                     HoloContext.Instance.GlobalsManager.RemoveRepository(repo.Url ?? string.Empty);
                 }
+                Repositories.Clear();
+                Repositories.AddRange(HoloContext.Instance.RepositoryManager.Repositories);
                 HoloContext.Instance.RepositoryManager.GatherRepoScripts();
+                PopulateRepoScriptsList();
             });
 
             DisplayRepoManagerCommand = ReactiveCommand.Create(async () => {

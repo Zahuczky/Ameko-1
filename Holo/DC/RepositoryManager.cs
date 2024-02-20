@@ -36,6 +36,7 @@ namespace Holo.DC
         public void RemoveRepository(Repository repo)
         {
             Repositories.Remove(repo);
+            RepositoryMap.Remove(repo.Name!);
         }
 
         public void GatherRepoScripts()
