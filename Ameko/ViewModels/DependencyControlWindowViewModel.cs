@@ -22,11 +22,11 @@ namespace Ameko.ViewModels
 
         public List<ScriptEntity> SelectedRepoScripts { get; }
         public List<ScriptEntity> SelectedInstalledScripts { get; }
-        public List<ScriptEntity> SelectedUpdateScripts { get; }
 
         public ICommand InstallScriptCommand { get; }
         public ICommand UninstallScriptCommand { get; }
         public ICommand UpdateScriptCommand { get; }
+        public ICommand UpdateAllCommand { get; }
 
         private void PopulateInstalledScriptsList()
         {
@@ -65,11 +65,25 @@ namespace Ameko.ViewModels
             );
         }
 
+        private async Task<bool> TryUpdate(ScriptEntity script)
+        {
+            if (script.QualifiedName == null) return false;
+
+            // Check if the script is an update candidate
+            var candidates = UpdateCandidates.Where(s => s.QualifiedName!.Equals(script.QualifiedName));
+            if (candidates.Any())
+            {
+                var serverScript = candidates.First();
+                if (serverScript.Url == null) return false;
+                return await DCScriptManager.UpdateDCScript(script.QualifiedName,serverScript.Url);
+            }
+            return false;
+        }
+
         public DependencyControlWindowViewModel()
         {
             SelectedRepoScripts = new List<ScriptEntity>();
             SelectedInstalledScripts = new List<ScriptEntity>();
-            SelectedUpdateScripts = new List<ScriptEntity>();
 
             Repositories = HoloContext.Instance.RepositoryManager.Repositories;
 
@@ -102,10 +116,19 @@ namespace Ameko.ViewModels
 
             UpdateScriptCommand = ReactiveCommand.Create(async () =>
             {
-                foreach (var script in SelectedUpdateScripts)
+                foreach (var script in SelectedInstalledScripts)
                 {
-                    if (script.QualifiedName != null && script.Url != null)
-                        await DCScriptManager.UpdateDCScript(script.QualifiedName, script.Url);
+                    await TryUpdate(script);
+                }
+                ScriptService.Instance.Reload(false);
+                PopulateInstalledScriptsList();
+            });
+
+            UpdateAllCommand = ReactiveCommand.Create(async () =>
+            {
+                foreach (var script in InstalledScripts)
+                {
+                    await TryUpdate(script);
                 }
                 ScriptService.Instance.Reload(false);
                 PopulateInstalledScriptsList();
