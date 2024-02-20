@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -22,11 +24,25 @@ namespace Ameko.ViewModels
 
         public List<ScriptEntity> SelectedRepoScripts { get; }
         public List<ScriptEntity> SelectedInstalledScripts { get; }
+        public List<Repository> SelectedRepos { get; }
+
+        private string _repoTextBoxText;
+        public string RepoTextBoxText
+        {
+            get => _repoTextBoxText;
+            set => this.RaiseAndSetIfChanged(ref _repoTextBoxText, value);
+        }
+
+        public Interaction<DependencyControlWindowViewModel, Unit> DisplayRepoManager { get; }
 
         public ICommand InstallScriptCommand { get; }
         public ICommand UninstallScriptCommand { get; }
         public ICommand UpdateScriptCommand { get; }
         public ICommand UpdateAllCommand { get; }
+
+        public ICommand AddRepositoryCommand { get; }
+        public ICommand RemoveRepositoryCommand { get; }
+        public ICommand DisplayRepoManagerCommand { get; }
 
         private void PopulateInstalledScriptsList()
         {
@@ -82,8 +98,12 @@ namespace Ameko.ViewModels
 
         public DependencyControlWindowViewModel()
         {
+            _repoTextBoxText = string.Empty;
+            DisplayRepoManager = new Interaction<DependencyControlWindowViewModel, Unit>();
+
             SelectedRepoScripts = new List<ScriptEntity>();
             SelectedInstalledScripts = new List<ScriptEntity>();
+            SelectedRepos = new List<Repository>();
 
             Repositories = HoloContext.Instance.RepositoryManager.Repositories;
 
@@ -132,6 +152,36 @@ namespace Ameko.ViewModels
                 }
                 ScriptService.Instance.Reload(false);
                 PopulateInstalledScriptsList();
+            });
+
+            AddRepositoryCommand = ReactiveCommand.Create(async () =>
+            {
+                var input = RepoTextBoxText.Trim();
+                if (input.Equals(string.Empty)) return;
+
+                var repo = await Repository.Build(input);
+                if (repo == null) return;
+
+                HoloContext.Instance.GlobalsManager.AddRepository(repo.Url ?? string.Empty);
+                HoloContext.Instance.RepositoryManager.GatherRepositories(repo);
+                HoloContext.Instance.RepositoryManager.GatherRepoScripts();
+
+                Repositories.Clear();
+                Repositories.AddRange(HoloContext.Instance.RepositoryManager.Repositories);
+            });
+
+            RemoveRepositoryCommand = ReactiveCommand.Create(() =>
+            {
+                foreach (var repo in SelectedRepos.ToArray())
+                {
+                    HoloContext.Instance.RepositoryManager.RemoveRepository(repo);
+                    HoloContext.Instance.GlobalsManager.RemoveRepository(repo.Url ?? string.Empty);
+                }
+                HoloContext.Instance.RepositoryManager.GatherRepoScripts();
+            });
+
+            DisplayRepoManagerCommand = ReactiveCommand.Create(async () => {
+                await DisplayRepoManager.Handle(this);
             });
         }
     }

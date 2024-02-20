@@ -15,6 +15,7 @@ namespace Holo.DC
         public double? Version { get; set; }
         public List<string>? Repositories { get; set; }
         public List<ScriptEntity>? Scripts { get; set; }
+        public string? Url { get; set; }
 
         public static async Task<Repository?> Build(string url)
         {
@@ -22,7 +23,9 @@ namespace Holo.DC
             {
                 try
                 {
-                    return await client.GetFromJsonAsync<Repository>(url);
+                    var repo = await client.GetFromJsonAsync<Repository>(url);
+                    if (repo != null) repo.Url = url;
+                    return repo;
                 }
                 catch (HttpRequestException)
                 {

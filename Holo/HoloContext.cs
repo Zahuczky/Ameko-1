@@ -21,10 +21,14 @@ namespace Holo
 
         private HoloContext()
         {
-            PluginHandler = new PluginHandler(Path.Combine(HoloDirectory, "plugins"));
             ConfigurationManager = new ConfigurationManager(HoloDirectory);
-            RepositoryManager = new RepositoryManager();
             GlobalsManager = new GlobalsManager();
+
+            PluginHandler = new PluginHandler(Path.Combine(HoloDirectory, "plugins"));
+
+            RepositoryManager = new RepositoryManager();
+            RepositoryManager.LoadUrlList(GlobalsManager.GetRepositories());
+
             Workspace = new Workspace();
             
             if (!ConfigurationManager.LoadConfiguration())

@@ -33,6 +33,11 @@ namespace Holo.DC
             }
         }
 
+        public void RemoveRepository(Repository repo)
+        {
+            Repositories.Remove(repo);
+        }
+
         public void GatherRepoScripts()
         {
             RepoScripts.Clear();
@@ -40,6 +45,17 @@ namespace Holo.DC
                 if (repo.Scripts != null)
                     foreach (var script in repo.Scripts)
                         RepoScripts.Add(script);
+        }
+
+        public async void LoadUrlList(List<string> urlList)
+        {
+            foreach (var url in urlList)
+            {
+                var repo = await Repository.Build(url);
+                if (repo != null)
+                    GatherRepositories(repo);
+            }
+            GatherRepoScripts();
         }
 
         private async void SetUpBaseRepository()
