@@ -106,7 +106,7 @@ public class MainViewModel : ViewModelBase
         var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg")) { Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath };
         var dcSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/globe.svg")) { Path = new Uri("avares://Ameko/Assets/B5/globe.svg").LocalPath };
 
-        ScriptMenuItems.AddRange(ScriptService.Instance.GetScriptsMenuItems(ActivateScriptCommand));
+        ScriptMenuItems.AddRange(ScriptMenuService.GenerateScriptMenuItemSource(ActivateScriptCommand));
 
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(new MenuItem

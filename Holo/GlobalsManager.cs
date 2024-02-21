@@ -83,6 +83,8 @@ namespace Holo
             return SubmenuOverrides.Select(k => new Tuple<string, string>(k.Key, k.Value)).ToList();
         }
 
+        public Dictionary<string, string> SubmenuOverridesMap => new Dictionary<string, string>(SubmenuOverrides);
+
         /// <summary>
         /// Add a style
         /// </summary>

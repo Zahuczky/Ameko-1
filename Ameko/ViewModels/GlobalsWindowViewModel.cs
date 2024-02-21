@@ -1,4 +1,5 @@
-﻿using Ameko.Services;
+﻿using Ameko.DataModels;
+using Ameko.Services;
 using DynamicData;
 using Holo;
 using ReactiveUI;
@@ -14,47 +15,60 @@ namespace Ameko.ViewModels
 {
     public class GlobalsWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<Tuple<string, string>> Overrides { get; private set; }
-        public ObservableCollection<string> LoadedScripts { get; private set; }
-        public List<Tuple<string, string>> SelectedOverrides { get; set; }
+        public List<SubmenuOverrideLink> SelectedScripts { get; set; }
         public string OverrideTextBoxText { get; set; }
-        private string _selectedScript;
-        public string SelectedScript
-        {
-            get => _selectedScript;
-            set => this.RaiseAndSetIfChanged(ref _selectedScript, value);
-        }
+
+        public ObservableCollection<SubmenuOverrideLink> OverrideLinks { get; private set; }
 
         public ICommand SetOverrideCommand { get; }
         public ICommand RemoveOverrideCommand { get; }
 
+        private void GenerateOverrideLinks()
+        {
+            var currentOverrides = HoloContext.Instance.GlobalsManager.GetSubmenuOverrides();
+
+            OverrideLinks.Clear();
+            foreach (var script in ScriptService.Instance.LoadedScripts)
+            {
+                string? setOverride = null;
+                var ovrs = currentOverrides.Where(o => o.Item1.Equals(script.Item1));
+                if (ovrs.Any()) setOverride = ovrs.First().Item2;
+
+                var mol = new SubmenuOverrideLink
+                {
+                    Name = script.Item2,
+                    QualifiedName = script.Item1,
+                    SubmenuOverride = setOverride
+                };
+                OverrideLinks.Add(mol);
+            }
+        }
+
         public GlobalsWindowViewModel()
         {
-            Overrides = new ObservableCollection<Tuple<string, string>>(HoloContext.Instance.GlobalsManager.GetSubmenuOverrides());
-            LoadedScripts = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts.Select(s => s.Item1));
+            OverrideLinks = new ObservableCollection<SubmenuOverrideLink>();
+            GenerateOverrideLinks();
             
-            SelectedOverrides = new List<Tuple<string, string>>();
-            _selectedScript = LoadedScripts.First();
+            SelectedScripts = new List<SubmenuOverrideLink>();
             OverrideTextBoxText = string.Empty;
 
             SetOverrideCommand = ReactiveCommand.Create(() =>
             {
                 if (OverrideTextBoxText.Trim().Equals(string.Empty)) return;
-
-                HoloContext.Instance.GlobalsManager.SetSubmenuOverride(SelectedScript, OverrideTextBoxText.Trim());
-                Overrides.Clear();
-                Overrides.AddRange(HoloContext.Instance.GlobalsManager.GetSubmenuOverrides());
+                foreach (var script in SelectedScripts)
+                {
+                    HoloContext.Instance.GlobalsManager.SetSubmenuOverride(script.QualifiedName, OverrideTextBoxText.Trim());
+                }
+                GenerateOverrideLinks();
             });
 
             RemoveOverrideCommand = ReactiveCommand.Create(() =>
             {
-                foreach (var script in SelectedOverrides)
+                foreach (var script in SelectedScripts)
                 {
-                    HoloContext.Instance.GlobalsManager.RemoveSubmenuOverride(script.Item1);
+                    HoloContext.Instance.GlobalsManager.RemoveSubmenuOverride(script.QualifiedName);
                 }
-
-                Overrides.Clear();
-                Overrides.AddRange(HoloContext.Instance.GlobalsManager.GetSubmenuOverrides());
+                GenerateOverrideLinks();
             });
         }
     }

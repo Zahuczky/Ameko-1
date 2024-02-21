@@ -12,25 +12,25 @@
 		Topmost="True"
 		CanResize="False"
         Title="Globals Management">
-	<Grid ColumnDefinitions="*, *" RowDefinitions="*, *">
-		<DockPanel Grid.Column="0" Grid.Row="0">
+	<Grid ColumnDefinitions="*, *" RowDefinitions="*, *, *">
+		<DockPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="3">
 			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Script Submenu Overrides" />
-			<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, *, auto" RowDefinitions="auto, auto">
-				<ComboBox Grid.Column="0" Grid.Row="1" Margin="2" ItemsSource="{Binding LoadedScripts}" SelectedItem="{Binding SelectedScript}" />
-				<TextBox Grid.Column="1" Grid.Row="1" Margin="2" Watermark="Submenu Name" Text="{Binding OverrideTextBoxText}" />
-				<Button Grid.Column="2" Grid.Row="1" Margin="2" Command="{Binding SetOverrideCommand}">Set</Button>
-				<Button Grid.Column="2" Grid.Row="0" Margin="2" Command="{Binding RemoveOverrideCommand}">Delete</Button>
-				<TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="2" Text="Use '-' to move to root menu" />
+			<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto, auto" RowDefinitions="auto, auto">
+				<TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="2" Text="Use '-' to send to root menu" />
+				<Button Grid.Column="2" Grid.Row="0" Margin="2" Command="{Binding RemoveOverrideCommand}">Clear Selected</Button>
+				<TextBox Grid.Column="0" Grid.Row="1" Margin="2" Watermark="Submenu Name" Text="{Binding OverrideTextBoxText}" />
+				<Button Grid.Column="2" Grid.Row="1" Margin="2" Command="{Binding SetOverrideCommand}">Set Selected</Button>
 			</Grid>
-			<ListBox ItemsSource="{Binding Overrides}"
-					 SelectedItems="{Binding SelectedOverrides}">
+			<ListBox ItemsSource="{Binding OverrideLinks}"
+					 SelectedItems="{Binding SelectedScripts}"
+					 SelectionMode="Multiple">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<ListBoxItem>
 							<ListBoxItem.Content>
 								<Grid ColumnDefinitions="*, auto">
-									<TextBlock Grid.Column="0" Text="{Binding Item1}" />
-									<TextBlock Grid.Column="1" Text="{Binding Item2}" Margin="4 0" />
+									<TextBlock Grid.Column="0" Text="{Binding Name}" />
+									<TextBlock Grid.Column="1" Text="{Binding SubmenuOverride}" Margin="4 0" />
 								</Grid>
 							</ListBoxItem.Content>
 						</ListBoxItem>

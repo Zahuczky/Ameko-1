@@ -25,6 +25,8 @@ namespace Ameko.Services
         public static ScriptService Instance => _instance.Value;
         public ObservableCollection<Tuple<string, string>> LoadedScripts { get; private set; }
 
+        public List<HoloScript> HoloScripts => new List<HoloScript>(scripts.Values);
+
         /// <summary>
         /// Get a script by its qualified name
         /// </summary>
@@ -75,66 +77,6 @@ namespace Ameko.Services
                 var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", "Scripts have been reloaded.", ButtonEnum.Ok);
                 await box.ShowAsync();
             }
-        }
-
-        public List<TemplatedControl> GetScriptsMenuItems(ICommand ActivateScriptCommand)
-        {
-            var list = new List<TemplatedControl>();
-            var scriptSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/code-slash.svg")) { Path = new Uri("avares://Ameko/Assets/B5/code-slash.svg").LocalPath };
-
-            var subMenuParents = new List<MenuItem>();
-            var overrides = HoloContext.Instance.GlobalsManager.GetSubmenuOverrides();
-
-            foreach (var script in LoadedScripts)
-            {
-                var mi = new MenuItem
-                {
-                    Header = script.Item2,
-                    Command = ActivateScriptCommand,
-                    CommandParameter = script.Item1,
-                    Icon = scriptSvg
-                };
-
-                string? submenuName = null;
-                var matches = overrides.Where(o => o.Item1.Equals(script.Item1));
-                if (matches.Any())
-                {
-                    submenuName = matches.First().Item2;
-                }
-                else
-                {
-                    var real = Instance.Get(script.Item1);
-                    if (real != null)
-                        submenuName = real.SubmenuName; // may be null
-                }
-
-                if (submenuName != null && !submenuName.Equals("-")) // `-` sends to root
-                {
-                    // See if there's already a submenu with that name, and if so, add to it
-                    var potentialParents = subMenuParents.Where(p => p.Header != null && p.Header.Equals(submenuName));
-                    if (potentialParents.Any())
-                    {
-                        potentialParents.First().Items.Add(mi);
-                    }
-                    else
-                    {
-                        // No submenu exists, so add a new one
-                        var parent = new MenuItem { Header = submenuName };
-                        parent.Items.Add(mi);
-                        subMenuParents.Add(parent);
-                    }
-                }
-                else
-                {
-                    // Submenu Name is null, add to main
-                    list.Add(mi);
-                }
-
-            }
-
-            if (subMenuParents.Count > 0)
-                list.InsertRange(0, subMenuParents.ToArray());
-            return list;
         }
 
         private ScriptService()
