@@ -38,6 +38,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
     public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
+    public Interaction<GlobalsWindowViewModel, Unit> ShowGlobalsWindow { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
@@ -54,6 +55,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowSearchDialogCommand { get; }
     public ICommand ShowShiftTimesDialogCommand { get; }
     public ICommand ShowDependencyControlWindowCommand { get; }
+    public ICommand ShowGlobalsWindowCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
@@ -133,6 +135,7 @@ public class MainViewModel : ViewModelBase
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
         ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
+        ShowGlobalsWindow = new Interaction<GlobalsWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
         ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
@@ -179,6 +182,12 @@ public class MainViewModel : ViewModelBase
         {
             var vm = new DependencyControlWindowViewModel();
             await ShowDependencyControlWindow.Handle(vm);
+        });
+
+        ShowGlobalsWindowCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new GlobalsWindowViewModel();
+            await ShowGlobalsWindow.Handle(vm);
         });
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>

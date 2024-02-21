@@ -145,6 +145,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         manager.Show();
         interaction.SetOutput(null);
     }
+    
+    private async void DoShowGlobalsManagerAsync(InteractionContext<GlobalsWindowViewModel, Unit> interaction)
+    {
+        interaction.SetOutput(Unit.Default);
+        var manager = new GlobalsWindow();
+        manager.DataContext = interaction.Input;
+        await manager.ShowDialog(this);
+    }
 
     public MainWindow()
     {
@@ -203,6 +211,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialog);
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
+                ViewModel.ShowGlobalsWindow.RegisterHandler(DoShowGlobalsManagerAsync);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

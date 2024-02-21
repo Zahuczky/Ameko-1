@@ -83,6 +83,7 @@ namespace Ameko.Services
             var scriptSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/code-slash.svg")) { Path = new Uri("avares://Ameko/Assets/B5/code-slash.svg").LocalPath };
 
             var subMenuParents = new List<MenuItem>();
+            var overrides = HoloContext.Instance.GlobalsManager.GetSubmenuOverrides();
 
             foreach (var script in LoadedScripts)
             {
@@ -95,9 +96,10 @@ namespace Ameko.Services
                 };
 
                 string? submenuName = null;
-                if (false) // TODO: Configuration-based overrides: QualifiedName → MenuName link
+                var matches = overrides.Where(o => o.Item1.Equals(script.Item1));
+                if (matches.Any())
                 {
-                    // if configuration.menuoverrides.contains(Item1) submenuName = blah blah
+                    submenuName = matches.First().Item2;
                 }
                 else
                 {
@@ -106,7 +108,7 @@ namespace Ameko.Services
                         submenuName = real.SubmenuName; // may be null
                 }
 
-                if (submenuName != null)
+                if (submenuName != null && !submenuName.Equals("-")) // `-` sends to root
                 {
                     // See if there's already a submenu with that name, and if so, add to it
                     var potentialParents = subMenuParents.Where(p => p.Header != null && p.Header.Equals(submenuName));
