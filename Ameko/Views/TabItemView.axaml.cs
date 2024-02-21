@@ -8,6 +8,8 @@ using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using Avalonia.Remote.Protocol.Input;
 using DynamicData;
+using HarfBuzzSharp;
+using Holo;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -103,7 +105,9 @@ namespace Ameko.Views
                 this.GetObservable(ViewModelProperty).WhereNotNull()
                 .Subscribe(vm =>
                 {
-                    // Skip if already subscribed
+                    DiscordRPCService.Instance.Set($"{vm.Title}.ass", HoloContext.Instance.Workspace.Name);
+
+                    // Skip registration if already subscribed
                     if (previousVMs.Contains(vm)) return;
                     previousVMs.Add(vm);
 

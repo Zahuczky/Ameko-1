@@ -12,6 +12,7 @@ The following libraries are property of their respective owners and may be licen
 - Avalonia
 - CS-Script
 - GitInfo
+- Lachee/DiscordRichPresence
 - MessageBox.Avalonia
 - Svg.Skia
 - Tomlet

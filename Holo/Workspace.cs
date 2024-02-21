@@ -37,6 +37,7 @@ namespace Holo
         private Dictionary<int, FileWrapper> loadedFiles;
         
         public Uri? FilePath { get; private set; }
+        public string Name { get; private set; }
         private ObservableCollection<Style> Styles { get; set; }
         public ObservableCollection<string> StyleNames { get; private set; }
 
@@ -208,6 +209,8 @@ namespace Holo
                 using var writer = new StreamWriter(fp, false);
                 string m = TomletMain.TomlStringFrom(file);
                 writer.Write(m);
+                FilePath = filePath;
+                Name = Path.GetFileName(FilePath.LocalPath);
                 return true;
             }
             catch { return false; }
@@ -252,6 +255,7 @@ namespace Holo
                 loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
                 FilePath = filePath;
+                Name = Path.GetFileName(FilePath.LocalPath);
             }
             catch { throw new IOException($"An error occured while loading workspace file {filePath}"); }
         }
@@ -307,6 +311,7 @@ namespace Holo
             Cps = 0;
             AddFileToWorkspace();
             WorkingIndex = 0;
+            Name = "Default Workspace";
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -1,4 +1,5 @@
-﻿using Ameko.ViewModels;
+﻿using Ameko.Services;
+using Ameko.ViewModels;
 using Ameko.Views;
 
 using Avalonia;
@@ -23,6 +24,7 @@ public partial class App : Application
             {
                 DataContext = new MainViewModel()
             };
+            desktop.ShutdownRequested += HandleShutdown;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
@@ -33,5 +35,10 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    public void HandleShutdown(object? sender, ShutdownRequestedEventArgs e)
+    {
+        DiscordRPCService.Instance.Unload();
     }
 }
