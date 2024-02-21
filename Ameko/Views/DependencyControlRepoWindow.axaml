@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:Ameko.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
+        x:Class="Ameko.Views.DependencyControlRepoWindow"
+		x:DataType="vm:DependencyControlWindowViewModel"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		Width="300"
+		Height="300"
+		CanResize="False"
+		Topmost="True"
+		WindowStartupLocation="CenterOwner"
+        Title="Manage Repositories">
+	<DockPanel>
+		<TextBlock DockPanel.Dock="Top" Text="Source Repositories" />
+		<Grid DockPanel.Dock="Bottom" ColumnDefinitions="*, auto" RowDefinitions="auto, auto">
+			<TextBlock Grid.Column="0" Grid.Row="0" Margin="2" Text="Note: Restart Ameko after removing repositories to clean sub-repositories." TextWrapping="Wrap" />
+			<Button Grid.Column="1" Grid.Row="0" Margin="2" Content="Remove" Command="{Binding RemoveRepositoryCommand}" />
+			<TextBox Grid.Column="0" Grid.Row="1" Margin="2" Watermark="url..." Text="{Binding RepoTextBoxText}" />
+			<Button Grid.Column="1" Grid.Row="1" Margin="2" Content="Add" Command="{Binding AddRepositoryCommand}" />
+		</Grid>
+		<ListBox Margin="2" VerticalAlignment="Stretch"
+			     SelectionMode="Multiple"
+			     ItemsSource="{Binding Repositories}"
+				 SelectedItems="{Binding SelectedRepos}">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<ListBoxItem Content="{Binding Name}">
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock Text="{Binding Description}" />
+								<TextBlock Text="{Binding Url}" />
+							</StackPanel>
+						</ToolTip.Tip>
+					</ListBoxItem>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</DockPanel>
+</Window>

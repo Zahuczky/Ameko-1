@@ -9,8 +9,8 @@ namespace Holo
     public class ConfigurationManager
     {
         private readonly string configDirectory;
-        private HoloConfiguration? _config;
-        public HoloConfiguration? CurrentConfiguration => _config;
+        private Configuration? _config;
+        public Configuration? CurrentConfiguration => _config;
 
         public bool LoadConfiguration()
         {
@@ -21,7 +21,7 @@ namespace Holo
             {
                 using var reader = new StreamReader(configFilePath);
                 var configContents = reader.ReadToEnd();
-                _config = TomletMain.To<HoloConfiguration>(configContents);
+                _config = TomletMain.To<Configuration>(configContents);
                 return true;
             }
             catch { return false; }
@@ -51,7 +51,7 @@ namespace Holo
         }
     }
 
-    public class HoloConfiguration
+    public class Configuration
     {
         public string? AudioProvider;
         public string? VideoProvider;

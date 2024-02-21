@@ -4,10 +4,14 @@ using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Primitives;
+using Avalonia.Platform;
+using Avalonia.Svg.Skia;
 using DynamicData;
 using ExCSS;
 using Holo;
 using ReactiveUI;
+using Svg.Skia;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -33,6 +37,8 @@ public class MainViewModel : ViewModelBase
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
+    public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
+    public Interaction<GlobalsWindowViewModel, Unit> ShowGlobalsWindow { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
@@ -48,10 +54,11 @@ public class MainViewModel : ViewModelBase
     public ICommand QuitCommand { get; }
     public ICommand ShowSearchDialogCommand { get; }
     public ICommand ShowShiftTimesDialogCommand { get; }
+    public ICommand ShowDependencyControlWindowCommand { get; }
+    public ICommand ShowGlobalsWindowCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
-    public ObservableCollection<string> ScriptNames { get; }
-    public bool HasScripts { get; set; }
+    public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
 
     public int SelectedTabIndex
     {
@@ -93,6 +100,29 @@ public class MainViewModel : ViewModelBase
             }
     }
 
+    private void GenerateScriptsMenu()
+    {
+        ScriptMenuItems.Clear();
+        var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg")) { Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath };
+        var dcSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/globe.svg")) { Path = new Uri("avares://Ameko/Assets/B5/globe.svg").LocalPath };
+
+        ScriptMenuItems.AddRange(ScriptMenuService.GenerateScriptMenuItemSource(ActivateScriptCommand));
+
+        ScriptMenuItems.Add(new Separator());
+        ScriptMenuItems.Add(new MenuItem
+        {
+            Header = "_Reload Scripts",
+            Command = ReloadScriptsCommand,
+            Icon = reloadSvg
+        });
+        ScriptMenuItems.Add(new MenuItem
+        {
+            Header = "_Dependency Control",
+            Command = ShowDependencyControlWindowCommand,
+            Icon = dcSvg
+        });
+    }
+
     public MainViewModel()
     {
         Workspace = HoloContext.Instance.Workspace;
@@ -104,6 +134,8 @@ public class MainViewModel : ViewModelBase
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
+        ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
+        ShowGlobalsWindow = new Interaction<GlobalsWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
         ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
@@ -146,6 +178,18 @@ public class MainViewModel : ViewModelBase
             await ShowShiftTimesDialog.Handle(vm);
         });
 
+        ShowDependencyControlWindowCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new DependencyControlWindowViewModel();
+            await ShowDependencyControlWindow.Handle(vm);
+        });
+
+        ShowGlobalsWindowCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new GlobalsWindowViewModel();
+            await ShowGlobalsWindow.Handle(vm);
+        });
+
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
         {
             var script = ScriptService.Instance.Get(scriptName);
@@ -160,16 +204,14 @@ public class MainViewModel : ViewModelBase
         });
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));
-        ScriptNames = new ObservableCollection<string>(ScriptService.Instance.LoadedScripts);
-        HasScripts = ScriptNames.Any();
+
+        ScriptMenuItems = new ObservableCollection<TemplatedControl>();
+        GenerateScriptsMenu();
 
         HoloContext.Instance.Workspace.Files.CollectionChanged += UpdateLoadedTabsCallback;
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
-            ScriptNames.Clear();
-            ScriptNames.AddRange(ScriptService.Instance.LoadedScripts);
-            HasScripts = ScriptNames.Any();
-            this.RaisePropertyChanged(nameof(HasScripts));
+            GenerateScriptsMenu();
         };
     }
 }

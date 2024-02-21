@@ -10,6 +10,7 @@
 		Width="775"
 		Height="525"
 		Topmost="True"
+		CanResize="False"
         Title="Styles Manager">
 	<Grid ColumnDefinitions="*, *, *"
 		  RowDefinitions="auto, *">

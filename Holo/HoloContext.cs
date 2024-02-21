@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Holo.DC;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -15,13 +16,19 @@ namespace Holo
         public PluginHandler PluginHandler { get; }
         public ConfigurationManager ConfigurationManager { get; }
         public GlobalsManager GlobalsManager { get; }
+        public RepositoryManager RepositoryManager { get; }
         public Workspace Workspace { get; set; }
 
         private HoloContext()
         {
-            PluginHandler = new PluginHandler(Path.Combine(HoloDirectory, "plugins"));
             ConfigurationManager = new ConfigurationManager(HoloDirectory);
             GlobalsManager = new GlobalsManager();
+
+            PluginHandler = new PluginHandler(Path.Combine(HoloDirectory, "plugins"));
+
+            RepositoryManager = new RepositoryManager();
+            RepositoryManager.LoadUrlList(GlobalsManager.GetRepositories());
+
             Workspace = new Workspace();
             
             if (!ConfigurationManager.LoadConfiguration())

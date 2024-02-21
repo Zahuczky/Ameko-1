@@ -1,0 +1,97 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Ameko.ViewModels"
+		xmlns:converters="using:Ameko.Converters"
+		mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
+        x:Class="Ameko.Views.DependencyControlWindow"
+		x:DataType="vm:DependencyControlWindowViewModel"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		Width="600"
+		Height="450"
+		Topmost="True"
+		CanResize="False"
+        Title="Dependency Control"
+		WindowStartupLocation="CenterOwner"
+		x:Name="dcw">
+	<Window.Resources>
+		<converters:DCScriptUpdateVersionConverter x:Key="VersionConverter" />
+		<converters:DCScriptUpdateNotifConverter x:Key="NotifConverter" />
+	</Window.Resources>
+		<Grid ColumnDefinitions="*, *" RowDefinitions="*, auto">
+			<!-- Available Scripts -->
+			<DockPanel Grid.Column="0" Grid.Row="0">
+				<TextBlock DockPanel.Dock="Top" Margin="2" HorizontalAlignment="Center" Text="Available Scripts" />
+				<ListBox Margin="2" VerticalAlignment="Stretch"
+						 SelectionMode="Multiple"
+						 ItemsSource="{Binding RepoScripts}"
+						 SelectedItems="{Binding SelectedRepoScripts}">
+					<ListBox.ItemTemplate>
+						<DataTemplate> 
+							<ListBoxItem>
+								<ListBoxItem.Content>
+									<Grid ColumnDefinitions="*, auto">
+										<TextBlock Grid.Column="0" Text="{Binding Name}" />
+										<TextBlock Grid.Column="1" Text="{Binding CurrentVersion, StringFormat='v{0}'}" Margin="4 0" />
+									</Grid>
+								</ListBoxItem.Content>
+								<ToolTip.Tip>
+									<StackPanel>
+										<TextBlock Text="{Binding QualifiedName}" />
+										<TextBlock Grid.Column="2" Text="{Binding Author, StringFormat='Author: {0}'}" />
+										<TextBlock Text="{Binding Description}" />
+									</StackPanel>
+								</ToolTip.Tip>
+							</ListBoxItem>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</DockPanel>
+			
+			<!-- Installed Scripts -->
+			<DockPanel Grid.Column="1" Grid.Row="0">
+				<TextBlock DockPanel.Dock="Top" Margin="2" HorizontalAlignment="Center" Text="Installed Scripts" />
+				<ListBox Margin="2" VerticalAlignment="Stretch" 
+						 SelectionMode="Multiple"
+						 ItemsSource="{Binding InstalledScripts}"
+						 SelectedItems="{Binding SelectedInstalledScripts}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<ListBoxItem>
+								<ListBoxItem.Content>
+									<Grid ColumnDefinitions="auto, *, auto">
+										<TextBlock Grid.Column="0" Text="{Binding ., Converter={StaticResource NotifConverter}}" Foreground="Yellow" />
+										<TextBlock Grid.Column="1" Text="{Binding Name}" />
+										<TextBlock Grid.Column="2" Text="{Binding CurrentVersion, StringFormat='v{0}'}" Margin="4 0 0 0" />
+										
+									</Grid>
+								</ListBoxItem.Content>
+								<ToolTip.Tip>
+									<StackPanel>
+										<TextBlock Text="{Binding QualifiedName}" />
+										<TextBlock Text="{Binding Description}" />
+										<TextBlock Text="{Binding ., Converter={StaticResource VersionConverter}}" />
+									</StackPanel>
+								</ToolTip.Tip>
+							</ListBoxItem>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</DockPanel>
+			
+			<!-- Left Grid -->
+			<Grid Grid.Column="0" Grid.Row="1"
+				  ColumnDefinitions="auto, *, auto">
+				<Button Grid.Column="0" Margin="2" Command="{Binding DisplayRepoManagerCommand}">Repos...</Button>
+				<Button Grid.Column="2" Margin="2" Command="{Binding InstallScriptCommand}">Install</Button>
+			</Grid>
+			<!-- Right Grid -->
+			<Grid Grid.Column="1" Grid.Row="1"
+				  ColumnDefinitions="auto, *, auto, auto">
+				<Button Grid.Column="0" Margin="2" Command="{Binding UpdateAllCommand}">Update All</Button>
+				<Button Grid.Column="2" Margin="2" Command="{Binding UpdateScriptCommand}">Update</Button>
+				<Button Grid.Column="3" Margin="2" Command="{Binding UninstallScriptCommand}">Uninstall</Button>
+			</Grid>
+		</Grid>
+</Window>

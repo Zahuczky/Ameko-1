@@ -1,4 +1,6 @@
-﻿using CSScriptLib;
+﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using CSScriptLib;
 using Holo;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
@@ -10,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Ameko.Services
 {
@@ -20,15 +23,26 @@ namespace Ameko.Services
         private readonly Dictionary<string, HoloScript> scripts;
         
         public static ScriptService Instance => _instance.Value;
-        public ObservableCollection<string> LoadedScripts { get; private set; }
+        public ObservableCollection<Tuple<string, string>> LoadedScripts { get; private set; }
 
-        public HoloScript? Get(string name)
+        public List<HoloScript> HoloScripts => new List<HoloScript>(scripts.Values);
+
+        /// <summary>
+        /// Get a script by its qualified name
+        /// </summary>
+        /// <param name="qualifiedName"></param>
+        /// <returns></returns>
+        public HoloScript? Get(string qualifiedName)
         {
-            if (scripts.ContainsKey(name))
-                return scripts[name];
+            if (scripts.ContainsKey(qualifiedName))
+                return scripts[qualifiedName];
             return null;
         }
 
+        /// <summary>
+        /// Reload the scripts
+        /// </summary>
+        /// <param name="manual">Was the reload manually triggered</param>
         public async void Reload(bool manual)
         {
             if (!Directory.Exists(scriptRoot))
@@ -48,8 +62,9 @@ namespace Ameko.Services
                     if (script == null) continue;
 
                     var name = script.Name;
-                    scripts[name] = script;
-                    LoadedScripts.Add(name);
+                    var qname = script.QualifiedName;
+                    scripts[qname] = script;
+                    LoadedScripts.Add(new Tuple<string, string>(qname, name));
                 }
                 catch (Exception e)
                 {
@@ -67,7 +82,7 @@ namespace Ameko.Services
         private ScriptService()
         {
             scriptRoot = Path.Combine(HoloContext.HoloDirectory, "scripts");
-            LoadedScripts = new ObservableCollection<string>();
+            LoadedScripts = new ObservableCollection<Tuple<string, string>>();
             scripts = new Dictionary<string, HoloScript>();
             Reload(false);
         }
