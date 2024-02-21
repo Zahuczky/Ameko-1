@@ -2,23 +2,32 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Tomlet;
 
 namespace Holo
 {
-    public class GlobalsManager
+    public class GlobalsManager : INotifyPropertyChanged
     {
         private int _styleId;
         public int NextStyleId => _styleId++;
         private string _globalsFilePath;
+        private int _cps;
 
         private ObservableCollection<Style> Styles { get; set; }
         private ObservableCollection<Color> Colors { get; set; }
         private ObservableCollection<string> Repositories { get; set; }
         private Dictionary<string, string> SubmenuOverrides { get; set; }
         public ObservableCollection<string> StyleNames { get; private set; }
+        public int Cps
+        {
+            get => _cps;
+            set { _cps = value; OnPropertyChanged(nameof(Cps)); Write(); }
+        }
+
 
         /// <summary>
         /// Add a new DepCtl repository
@@ -144,6 +153,7 @@ namespace Holo
                     GlobalsVersion = 1.0,
                     Styles = this.Styles.Select(s => s.AsAss()).ToList(),
                     Colors = this.Colors.Select(c => c.AsAss()).ToList(),
+                    Cps = this.Cps,
                     DepCtl =
                     new DepCtlGlobalsModel {
                         Repositories = this.Repositories?.ToList(),
@@ -183,6 +193,7 @@ namespace Holo
 
                 Styles = new ObservableCollection<Style>(input.Styles.Select(s => new Style(NextStyleId, s)));
                 Colors = new ObservableCollection<Color>(input.Colors.Select(c => new Color(c)));
+                Cps = input.Cps ?? 0;
                 StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
                 Repositories = new ObservableCollection<string>(input.DepCtl?.Repositories);
                 SubmenuOverrides = new Dictionary<string, string>(input.DepCtl?.SubmenuOverrides);
@@ -199,6 +210,7 @@ namespace Holo
             Repositories = new ObservableCollection<string>();
             SubmenuOverrides = new Dictionary<string, string>();
             _styleId = 0;
+            _cps = 0;
             Read();
         }
 
@@ -217,6 +229,10 @@ namespace Holo
             /// </summary>
             public List<string>? Colors;
             /// <summary>
+            /// Globals CPS
+            /// </summary>
+            public int? Cps;
+            /// <summary>
             /// Depencency Control model
             /// </summary>
             public DepCtlGlobalsModel? DepCtl;
@@ -232,6 +248,12 @@ namespace Holo
             /// Mapping of user-specified submenu overrides
             /// </summary>
             public Dictionary<string, string>? SubmenuOverrides;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

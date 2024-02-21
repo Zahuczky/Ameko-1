@@ -38,5 +38,18 @@
 				</ListBox.ItemTemplate>
 			</ListBox>
 		</DockPanel>
+		<StackPanel Grid.Column="1" Grid.Row="0">
+			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Additional Globals" />
+			<StackPanel Orientation="Horizontal">
+				<Label VerticalAlignment="Center">CPS warn limit:</Label>
+				<NumericUpDown Margin="2 0 2 2"
+							   ShowButtonSpinner="False"
+							   Minimum="0"
+							   Maximum="50"
+							   AllowSpin="True"
+							   Value="{Binding Cps}" />
+				<Button Margin="2 0 2 2" IsEnabled="{Binding CpsButtonEnabled}" Command="{Binding SetCpsCommand}">Set</Button>
+			</StackPanel>
+		</StackPanel>
 	</Grid>
 </Window>

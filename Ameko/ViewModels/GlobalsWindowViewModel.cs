@@ -15,13 +15,27 @@ namespace Ameko.ViewModels
 {
     public class GlobalsWindowViewModel : ViewModelBase
     {
+        private bool cpsButtonEnabled;
+        private int cps;
+
         public List<SubmenuOverrideLink> SelectedScripts { get; set; }
         public string OverrideTextBoxText { get; set; }
 
         public ObservableCollection<SubmenuOverrideLink> OverrideLinks { get; private set; }
+        public int Cps
+        {
+            get => cps;
+            set { this.RaiseAndSetIfChanged(ref cps, value); CpsButtonEnabled = true; }
+        }
+        public bool CpsButtonEnabled
+        {
+            get => cpsButtonEnabled;
+            set => this.RaiseAndSetIfChanged(ref cpsButtonEnabled, value);
+        }
 
         public ICommand SetOverrideCommand { get; }
         public ICommand RemoveOverrideCommand { get; }
+        public ICommand SetCpsCommand { get; }
 
         private void GenerateOverrideLinks()
         {
@@ -51,6 +65,8 @@ namespace Ameko.ViewModels
             
             SelectedScripts = new List<SubmenuOverrideLink>();
             OverrideTextBoxText = string.Empty;
+            Cps = HoloContext.Instance.GlobalsManager.Cps;
+            cpsButtonEnabled = false;
 
             SetOverrideCommand = ReactiveCommand.Create(() =>
             {
@@ -69,6 +85,12 @@ namespace Ameko.ViewModels
                     HoloContext.Instance.GlobalsManager.RemoveSubmenuOverride(script.QualifiedName);
                 }
                 GenerateOverrideLinks();
+            });
+
+            SetCpsCommand = ReactiveCommand.Create(() =>
+            {
+                HoloContext.Instance.GlobalsManager.Cps = Cps;
+                CpsButtonEnabled = false;
             });
         }
     }

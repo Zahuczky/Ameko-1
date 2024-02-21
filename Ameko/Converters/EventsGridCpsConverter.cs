@@ -16,10 +16,14 @@ namespace Ameko.Converters
         {
             int cps = System.Convert.ToInt32(value);
 
-            // TODO: Load threshold from config
+            // Workspace > Globals > Default
             int threshold;
-            if (HoloContext.Instance.Workspace.Cps == 0) threshold = 18; // Default
-            else threshold = HoloContext.Instance.Workspace.Cps;
+            if (HoloContext.Instance.Workspace.Cps != 0)
+                threshold = HoloContext.Instance.Workspace.Cps;
+            else if (HoloContext.Instance.GlobalsManager.Cps != 0)
+                threshold = HoloContext.Instance.GlobalsManager.Cps;
+            else
+                threshold = 18; // Default
 
             if (cps > threshold)
             {
