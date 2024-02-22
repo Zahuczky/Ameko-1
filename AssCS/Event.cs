@@ -87,7 +87,8 @@ namespace AssCS
             {
                 var secs = (End - Start).TotalSeconds;
                 if (secs == 0) return 0;
-                return Math.Round(GetStrippedText().Length / (End - Start).TotalSeconds);
+                var text = GetStrippedText().Replace("\\N", string.Empty).Replace(" ", string.Empty);
+                return Math.Round(text.Length / (End - Start).TotalSeconds);
             }
         }
         /// <summary>
