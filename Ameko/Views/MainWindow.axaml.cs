@@ -158,6 +158,10 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     {
         InitializeComponent();
 
+        var autosave = new AutosaveService();
+        autosave.SetInterval(new TimeSpan(0, 5, 0)); // TODO: config
+        autosave.Start();
+
         _searchWindow = new SearchWindow();
         // _searchWindow.Unloaded += (o, e) => _isSearching = false;
         _searchWindow.Closing += (o, e) => { 

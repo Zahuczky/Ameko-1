@@ -8,10 +8,13 @@ namespace Holo
     public class HoloContext
     {
         private static readonly Lazy<HoloContext> _instance = new Lazy<HoloContext>(() => new HoloContext());
-        private static readonly string localappdata = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.Create), "Ameko", "Holo");
+        private static readonly string localappdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.Create);
+        private static readonly string amekoDir = Path.Combine(localappdata, "Ameko");
+        private static readonly string holoDir = Path.Combine(localappdata, "Ameko", "Holo");
         
         public static HoloContext Instance => _instance.Value;
-        public static string HoloDirectory => localappdata;
+        public static string HoloDirectory => holoDir;
+        public static string AmekoDirectory => amekoDir;
         
         public PluginHandler PluginHandler { get; }
         public ConfigurationManager ConfigurationManager { get; }
