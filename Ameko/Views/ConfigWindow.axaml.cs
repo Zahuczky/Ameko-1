@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Ameko.Views
 {
-    public partial class GlobalsWindow : Window
+    public partial class ConfigWindow : Window
     {
-        public GlobalsWindow()
+        public ConfigWindow()
         {
             InitializeComponent();
         }

@@ -19,7 +19,7 @@ namespace Ameko.Services
             var submenuItemsMap = new Dictionary<string, List<MenuItem>>();
             var rootItems = new List<MenuItem>();
             var groups = new List<MenuItem>();
-            var overrides = HoloContext.Instance.GlobalsManager.SubmenuOverridesMap;
+            var overrides = HoloContext.Instance.ConfigurationManager.SubmenuOverridesMap;
 
             var scripts = ScriptService.Instance.HoloScripts;
 

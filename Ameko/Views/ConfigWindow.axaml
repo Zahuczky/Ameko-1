@@ -4,14 +4,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:Ameko.ViewModels"
         mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="500"
-        x:Class="Ameko.Views.GlobalsWindow"
-		x:DataType="vm:GlobalsWindowViewModel"
+        x:Class="Ameko.Views.ConfigWindow"
+		x:DataType="vm:ConfigWindowViewModel"
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
 		Width="650"
 		Height="500"
 		Topmost="True"
 		CanResize="False"
-        Title="Globals Management">
+        Title="Configuration">
 	<Grid ColumnDefinitions="*, *" RowDefinitions="*, *, *">
 		<DockPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="3">
 			<TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Text="Script Submenu Overrides" />

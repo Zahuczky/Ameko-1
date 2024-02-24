@@ -80,6 +80,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\ConfigWindow.axaml.cs">
+      <DependentUpon>ConfigWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\StylesManagerWindow.axaml.cs">
       <DependentUpon>StylesManagerWindow.axaml</DependentUpon>
     </Compile>

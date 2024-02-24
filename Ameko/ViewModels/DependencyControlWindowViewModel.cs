@@ -162,7 +162,7 @@ namespace Ameko.ViewModels
                 var repo = await Repository.Build(input);
                 if (repo == null) return;
 
-                HoloContext.Instance.GlobalsManager.AddRepository(repo.Url ?? string.Empty);
+                HoloContext.Instance.ConfigurationManager.AddRepository(repo.Url ?? string.Empty);
                 HoloContext.Instance.RepositoryManager.GatherRepositories(repo);
                 HoloContext.Instance.RepositoryManager.GatherRepoScripts();
 
@@ -177,7 +177,7 @@ namespace Ameko.ViewModels
                 foreach (var repo in SelectedRepos.ToArray())
                 {
                     HoloContext.Instance.RepositoryManager.RemoveRepository(repo);
-                    HoloContext.Instance.GlobalsManager.RemoveRepository(repo.Url ?? string.Empty);
+                    HoloContext.Instance.ConfigurationManager.RemoveRepository(repo.Url ?? string.Empty);
                 }
                 Repositories.Clear();
                 Repositories.AddRange(HoloContext.Instance.RepositoryManager.Repositories);

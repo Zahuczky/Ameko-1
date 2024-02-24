@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace Ameko.ViewModels
 {
-    public class GlobalsWindowViewModel : ViewModelBase
+    public class ConfigWindowViewModel : ViewModelBase
     {
         private bool cpsButtonEnabled;
         private int cps;
@@ -39,7 +39,7 @@ namespace Ameko.ViewModels
 
         private void GenerateOverrideLinks()
         {
-            var currentOverrides = HoloContext.Instance.GlobalsManager.GetSubmenuOverrides();
+            var currentOverrides = HoloContext.Instance.ConfigurationManager.GetSubmenuOverrides();
 
             OverrideLinks.Clear();
             foreach (var script in ScriptService.Instance.LoadedScripts)
@@ -58,14 +58,14 @@ namespace Ameko.ViewModels
             }
         }
 
-        public GlobalsWindowViewModel()
+        public ConfigWindowViewModel()
         {
             OverrideLinks = new ObservableCollection<SubmenuOverrideLink>();
             GenerateOverrideLinks();
             
             SelectedScripts = new List<SubmenuOverrideLink>();
             OverrideTextBoxText = string.Empty;
-            Cps = HoloContext.Instance.GlobalsManager.Cps;
+            Cps = HoloContext.Instance.ConfigurationManager.Cps;
             cpsButtonEnabled = false;
 
             SetOverrideCommand = ReactiveCommand.Create(() =>
@@ -73,7 +73,7 @@ namespace Ameko.ViewModels
                 if (OverrideTextBoxText.Trim().Equals(string.Empty)) return;
                 foreach (var script in SelectedScripts)
                 {
-                    HoloContext.Instance.GlobalsManager.SetSubmenuOverride(script.QualifiedName, OverrideTextBoxText.Trim());
+                    HoloContext.Instance.ConfigurationManager.SetSubmenuOverride(script.QualifiedName, OverrideTextBoxText.Trim());
                 }
                 GenerateOverrideLinks();
             });
@@ -82,14 +82,14 @@ namespace Ameko.ViewModels
             {
                 foreach (var script in SelectedScripts)
                 {
-                    HoloContext.Instance.GlobalsManager.RemoveSubmenuOverride(script.QualifiedName);
+                    HoloContext.Instance.ConfigurationManager.RemoveSubmenuOverride(script.QualifiedName);
                 }
                 GenerateOverrideLinks();
             });
 
             SetCpsCommand = ReactiveCommand.Create(() =>
             {
-                HoloContext.Instance.GlobalsManager.Cps = Cps;
+                HoloContext.Instance.ConfigurationManager.Cps = Cps;
                 CpsButtonEnabled = false;
             });
         }

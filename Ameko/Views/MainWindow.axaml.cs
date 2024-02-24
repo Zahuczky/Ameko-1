@@ -146,10 +146,10 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
     
-    private async void DoShowGlobalsManagerAsync(InteractionContext<GlobalsWindowViewModel, Unit> interaction)
+    private async void DoShowGlobalsManagerAsync(InteractionContext<ConfigWindowViewModel, Unit> interaction)
     {
         interaction.SetOutput(Unit.Default);
-        var manager = new GlobalsWindow();
+        var manager = new ConfigWindow();
         manager.DataContext = interaction.Input;
         await manager.ShowDialog(this);
     }
@@ -159,8 +159,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         InitializeComponent();
 
         var autosave = new AutosaveService();
-        autosave.SetInterval(new TimeSpan(0, 5, 0)); // TODO: config
-        autosave.Start();
 
         _searchWindow = new SearchWindow();
         // _searchWindow.Unloaded += (o, e) => _isSearching = false;
@@ -215,7 +213,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialog);
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
-                ViewModel.ShowGlobalsWindow.RegisterHandler(DoShowGlobalsManagerAsync);
+                ViewModel.ShowConfigWindow.RegisterHandler(DoShowGlobalsManagerAsync);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
