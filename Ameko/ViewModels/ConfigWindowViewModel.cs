@@ -15,8 +15,9 @@ namespace Ameko.ViewModels
 {
     public class ConfigWindowViewModel : ViewModelBase
     {
-        private bool cpsButtonEnabled;
         private int cps;
+        private bool autosaveEnabled;
+        private int autosaveInterval;
 
         public List<SubmenuOverrideLink> SelectedScripts { get; set; }
         public string OverrideTextBoxText { get; set; }
@@ -25,17 +26,24 @@ namespace Ameko.ViewModels
         public int Cps
         {
             get => cps;
-            set { this.RaiseAndSetIfChanged(ref cps, value); CpsButtonEnabled = true; }
+            set => this.RaiseAndSetIfChanged(ref cps, value);
         }
-        public bool CpsButtonEnabled
+
+        public bool AutosaveEnabled
         {
-            get => cpsButtonEnabled;
-            set => this.RaiseAndSetIfChanged(ref cpsButtonEnabled, value);
+            get => autosaveEnabled;
+            set => this.RaiseAndSetIfChanged(ref autosaveEnabled, value);
+        }
+
+        public int AutosaveInterval
+        {
+            get => autosaveInterval;
+            set => this.RaiseAndSetIfChanged(ref autosaveInterval, value);
         }
 
         public ICommand SetOverrideCommand { get; }
         public ICommand RemoveOverrideCommand { get; }
-        public ICommand SetCpsCommand { get; }
+        public ICommand SaveConfigCommand { get; }
 
         private void GenerateOverrideLinks()
         {
@@ -66,7 +74,8 @@ namespace Ameko.ViewModels
             SelectedScripts = new List<SubmenuOverrideLink>();
             OverrideTextBoxText = string.Empty;
             Cps = HoloContext.Instance.ConfigurationManager.Cps;
-            cpsButtonEnabled = false;
+            AutosaveEnabled = HoloContext.Instance.ConfigurationManager.Autosave;
+            AutosaveInterval = HoloContext.Instance.ConfigurationManager.AutosaveInterval;
 
             SetOverrideCommand = ReactiveCommand.Create(() =>
             {
@@ -87,10 +96,11 @@ namespace Ameko.ViewModels
                 GenerateOverrideLinks();
             });
 
-            SetCpsCommand = ReactiveCommand.Create(() =>
+            SaveConfigCommand = ReactiveCommand.Create(() =>
             {
                 HoloContext.Instance.ConfigurationManager.Cps = Cps;
-                CpsButtonEnabled = false;
+                HoloContext.Instance.ConfigurationManager.Autosave = AutosaveEnabled;
+                HoloContext.Instance.ConfigurationManager.AutosaveInterval = AutosaveInterval;
             });
         }
     }
