@@ -110,6 +110,23 @@ namespace Holo
         }
 
         /// <summary>
+        /// Set multiple keybinds. Empty string removes.
+        /// </summary>
+        /// <param name="keybinds">Map</param>
+        public void SetKeybinds(Dictionary<string, string> keybinds)
+        {
+            foreach (var pair in keybinds)
+            {
+                if (pair.Value != string.Empty)
+                    _keybinds[pair.Key] = pair.Value;
+                else
+                    _keybinds.Remove(pair.Key);
+            }
+            WriteKeybinds();
+            OnPropertyChanged(nameof(KeybindsMap));
+        }
+
+        /// <summary>
         /// Remove a keybind
         /// </summary>
         /// <param name="qualifiedName">Action's qualified name</param>
@@ -278,6 +295,24 @@ namespace Holo
         }
         #endregion Models
 
+        #region Defaults
+        public List<string> AmekoKeybindQNames => new List<string>
+        {
+            "ameko.file.new",
+            "ameko.file.open",
+            "ameko.file.save",
+            "ameko.file.saveas",
+            "ameko.file.search",
+            "ameko.file.shift",
+            "ameko.event.duplicate",
+            "ameko.event.copy",
+            "ameko.event.cut",
+            "ameko.event.paste",
+            "ameko.event.pasteover",
+            "ameko.event.delete",
+            "ameko.app.about",
+            "ameko.app.quit"
+        };
         private Dictionary<string, string> DefaultKeybinds()
         {
             var defaults = new Dictionary<string, string>
@@ -300,6 +335,7 @@ namespace Holo
 
             return defaults;
         }
+        #endregion Defaults
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

@@ -78,6 +78,11 @@
 						<Svg Path="avares://Ameko/Assets/B5/gear.svg" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<MenuItem Header="_Keybinds" Command="{Binding ShowKeybindsWindowCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/link.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
 				<MenuItem Header="About _Ameko" Command="{Binding ShowAboutDialogCommand}">
 					<MenuItem.Icon>
 						<Image Width="16" Height="16" Source="avares://Ameko/Assets/Ameko-Simplified-BG-64.ico" />

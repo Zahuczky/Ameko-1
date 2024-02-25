@@ -148,10 +148,18 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
     
-    private async void DoShowGlobalsManagerAsync(InteractionContext<ConfigWindowViewModel, Unit> interaction)
+    private async void DoShowConfigWindowAsync(InteractionContext<ConfigWindowViewModel, Unit> interaction)
     {
         interaction.SetOutput(Unit.Default);
         var manager = new ConfigWindow();
+        manager.DataContext = interaction.Input;
+        await manager.ShowDialog(this);
+    }
+
+    private async void DoShowKeybindsWindowAsync(InteractionContext<ConfigWindowViewModel, Unit> interaction)
+    {
+        interaction.SetOutput(Unit.Default);
+        var manager = new KeybindsWindow();
         manager.DataContext = interaction.Input;
         await manager.ShowDialog(this);
     }
@@ -249,7 +257,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialog);
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
-                ViewModel.ShowConfigWindow.RegisterHandler(DoShowGlobalsManagerAsync);
+                ViewModel.ShowConfigWindow.RegisterHandler(DoShowConfigWindowAsync);
+                ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindowAsync);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

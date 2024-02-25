@@ -1,5 +1,6 @@
 ﻿using Ameko.DataModels;
 using Ameko.Services;
+using Ameko.Views;
 using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls;
@@ -39,6 +40,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
     public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
     public Interaction<ConfigWindowViewModel, Unit> ShowConfigWindow { get; }
+    public Interaction<ConfigWindowViewModel, Unit> ShowKeybindsWindow { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
@@ -55,7 +57,8 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowSearchDialogCommand { get; }
     public ICommand ShowShiftTimesDialogCommand { get; }
     public ICommand ShowDependencyControlWindowCommand { get; }
-    public ICommand ShowGlobalsWindowCommand { get; }
+    public ICommand ShowConfigWindowCommand { get; }
+    public ICommand ShowKeybindsWindowCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
@@ -136,6 +139,7 @@ public class MainViewModel : ViewModelBase
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
         ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
         ShowConfigWindow = new Interaction<ConfigWindowViewModel, Unit>();
+        ShowKeybindsWindow = new Interaction<ConfigWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
         ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
@@ -184,10 +188,16 @@ public class MainViewModel : ViewModelBase
             await ShowDependencyControlWindow.Handle(vm);
         });
 
-        ShowGlobalsWindowCommand = ReactiveCommand.Create(async () =>
+        ShowConfigWindowCommand = ReactiveCommand.Create(async () =>
         {
             var vm = new ConfigWindowViewModel();
             await ShowConfigWindow.Handle(vm);
+        });
+
+        ShowKeybindsWindowCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new ConfigWindowViewModel();
+            await ShowKeybindsWindow.Handle(vm);
         });
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
