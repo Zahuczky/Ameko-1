@@ -12,7 +12,7 @@
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="Manage Keybinds">
 	<Grid RowDefinitions="auto, *, auto">
-		<TextBox Grid.Row="0" Margin="2" IsEnabled="False" Watermark="Filter..." />
+		<TextBox Grid.Row="0" Margin="2" Text="{Binding Filter}" Watermark="Filter..." />
 		<TabControl Grid.Row="1" TabStripPlacement="Top" Margin="2">
 			<TabItem Header="Global">
 				<ListBox Grid.Row="0" ItemsSource="{Binding GlobalBinds}">

@@ -13,15 +13,51 @@ using System.Windows.Input;
 
 namespace Ameko.ViewModels
 {
-    public class KeybindsWindowViewModel
+    public class KeybindsWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<KeybindLink> GlobalBinds { get; private set; }
-        public ObservableCollection<KeybindLink> GridBinds { get; private set; }
-        public ObservableCollection<KeybindLink> EditBinds { get; private set; }
-        public ObservableCollection<KeybindLink> AudioBinds { get; private set; }
-        public ObservableCollection<KeybindLink> VideoBinds { get; private set; }
+        private readonly SourceCache<KeybindLink, string> _globalCache = new(x => x.Key);
+        private readonly SourceCache<KeybindLink, string> _gridCache = new(x => x.Key);
+        private readonly SourceCache<KeybindLink, string> _editCache = new(x => x.Key);
+        private readonly SourceCache<KeybindLink, string> _audioCache = new(x => x.Key);
+        private readonly SourceCache<KeybindLink, string> _videoCache = new(x => x.Key);
+
+        private readonly ReadOnlyObservableCollection<KeybindLink> _globalBinds;
+        private readonly ReadOnlyObservableCollection<KeybindLink> _gridBinds;
+        private readonly ReadOnlyObservableCollection<KeybindLink> _editBinds;
+        private readonly ReadOnlyObservableCollection<KeybindLink> _audioBinds;
+        private readonly ReadOnlyObservableCollection<KeybindLink> _videoBinds;
+
+        public ReadOnlyObservableCollection<KeybindLink> GlobalBinds => _globalBinds;
+        public ReadOnlyObservableCollection<KeybindLink> GridBinds => _gridBinds;
+        public ReadOnlyObservableCollection<KeybindLink> EditBinds => _editBinds;
+        public ReadOnlyObservableCollection<KeybindLink> AudioBinds => _audioBinds;
+        public ReadOnlyObservableCollection<KeybindLink> VideoBinds => _videoBinds;
+
+        private string _filter = string.Empty;
+        public string Filter
+        {
+            get => _filter;
+            set 
+            {
+                this.RaiseAndSetIfChanged(ref _filter, value);
+                _globalCache.Refresh();
+                _gridCache.Refresh();
+                _editCache.Refresh();
+                _audioCache.Refresh();
+                _videoCache.Refresh();
+            }
+        }
 
         public ICommand SaveKeybindsCommand { get; }
+
+        private ReadOnlyObservableCollection<KeybindLink> ROOCGenerator(IEnumerable<string> targets, Dictionary<string, string> sources)
+        {
+            return new ReadOnlyObservableCollection<KeybindLink>(
+                new ObservableCollection<KeybindLink>(
+                    targets.Select(n => new KeybindLink { Key = n, Value = sources.GetValueOrDefault(n, string.Empty) })
+                )
+            );
+        }
 
         public KeybindsWindowViewModel()
         {
@@ -37,17 +73,44 @@ namespace Ameko.ViewModels
             var audio = KeybindsRegistry.GetBuiltins(KeybindContext.AUDIO).Concat(scriptNames);
             var video = KeybindsRegistry.GetBuiltins(KeybindContext.VIDEO).Concat(scriptNames);
 
-            GlobalBinds = new ObservableCollection<KeybindLink>(global.Select(n => new KeybindLink { Key = n, Value = reg.GlobalBinds.GetValueOrDefault(n, string.Empty) }));
-            GridBinds = new ObservableCollection<KeybindLink>(grid.Select(n => new KeybindLink { Key = n, Value = reg.GridBinds.GetValueOrDefault(n, string.Empty) }));
-            EditBinds = new ObservableCollection<KeybindLink>(edit.Select(n => new KeybindLink { Key = n, Value = reg.EditBinds.GetValueOrDefault(n, string.Empty) }));
-            AudioBinds = new ObservableCollection<KeybindLink>(audio.Select(n => new KeybindLink { Key = n, Value = reg.AudioBinds.GetValueOrDefault(n, string.Empty) }));
-            VideoBinds = new ObservableCollection<KeybindLink>(video.Select(n => new KeybindLink { Key = n, Value = reg.VideoBinds.GetValueOrDefault(n, string.Empty) }));
+            _globalBinds = ROOCGenerator(global, reg.GlobalBinds);
+            _gridBinds = ROOCGenerator(grid, reg.GridBinds);
+            _editBinds = ROOCGenerator(edit, reg.EditBinds);
+            _audioBinds = ROOCGenerator(audio, reg.AudioBinds);
+            _videoBinds = ROOCGenerator(video, reg.VideoBinds);
+
+            _globalCache.AddOrUpdate(_globalBinds);
+            _gridCache.AddOrUpdate(_gridBinds);
+            _editCache.AddOrUpdate(_editBinds);
+            _audioCache.AddOrUpdate(_audioBinds);
+            _videoCache.AddOrUpdate(_videoBinds);
+
+            _globalCache.Connect()
+                .Filter(x => Filter.Equals(string.Empty) || x.Key.Contains(Filter, StringComparison.CurrentCultureIgnoreCase) || x.Value.Contains(Filter, StringComparison.CurrentCultureIgnoreCase))
+                .Bind(out _globalBinds)
+                .Subscribe();
+            _gridCache.Connect()
+                .Filter(x => Filter.Equals(string.Empty) || x.Key.Contains(Filter, StringComparison.CurrentCultureIgnoreCase) || x.Value.Contains(Filter, StringComparison.CurrentCultureIgnoreCase))
+                .Bind(out _gridBinds)
+                .Subscribe();
+            _editCache.Connect()
+                .Filter(x => Filter.Equals(string.Empty) || x.Key.Contains(Filter, StringComparison.CurrentCultureIgnoreCase) || x.Value.Contains(Filter, StringComparison.CurrentCultureIgnoreCase))
+                .Bind(out _editBinds)
+                .Subscribe();
+            _audioCache.Connect()
+                .Filter(x => Filter.Equals(string.Empty) || x.Key.Contains(Filter, StringComparison.CurrentCultureIgnoreCase) || x.Value.Contains(Filter, StringComparison.CurrentCultureIgnoreCase))
+                .Bind(out _audioBinds)
+                .Subscribe();
+            _videoCache.Connect()
+                .Filter(x => Filter.Equals(string.Empty) || x.Key.Contains(Filter, StringComparison.CurrentCultureIgnoreCase) || x.Value.Contains(Filter, StringComparison.CurrentCultureIgnoreCase))
+                .Bind(out _videoBinds)
+                .Subscribe();
 
             SaveKeybindsCommand = ReactiveCommand.Create(() =>
             {
                 HoloContext.Instance.ConfigurationManager.SetKeybinds(
                     KeybindContext.GLOBAL,
-                    new Dictionary<string, string>(GlobalBinds.Select(k => new KeyValuePair<string, string>(k.Key, k.Value)))
+                    new Dictionary<string, string>(_globalBinds.Select(k => new KeyValuePair<string, string>(k.Key, k.Value)))
                 );
                 HoloContext.Instance.ConfigurationManager.SetKeybinds(
                     KeybindContext.GRID,
