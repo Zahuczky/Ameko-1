@@ -43,6 +43,7 @@ namespace Ameko.ViewModels
         public ICommand InsertAfterCommand { get; }
         public ICommand SplitEventCommand { get; }
         public ICommand MergeEventsCommand { get; }
+        public ICommand ActivateScriptCommand { get; }
 
         public string Title
         {
@@ -130,6 +131,11 @@ namespace Ameko.ViewModels
             SplitEventCommand = ReactiveCommand.Create(Wrapper.SplitSelected);
             MergeEventsCommand = ReactiveCommand.Create(Wrapper.MergeSelectedAdj);
             NextOrAddEventCommand = ReactiveCommand.Create(Wrapper.NextOrAdd);
+
+            ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
+            {
+                await ScriptService.Instance.ExecuteScriptOrFunction(scriptName);
+            });
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };

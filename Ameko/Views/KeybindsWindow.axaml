@@ -38,7 +38,7 @@
 					</ListBox.ItemTemplate>
 				</ListBox>
 			</TabItem>
-			<TabItem Header="Editing">
+			<TabItem Header="Editor">
 				<ListBox Grid.Row="0" ItemsSource="{Binding EditBinds}">
 					<ListBox.ItemTemplate>
 						<DataTemplate>

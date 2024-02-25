@@ -23,7 +23,7 @@
 			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Audio Area" />
 		</Panel>
 		<!-- Editor -->
-		<Grid Grid.Row="2" Grid.Column="2" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}" RowDefinitions="auto, auto, *">
+		<Grid Grid.Row="2" Grid.Column="2" Name="editorPanel" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}" RowDefinitions="auto, auto, *">
 			<Grid Grid.Row="0" ColumnDefinitions="auto, *, auto, *, *, auto">
 				<CheckBox Grid.Column="0"
 						  Margin="2"
