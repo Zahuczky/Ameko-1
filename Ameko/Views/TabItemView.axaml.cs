@@ -95,6 +95,19 @@ namespace Ameko.Views
             interaction.SetOutput(Unit.Default);
         }
 
+        private void SetKeybinds()
+        {
+            if (ViewModel == null) return;
+            eventsGrid.KeyBindings.Clear();
+            var map = HoloContext.Instance.ConfigurationManager.KeybindsMap;
+            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.duplicate", ViewModel.DuplicateSelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.copy", ViewModel.CopySelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.cut", ViewModel.CutSelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.paste", ViewModel.PasteCommand);
+            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.pasteover", ViewModel.PasteOverCommand);
+            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.delete", ViewModel.DeleteSelectedCommand);
+        }
+
         public TabView()
         {
             InitializeComponent();
@@ -105,9 +118,11 @@ namespace Ameko.Views
                 this.GetObservable(ViewModelProperty).WhereNotNull()
                 .Subscribe(vm =>
                 {
+                    // Every time
                     DiscordRPCService.Instance.Set($"{vm.Title}.ass", HoloContext.Instance.Workspace.Name);
+                    SetKeybinds();
 
-                    // Skip registration if already subscribed
+                    // Skip the rest if already subscribed
                     if (previousVMs.Contains(vm)) return;
                     previousVMs.Add(vm);
 
@@ -121,9 +136,21 @@ namespace Ameko.Views
                     endBox.AddHandler(InputElement.KeyDownEvent, Helpers.TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
                     eventsGrid.SelectionChanged += EventsGrid_SelectionChanged;
+
+                    HoloContext.Instance.ConfigurationManager.PropertyChanged += ConfigurationManager_PropertyChanged;
                 })
                 .DisposeWith(disposables);
             });
+        }
+
+        private void ConfigurationManager_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsMap):
+                    SetKeybinds();
+                    break;
+            }
         }
 
         private void EventsGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)

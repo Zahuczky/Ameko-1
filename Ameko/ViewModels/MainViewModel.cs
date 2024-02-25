@@ -55,7 +55,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowSearchDialogCommand { get; }
     public ICommand ShowShiftTimesDialogCommand { get; }
     public ICommand ShowDependencyControlWindowCommand { get; }
-    public ICommand ShowConfigWindowCommand { get; }
+    public ICommand ShowGlobalsWindowCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
@@ -184,7 +184,7 @@ public class MainViewModel : ViewModelBase
             await ShowDependencyControlWindow.Handle(vm);
         });
 
-        ShowConfigWindowCommand = ReactiveCommand.Create(async () =>
+        ShowGlobalsWindowCommand = ReactiveCommand.Create(async () =>
         {
             var vm = new ConfigWindowViewModel();
             await ShowConfigWindow.Handle(vm);

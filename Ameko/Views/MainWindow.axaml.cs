@@ -7,10 +7,12 @@ using Avalonia.ReactiveUI;
 using Holo;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Ameko.Views;
 
@@ -154,6 +156,21 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         await manager.ShowDialog(this);
     }
 
+    private void SetKeybinds()
+    {
+        if (ViewModel == null) return;
+        this.KeyBindings.Clear();
+        var map = HoloContext.Instance.ConfigurationManager.KeybindsMap;
+        KeybindService.TrySetKeybind(this, map, "ameko.file.new", ViewModel.NewFileCommand);
+        KeybindService.TrySetKeybind(this, map, "ameko.file.open", ViewModel.ShowOpenFileDialogCommand);
+        KeybindService.TrySetKeybind(this, map, "ameko.file.save", ViewModel.ShowSaveFileDialogCommand);
+        KeybindService.TrySetKeybind(this, map, "ameko.file.saveas", ViewModel.ShowSaveAsFileDialogCommand);
+        KeybindService.TrySetKeybind(this, map, "ameko.file.search", ViewModel.ShowSearchDialogCommand);
+        KeybindService.TrySetKeybind(this, map, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
+        KeybindService.TrySetKeybind(this, map, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
+        KeybindService.TrySetKeybind(this, map, "ameko.app.quit", ViewModel.QuitCommand);
+    }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -167,6 +184,16 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             ((SearchWindow)o).Hide();
             _isSearching = false;
             e.Cancel = true; 
+        };
+
+        HoloContext.Instance.ConfigurationManager.PropertyChanged += (o, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsMap):
+                    SetKeybinds();
+                    break;
+            }
         };
 
         AddHandler(DragDrop.DropEvent, (s, e) =>
@@ -203,6 +230,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         {
             if (ViewModel != null)
             {
+                if (this.KeyBindings.Count == 0) SetKeybinds();
+
                 ViewModel.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
                 ViewModel.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
                 ViewModel.ShowSaveAsFileDialog.RegisterHandler(DoShowSaveAsFileDialogAsync);

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using Tomlet;
 
 namespace Holo
@@ -13,6 +14,7 @@ namespace Holo
     public class ConfigurationManager : INotifyPropertyChanged
     {
         private readonly string _configFilePath;
+        private readonly string _keybindsFilePath;
 
         private string _audioProvider;
         private string _videoProvider;
@@ -21,6 +23,7 @@ namespace Holo
         private int _autosaveInterval;
         private ObservableCollection<string> _repositories;
         private Dictionary<string, string> _submenuOverrides;
+        private Dictionary<string, string> _keybinds;
 
         /// <summary>
         /// Character-per-second warning limit
@@ -28,7 +31,7 @@ namespace Holo
         public int Cps
         {
             get => _cps;
-            set { _cps = value; OnPropertyChanged(nameof(Cps)); Write(); }
+            set { _cps = value; OnPropertyChanged(nameof(Cps)); WriteConfig(); }
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace Holo
         public bool Autosave
         {
             get => _autosave;
-            set { _autosave = value; OnPropertyChanged(nameof(Autosave)); Write(); }
+            set { _autosave = value; OnPropertyChanged(nameof(Autosave)); WriteConfig(); }
         }
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace Holo
         public int AutosaveInterval
         {
             get => _autosaveInterval;
-            set { _autosaveInterval = value; OnPropertyChanged(nameof(AutosaveInterval)); Write(); }
+            set { _autosaveInterval = value; OnPropertyChanged(nameof(AutosaveInterval)); WriteConfig(); }
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace Holo
         public void AddRepository(string repoUrl)
         {
             _repositories.Add(repoUrl);
-            Write();
+            WriteConfig();
         }
 
         /// <summary>
@@ -67,7 +70,7 @@ namespace Holo
         public bool RemoveRepository(string repoUrl)
         {
             var removed = _repositories.Remove(repoUrl);
-            if (removed) Write();
+            if (removed) WriteConfig();
             return removed;
         }
 
@@ -79,7 +82,7 @@ namespace Holo
         public void SetSubmenuOverride(string qualifiedName, string value)
         {
             _submenuOverrides[qualifiedName] = value;
-            Write();
+            WriteConfig();
         }
 
         /// <summary>
@@ -90,7 +93,32 @@ namespace Holo
         public bool RemoveSubmenuOverride(string qualifiedName)
         {
             var removed = _submenuOverrides.Remove(qualifiedName);
-            if (removed) Write();
+            if (removed) WriteConfig();
+            return removed;
+        }
+
+        /// <summary>
+        /// Apply a keybind
+        /// </summary>
+        /// <param name="qualifiedName">Action's qualified name</param>
+        /// <param name="value">Keybind</param>
+        public void SetKeybind(string qualifiedName, string value)
+        {
+            _keybinds[qualifiedName] = value;
+            WriteKeybinds();
+            OnPropertyChanged(nameof(KeybindsMap));
+        }
+
+        /// <summary>
+        /// Remove a keybind
+        /// </summary>
+        /// <param name="qualifiedName">Action's qualified name</param>
+        /// <returns>True if it was removed</returns>
+        public bool RemoveKeybind(string qualifiedName)
+        {
+            var removed = _keybinds.Remove(qualifiedName);
+            if (removed) WriteKeybinds();
+            OnPropertyChanged(nameof(KeybindsMap));
             return removed;
         }
 
@@ -113,12 +141,13 @@ namespace Holo
         }
 
         public Dictionary<string, string> SubmenuOverridesMap => new Dictionary<string, string>(_submenuOverrides);
+        public Dictionary<string, string> KeybindsMap => new Dictionary<string, string>(_keybinds);
 
-        public void Read()
+        public void ReadConfig()
         {
             if (!File.Exists(_configFilePath))
             {
-                Write();
+                WriteConfig();
                 return;
             }
 
@@ -131,14 +160,42 @@ namespace Holo
             catch { throw new IOException($"An error occured while loading config file {_configFilePath}"); }
         }
 
-        public async void Write()
+        public void ReadKeybinds()
+        {
+            if (!File.Exists(_keybindsFilePath))
+            {
+                WriteKeybinds();
+                return;
+            }
+
+            try
+            {
+                using var reader = new StreamReader(_keybindsFilePath);
+                var keybindContents = reader.ReadToEnd();
+                _keybinds = JsonSerializer.Deserialize<Dictionary<string, string>>(keybindContents)!;
+            }
+            catch { throw new IOException($"An error occured while loading keybinds file {_keybindsFilePath}"); }
+        }
+
+        public async void WriteConfig()
         {
             try
             {
-                using var writer = new StreamWriter(_configFilePath);
+                using var configWriter = new StreamWriter(_configFilePath);
                 string m = TomletMain.TomlStringFrom(ToConfigurationModel(), TomlSerializerOptions.Default);
-                await writer.WriteAsync(m);
+                await configWriter.WriteAsync(m);
             } catch { return; }
+        }
+
+        public async void WriteKeybinds()
+        {
+            try
+            {
+                using var keybindsWriter = new StreamWriter(_keybindsFilePath);
+                string kb = JsonSerializer.Serialize(_keybinds);
+                await keybindsWriter.WriteAsync(kb);
+            }
+            catch { return; }
         }
 
         private ConfigurationModel ToConfigurationModel()
@@ -179,6 +236,7 @@ namespace Holo
         public ConfigurationManager()
         {
             _configFilePath = Path.Join(HoloContext.HoloDirectory, "config.toml");
+            _keybindsFilePath = Path.Join(HoloContext.HoloDirectory, "keybinds.json");
             _audioProvider = string.Empty;
             _videoProvider = string.Empty;
             _cps = 0;
@@ -186,7 +244,9 @@ namespace Holo
             _autosaveInterval = 300; // 5 minutes
             _repositories = new ObservableCollection<string>();
             _submenuOverrides = new Dictionary<string, string>();
-            Read();
+            _keybinds = DefaultKeybinds();
+            ReadConfig();
+            ReadKeybinds();
         }
 
         #region Models
@@ -217,6 +277,29 @@ namespace Holo
             public Dictionary<string, string>? SubmenuOverrides;
         }
         #endregion Models
+
+        private Dictionary<string, string> DefaultKeybinds()
+        {
+            var defaults = new Dictionary<string, string>
+            {
+                ["ameko.file.new"] = "Ctrl+N",
+                ["ameko.file.open"] = "Ctrl+O",
+                ["ameko.file.save"] = "Ctrl+S",
+                ["ameko.file.saveas"] = "Ctrl+Shift+S",
+                ["ameko.file.search"] = "Ctrl+F",
+                ["ameko.file.shift"] = "Ctrl+I",
+                ["ameko.event.duplicate"] = "Ctrl+D",
+                ["ameko.event.copy"] = "Ctrl+C",
+                ["ameko.event.cut"] = "Ctrl+X",
+                ["ameko.event.paste"] = "Ctrl+V",
+                ["ameko.event.pasteover"] = "Ctrl+Shift+V",
+                ["ameko.event.delete"] = "Shift+Delete",
+                ["ameko.app.about"] = "Shift+F1",
+                ["ameko.app.quit"] = "Ctrl+Q"
+            };
+
+            return defaults;
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
