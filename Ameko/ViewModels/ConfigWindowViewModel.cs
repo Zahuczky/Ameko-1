@@ -22,7 +22,6 @@ namespace Ameko.ViewModels
         public List<SubmenuOverrideLink> SelectedScripts { get; set; }
         public string OverrideTextBoxText { get; set; }
         public ObservableCollection<SubmenuOverrideLink> OverrideLinks { get; private set; }
-        public ObservableCollection<KeybindLink> Keybinds { get; private set; }
 
         public int Cps
         {
@@ -45,7 +44,6 @@ namespace Ameko.ViewModels
         public ICommand SetOverrideCommand { get; }
         public ICommand RemoveOverrideCommand { get; }
         public ICommand SaveConfigCommand { get; }
-        public ICommand SaveKeybindsCommand { get; }
 
         private void GenerateOverrideLinks()
         {
@@ -79,26 +77,6 @@ namespace Ameko.ViewModels
             AutosaveEnabled = HoloContext.Instance.ConfigurationManager.Autosave;
             AutosaveInterval = HoloContext.Instance.ConfigurationManager.AutosaveInterval;
 
-            var kbm = HoloContext.Instance.ConfigurationManager.KeybindsMap;
-            Keybinds = new ObservableCollection<KeybindLink>();
-
-            // Load up all the possible binds
-            Keybinds.AddRange(HoloContext.Instance.ConfigurationManager.AmekoKeybindQNames.Select(n => new KeybindLink { Key = n }));
-            // Keybinds.AddRange(ScriptService.Instance.LoadedScripts.Select(s => new KeybindLink { Key = s.Item1 }));
-            foreach (var script in ScriptService.Instance.LoadedScripts)
-            {
-                Keybinds.Add(new KeybindLink { Key = script.Item1 });
-                foreach (var method in ScriptService.Instance.FunctionMap[script.Item1])
-                    Keybinds.Add(new KeybindLink { Key = method });
-            }
-
-            // Set the set binds
-            foreach (var pair in kbm)
-            {
-                var result = Keybinds.Where(k => k.Key == pair.Key);
-                if (result.Any()) result.First().Value = pair.Value;
-            }
-
             SetOverrideCommand = ReactiveCommand.Create(() =>
             {
                 if (OverrideTextBoxText.Trim().Equals(string.Empty)) return;
@@ -123,13 +101,6 @@ namespace Ameko.ViewModels
                 HoloContext.Instance.ConfigurationManager.Cps = Cps;
                 HoloContext.Instance.ConfigurationManager.Autosave = AutosaveEnabled;
                 HoloContext.Instance.ConfigurationManager.AutosaveInterval = AutosaveInterval;
-            });
-
-            SaveKeybindsCommand = ReactiveCommand.Create(() =>
-            {
-                HoloContext.Instance.ConfigurationManager.SetKeybinds(
-                    new Dictionary<string, string>(Keybinds.Select(k => new KeyValuePair<string, string>(k.Key, k.Value)))
-                );
             });
         }
     }

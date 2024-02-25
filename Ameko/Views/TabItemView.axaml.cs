@@ -99,13 +99,12 @@ namespace Ameko.Views
         {
             if (ViewModel == null) return;
             eventsGrid.KeyBindings.Clear();
-            var map = HoloContext.Instance.ConfigurationManager.KeybindsMap;
-            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.duplicate", ViewModel.DuplicateSelectedEventsCommand);
-            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.copy", ViewModel.CopySelectedEventsCommand);
-            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.cut", ViewModel.CutSelectedEventsCommand);
-            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.paste", ViewModel.PasteCommand);
-            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.pasteover", ViewModel.PasteOverCommand);
-            KeybindService.TrySetKeybind(eventsGrid, map, "ameko.event.delete", ViewModel.DeleteSelectedCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.duplicate", ViewModel.DuplicateSelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.copy", ViewModel.CopySelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.cut", ViewModel.CutSelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.paste", ViewModel.PasteCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.pasteover", ViewModel.PasteOverCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.delete", ViewModel.DeleteSelectedCommand);
         }
 
         public TabView()
@@ -147,7 +146,7 @@ namespace Ameko.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsMap):
+                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsRegistry):
                     SetKeybinds();
                     break;
             }

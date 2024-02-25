@@ -40,7 +40,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
     public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
     public Interaction<ConfigWindowViewModel, Unit> ShowConfigWindow { get; }
-    public Interaction<ConfigWindowViewModel, Unit> ShowKeybindsWindow { get; }
+    public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
@@ -139,7 +139,7 @@ public class MainViewModel : ViewModelBase
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
         ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
         ShowConfigWindow = new Interaction<ConfigWindowViewModel, Unit>();
-        ShowKeybindsWindow = new Interaction<ConfigWindowViewModel, Unit>();
+        ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
         ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
@@ -196,7 +196,7 @@ public class MainViewModel : ViewModelBase
 
         ShowKeybindsWindowCommand = ReactiveCommand.Create(async () =>
         {
-            var vm = new ConfigWindowViewModel();
+            var vm = new KeybindsWindowViewModel();
             await ShowKeybindsWindow.Handle(vm);
         });
 

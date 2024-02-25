@@ -10,7 +10,6 @@
              x:Class="Ameko.Views.TabView">
 	<UserControl.Resources>
 		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
-		<converters:KeybindGestureConverter x:Key="GestureConverter" />
 		<converters:EventEditEnabledConverter x:Key="EnabledConverter" />
 	</UserControl.Resources>
 	<Grid ColumnDefinitions="*, 2, 1.25*"

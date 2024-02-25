@@ -23,7 +23,7 @@ namespace Holo
         private int _autosaveInterval;
         private ObservableCollection<string> _repositories;
         private Dictionary<string, string> _submenuOverrides;
-        private Dictionary<string, string> _keybinds;
+        private KeybindsRegistry _keybindsRegistry;
 
         /// <summary>
         /// Character-per-second warning limit
@@ -100,42 +100,82 @@ namespace Holo
         /// <summary>
         /// Apply a keybind
         /// </summary>
+        /// <param name="context">Context for the keybind</param>
         /// <param name="qualifiedName">Action's qualified name</param>
         /// <param name="value">Keybind</param>
-        public void SetKeybind(string qualifiedName, string value)
+        public void SetKeybind(KeybindContext context, string qualifiedName, string value)
         {
-            _keybinds[qualifiedName] = value;
+            switch (context)
+            {
+                case KeybindContext.GLOBAL:
+                    _keybindsRegistry.GlobalBinds[qualifiedName] = value;
+                    break;
+                case KeybindContext.GRID:
+                    _keybindsRegistry.GridBinds[qualifiedName] = value;
+                    break;
+                case KeybindContext.EDIT:
+                    _keybindsRegistry.EditBinds[qualifiedName] = value;
+                    break;
+                case KeybindContext.AUDIO:
+                    _keybindsRegistry.AudioBinds[qualifiedName] = value;
+                    break;
+                case KeybindContext.VIDEO:
+                    _keybindsRegistry.VideoBinds[qualifiedName] = value;
+                    break;
+            }
+            
             WriteKeybinds();
-            OnPropertyChanged(nameof(KeybindsMap));
+            OnPropertyChanged(nameof(KeybindsRegistry));
         }
 
         /// <summary>
         /// Set multiple keybinds. Empty string removes.
         /// </summary>
+        /// <param name="context">Context for the keybind</param>
         /// <param name="keybinds">Map</param>
-        public void SetKeybinds(Dictionary<string, string> keybinds)
+        public void SetKeybinds(KeybindContext context, Dictionary<string, string> keybinds)
         {
+            Dictionary<string, string> binds = context switch
+            {
+                KeybindContext.GLOBAL => _keybindsRegistry.GlobalBinds,
+                KeybindContext.GRID => _keybindsRegistry.GridBinds,
+                KeybindContext.EDIT => _keybindsRegistry.EditBinds,
+                KeybindContext.AUDIO => _keybindsRegistry.AudioBinds,
+                KeybindContext.VIDEO => _keybindsRegistry.VideoBinds,
+                _ => new Dictionary<string, string>()
+            };
             foreach (var pair in keybinds)
             {
                 if (pair.Value != string.Empty)
-                    _keybinds[pair.Key] = pair.Value;
+                    binds[pair.Key] = pair.Value;
                 else
-                    _keybinds.Remove(pair.Key);
+                    binds.Remove(pair.Key);
             }
+
             WriteKeybinds();
-            OnPropertyChanged(nameof(KeybindsMap));
+            OnPropertyChanged(nameof(KeybindsRegistry));
         }
 
         /// <summary>
         /// Remove a keybind
         /// </summary>
+        /// <param name="context">Context for the keybind</param>
         /// <param name="qualifiedName">Action's qualified name</param>
         /// <returns>True if it was removed</returns>
-        public bool RemoveKeybind(string qualifiedName)
+        public bool RemoveKeybind(KeybindContext context, string qualifiedName)
         {
-            var removed = _keybinds.Remove(qualifiedName);
+            var removed = context switch
+            {
+                KeybindContext.GLOBAL => _keybindsRegistry.GlobalBinds.Remove(qualifiedName),
+                KeybindContext.GRID => _keybindsRegistry.GridBinds.Remove(qualifiedName),
+                KeybindContext.EDIT => _keybindsRegistry.EditBinds.Remove(qualifiedName),
+                KeybindContext.AUDIO => _keybindsRegistry.AudioBinds.Remove(qualifiedName),
+                KeybindContext.VIDEO => _keybindsRegistry.VideoBinds.Remove(qualifiedName),
+                _ => false
+            };
+            
             if (removed) WriteKeybinds();
-            OnPropertyChanged(nameof(KeybindsMap));
+            OnPropertyChanged(nameof(KeybindsRegistry));
             return removed;
         }
 
@@ -158,7 +198,7 @@ namespace Holo
         }
 
         public Dictionary<string, string> SubmenuOverridesMap => new Dictionary<string, string>(_submenuOverrides);
-        public Dictionary<string, string> KeybindsMap => new Dictionary<string, string>(_keybinds);
+        public KeybindsRegistry KeybindsRegistry => _keybindsRegistry;
 
         public void ReadConfig()
         {
@@ -189,7 +229,7 @@ namespace Holo
             {
                 using var reader = new StreamReader(_keybindsFilePath);
                 var keybindContents = reader.ReadToEnd();
-                _keybinds = JsonSerializer.Deserialize<Dictionary<string, string>>(keybindContents)!;
+                _keybindsRegistry = JsonSerializer.Deserialize<KeybindsRegistry>(keybindContents)!;
             }
             catch { throw new IOException($"An error occured while loading keybinds file {_keybindsFilePath}"); }
         }
@@ -209,7 +249,7 @@ namespace Holo
             try
             {
                 using var keybindsWriter = new StreamWriter(_keybindsFilePath);
-                string kb = JsonSerializer.Serialize(_keybinds);
+                string kb = JsonSerializer.Serialize(_keybindsRegistry);
                 await keybindsWriter.WriteAsync(kb);
             }
             catch { return; }
@@ -261,7 +301,7 @@ namespace Holo
             _autosaveInterval = 300; // 5 minutes
             _repositories = new ObservableCollection<string>();
             _submenuOverrides = new Dictionary<string, string>();
-            _keybinds = DefaultKeybinds();
+            _keybindsRegistry = KeybindsRegistry.Default();
             ReadConfig();
             ReadKeybinds();
         }
@@ -295,53 +335,79 @@ namespace Holo
         }
         #endregion Models
 
-        #region Defaults
-        public List<string> AmekoKeybindQNames => new List<string>
-        {
-            "ameko.file.new",
-            "ameko.file.open",
-            "ameko.file.save",
-            "ameko.file.saveas",
-            "ameko.file.search",
-            "ameko.file.shift",
-            "ameko.event.duplicate",
-            "ameko.event.copy",
-            "ameko.event.cut",
-            "ameko.event.paste",
-            "ameko.event.pasteover",
-            "ameko.event.delete",
-            "ameko.app.about",
-            "ameko.app.quit"
-        };
-        private Dictionary<string, string> DefaultKeybinds()
-        {
-            var defaults = new Dictionary<string, string>
-            {
-                ["ameko.file.new"] = "Ctrl+N",
-                ["ameko.file.open"] = "Ctrl+O",
-                ["ameko.file.save"] = "Ctrl+S",
-                ["ameko.file.saveas"] = "Ctrl+Shift+S",
-                ["ameko.file.search"] = "Ctrl+F",
-                ["ameko.file.shift"] = "Ctrl+I",
-                ["ameko.event.duplicate"] = "Ctrl+D",
-                ["ameko.event.copy"] = "Ctrl+C",
-                ["ameko.event.cut"] = "Ctrl+X",
-                ["ameko.event.paste"] = "Ctrl+V",
-                ["ameko.event.pasteover"] = "Ctrl+Shift+V",
-                ["ameko.event.delete"] = "Shift+Delete",
-                ["ameko.app.about"] = "Shift+F1",
-                ["ameko.app.quit"] = "Ctrl+Q"
-            };
-
-            return defaults;
-        }
-        #endregion Defaults
-
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        } 
+    }
+
+    public class KeybindsRegistry
+    {
+        public Dictionary<string, string> GlobalBinds { get; set; }
+        public Dictionary<string, string> GridBinds { get; set; }
+        public Dictionary<string, string> EditBinds { get; set; }
+        public Dictionary<string, string> AudioBinds { get; set; }
+        public Dictionary<string, string> VideoBinds { get; set; }
+
+        public KeybindsRegistry()
+        {
+            GlobalBinds = new Dictionary<string, string>();
+            GridBinds = new Dictionary<string, string>();
+            EditBinds = new Dictionary<string, string>();
+            AudioBinds = new Dictionary<string, string>();
+            VideoBinds = new Dictionary<string, string>();
         }
+
+        public static KeybindsRegistry Default()
+        {
+            return new KeybindsRegistry
+            {
+                GlobalBinds = new Dictionary<string, string>
+                {
+                    ["ameko.file.new"] = "Ctrl+N",
+                    ["ameko.file.open"] = "Ctrl+O",
+                    ["ameko.file.save"] = "Ctrl+S",
+                    ["ameko.file.saveas"] = "Ctrl+Shift+S",
+                    ["ameko.file.search"] = "Ctrl+F",
+                    ["ameko.file.shift"] = "Ctrl+I",
+                    ["ameko.app.about"] = "Shift+F1",
+                    ["ameko.app.quit"] = "Ctrl+Q"
+                },
+                GridBinds = new Dictionary<string, string>
+                {
+                    ["ameko.event.duplicate"] = "Ctrl+D",
+                    ["ameko.event.copy"] = "Ctrl+C",
+                    ["ameko.event.cut"] = "Ctrl+X",
+                    ["ameko.event.paste"] = "Ctrl+V",
+                    ["ameko.event.pasteover"] = "Ctrl+Shift+V",
+                    ["ameko.event.delete"] = "Shift+Delete"
+                }
+            };
+        }
+
+        public static List<string> GetBuiltins(KeybindContext context)
+        {
+            var def = Default();
+            return context switch
+            {
+                KeybindContext.GLOBAL => def.GlobalBinds.Keys.ToList(),
+                KeybindContext.GRID => def.GridBinds.Keys.ToList(),
+                KeybindContext.EDIT => def.EditBinds.Keys.ToList(),
+                KeybindContext.AUDIO => def.AudioBinds.Keys.ToList(),
+                KeybindContext.VIDEO => def.VideoBinds.Keys.ToList(),
+                _ => new List<string>()
+            };
+        }
+    }
+
+    public enum KeybindContext
+    {
+        GLOBAL,
+        GRID,
+        EDIT,
+        AUDIO,
+        VIDEO
     }
 
 }

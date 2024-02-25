@@ -156,7 +156,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         await manager.ShowDialog(this);
     }
 
-    private async void DoShowKeybindsWindowAsync(InteractionContext<ConfigWindowViewModel, Unit> interaction)
+    private async void DoShowKeybindsWindowAsync(InteractionContext<KeybindsWindowViewModel, Unit> interaction)
     {
         interaction.SetOutput(Unit.Default);
         var manager = new KeybindsWindow();
@@ -168,21 +168,20 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     {
         if (ViewModel == null) return;
         this.KeyBindings.Clear();
-        var map = HoloContext.Instance.ConfigurationManager.KeybindsMap;
-        KeybindService.TrySetKeybind(this, map, "ameko.file.new", ViewModel.NewFileCommand);
-        KeybindService.TrySetKeybind(this, map, "ameko.file.open", ViewModel.ShowOpenFileDialogCommand);
-        KeybindService.TrySetKeybind(this, map, "ameko.file.save", ViewModel.ShowSaveFileDialogCommand);
-        KeybindService.TrySetKeybind(this, map, "ameko.file.saveas", ViewModel.ShowSaveAsFileDialogCommand);
-        KeybindService.TrySetKeybind(this, map, "ameko.file.search", ViewModel.ShowSearchDialogCommand);
-        KeybindService.TrySetKeybind(this, map, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
-        KeybindService.TrySetKeybind(this, map, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
-        KeybindService.TrySetKeybind(this, map, "ameko.app.quit", ViewModel.QuitCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.new", ViewModel.NewFileCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.open", ViewModel.ShowOpenFileDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.save", ViewModel.ShowSaveFileDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.saveas", ViewModel.ShowSaveAsFileDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.search", ViewModel.ShowSearchDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.quit", ViewModel.QuitCommand);
 
-        // Assign script keybinds
-        foreach (var pair in map)
+        // Assign global script keybinds
+        foreach (var pair in HoloContext.Instance.ConfigurationManager.KeybindsRegistry.GlobalBinds)
         {
             if (pair.Key.StartsWith("ameko")) continue; // Skip builtins
-            KeybindService.TrySetKeybind(this, map, pair.Key, ViewModel.ActivateScriptCommand, pair.Key);
+            KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, pair.Key, ViewModel.ActivateScriptCommand, pair.Key);
         }
     }
 
@@ -205,7 +204,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         {
             switch (e.PropertyName)
             {
-                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsMap):
+                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsRegistry):
                     SetKeybinds();
                     break;
             }

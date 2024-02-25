@@ -4,24 +4,77 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:Ameko.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
-		x:DataType="vm:ConfigWindowViewModel"
+		x:DataType="vm:KeybindsWindowViewModel"
         x:Class="Ameko.Views.KeybindsWindow"
 		Width="400"
 		Height="600"
 		Topmost="True"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="Manage Keybinds">
-	<Grid RowDefinitions="*, auto">
-		<ListBox Grid.Row="0" ItemsSource="{Binding Keybinds}">
-			<ListBox.ItemTemplate>
-				<DataTemplate>
-					<Grid ColumnDefinitions="*, *">
-						<Label Grid.Column="0" Content="{Binding Key}" />
-						<TextBox Grid.Column="1" Text="{Binding Value}" />
-					</Grid>
-				</DataTemplate>
-			</ListBox.ItemTemplate>
-		</ListBox>
-		<Button Grid.Row="1" Margin="2" Command="{Binding SaveKeybindsCommand}">Save</Button>
+	<Grid RowDefinitions="auto, *, auto">
+		<TextBox Grid.Row="0" Margin="2" IsEnabled="False" Watermark="Filter..." />
+		<TabControl Grid.Row="1" TabStripPlacement="Top" Margin="2">
+			<TabItem Header="Global">
+				<ListBox Grid.Row="0" ItemsSource="{Binding GlobalBinds}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Grid ColumnDefinitions="*, *">
+								<Label Grid.Column="0" Content="{Binding Key}" />
+								<TextBox Grid.Column="1" Text="{Binding Value}" />
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</TabItem>
+			<TabItem Header="Grid">
+				<ListBox Grid.Row="0" ItemsSource="{Binding GridBinds}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Grid ColumnDefinitions="*, *">
+								<Label Grid.Column="0" Content="{Binding Key}" />
+								<TextBox Grid.Column="1" Text="{Binding Value}" />
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</TabItem>
+			<TabItem Header="Editing">
+				<ListBox Grid.Row="0" ItemsSource="{Binding EditBinds}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Grid ColumnDefinitions="*, *">
+								<Label Grid.Column="0" Content="{Binding Key}" />
+								<TextBox Grid.Column="1" Text="{Binding Value}" />
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</TabItem>
+			<TabItem Header="Audio">
+				<ListBox Grid.Row="0" ItemsSource="{Binding AudioBinds}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Grid ColumnDefinitions="*, *">
+								<Label Grid.Column="0" Content="{Binding Key}" />
+								<TextBox Grid.Column="1" Text="{Binding Value}" />
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</TabItem>
+			<TabItem Header="Video">
+				<ListBox Grid.Row="0" ItemsSource="{Binding VideoBinds}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Grid ColumnDefinitions="*, *">
+								<Label Grid.Column="0" Content="{Binding Key}" />
+								<TextBox Grid.Column="1" Text="{Binding Value}" />
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</TabItem>
+		</TabControl>
+		<Button Grid.Row="2" Margin="2" Command="{Binding SaveKeybindsCommand}">Save</Button>
 	</Grid>
 </Window>
