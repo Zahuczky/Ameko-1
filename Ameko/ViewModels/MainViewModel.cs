@@ -202,10 +202,7 @@ public class MainViewModel : ViewModelBase
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
         {
-            var script = ScriptService.Instance.Get(scriptName);
-            if (script == null) return;
-            var result = await script.Execute();
-            Debug.WriteLine($"Script `{script.Name}` finished executing with status `{result.Status}` and message `{result.Message}`");
+            await ScriptService.Instance.ExecuteScriptOrFunction(scriptName);
         });
 
         ReloadScriptsCommand = ReactiveCommand.Create(() =>

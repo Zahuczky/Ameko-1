@@ -41,7 +41,7 @@ namespace Holo
         /// Array of qualified names being exported
         /// </summary>
         /// <remarks>
-        /// Qualified name should follow the format <c>[scriptqname].func</c>.
+        /// Qualified name must follow the format <c>[scriptqname].func</c>, where <c>func</c> contains no fullstops.
         /// Handling of the qname must be provided in <c>Execute(qname)</c>.
         /// </remarks>
         public string[] ExportedMethods { get; }

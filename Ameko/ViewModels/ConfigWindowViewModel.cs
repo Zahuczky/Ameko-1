@@ -84,7 +84,13 @@ namespace Ameko.ViewModels
 
             // Load up all the possible binds
             Keybinds.AddRange(HoloContext.Instance.ConfigurationManager.AmekoKeybindQNames.Select(n => new KeybindLink { Key = n }));
-            Keybinds.AddRange(ScriptService.Instance.LoadedScripts.Select(s => new KeybindLink { Key = s.Item1 }));
+            // Keybinds.AddRange(ScriptService.Instance.LoadedScripts.Select(s => new KeybindLink { Key = s.Item1 }));
+            foreach (var script in ScriptService.Instance.LoadedScripts)
+            {
+                Keybinds.Add(new KeybindLink { Key = script.Item1 });
+                foreach (var method in ScriptService.Instance.FunctionMap[script.Item1])
+                    Keybinds.Add(new KeybindLink { Key = method });
+            }
 
             // Set the set binds
             foreach (var pair in kbm)
