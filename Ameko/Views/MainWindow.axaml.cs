@@ -169,6 +169,13 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         KeybindService.TrySetKeybind(this, map, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
         KeybindService.TrySetKeybind(this, map, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
         KeybindService.TrySetKeybind(this, map, "ameko.app.quit", ViewModel.QuitCommand);
+
+        // Assign script keybinds
+        foreach (var pair in map)
+        {
+            if (pair.Key.StartsWith("ameko")) continue; // Skip builtins
+            KeybindService.TrySetKeybind(this, map, pair.Key, ViewModel.ActivateScriptCommand, pair.Key);
+        }
     }
 
     public MainWindow()
