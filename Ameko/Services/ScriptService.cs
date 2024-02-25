@@ -21,11 +21,13 @@ namespace Ameko.Services
         private static readonly Lazy<ScriptService> _instance = new Lazy<ScriptService>(() => new ScriptService());
         private readonly string scriptRoot;
         private readonly Dictionary<string, HoloScript> scripts;
+        private readonly Dictionary<string, string[]> functions;
         
         public static ScriptService Instance => _instance.Value;
         public ObservableCollection<Tuple<string, string>> LoadedScripts { get; private set; }
 
         public List<HoloScript> HoloScripts => new List<HoloScript>(scripts.Values);
+        public Dictionary<string, string[]> FunctionMap => new Dictionary<string, string[]>(functions);
 
         /// <summary>
         /// Get a script by its qualified name
@@ -34,9 +36,32 @@ namespace Ameko.Services
         /// <returns></returns>
         public HoloScript? Get(string qualifiedName)
         {
-            if (scripts.ContainsKey(qualifiedName))
-                return scripts[qualifiedName];
+            if (scripts.TryGetValue(qualifiedName, out HoloScript? value))
+                return value;
             return null;
+        }
+
+        /// <summary>
+        /// Execute a script or function
+        /// </summary>
+        /// <remarks>
+        /// Execution as a script will be attempted first, followed by as a function
+        /// </remarks>
+        /// <param name="qname">Qualified name of the script or function</param>
+        /// <returns>Execution result of the script or function</returns>
+        public async Task<ExecutionResult> ExecuteScriptOrFunction(string qname)
+        {
+            // Try running as a script
+            if (scripts.TryGetValue(qname, out HoloScript? script))
+                return await script.Execute();
+
+            // Try running as a method
+            var scriptName = qname[..qname.LastIndexOf('.')];
+            if (scripts.TryGetValue(scriptName, out HoloScript? methodScript))
+                return await methodScript.Execute(qname);
+
+            // Neither of these worked, fail
+            return new ExecutionResult { Status = ExecutionStatus.Failure, Message = $"The script or function {qname} could not be found." };
         }
 
         /// <summary>
@@ -51,6 +76,7 @@ namespace Ameko.Services
             }
 
             scripts.Clear();
+            functions.Clear();
             LoadedScripts.Clear();
 
             foreach (var path in Directory.EnumerateFiles(scriptRoot))
@@ -65,6 +91,9 @@ namespace Ameko.Services
                     var qname = script.QualifiedName;
                     scripts[qname] = script;
                     LoadedScripts.Add(new Tuple<string, string>(qname, name));
+
+                    if (script.ExportedMethods != null)
+                        functions[qname] = script.ExportedMethods;
                 }
                 catch (Exception e)
                 {
@@ -84,6 +113,7 @@ namespace Ameko.Services
             scriptRoot = Path.Combine(HoloContext.HoloDirectory, "scripts");
             LoadedScripts = new ObservableCollection<Tuple<string, string>>();
             scripts = new Dictionary<string, HoloScript>();
+            functions = new Dictionary<string, string[]>();
             Reload(false);
         }
     }

@@ -20,8 +20,8 @@ namespace Ameko.Converters
             int threshold;
             if (HoloContext.Instance.Workspace.Cps != 0)
                 threshold = HoloContext.Instance.Workspace.Cps;
-            else if (HoloContext.Instance.GlobalsManager.Cps != 0)
-                threshold = HoloContext.Instance.GlobalsManager.Cps;
+            else if (HoloContext.Instance.ConfigurationManager.Cps != 0)
+                threshold = HoloContext.Instance.ConfigurationManager.Cps;
             else
                 threshold = 18; // Default
 

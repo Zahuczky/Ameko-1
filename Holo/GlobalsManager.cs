@@ -15,84 +15,10 @@ namespace Holo
         private int _styleId;
         public int NextStyleId => _styleId++;
         private string _globalsFilePath;
-        private int _cps;
 
         private ObservableCollection<Style> Styles { get; set; }
         private ObservableCollection<Color> Colors { get; set; }
-        private ObservableCollection<string> Repositories { get; set; }
-        private Dictionary<string, string> SubmenuOverrides { get; set; }
         public ObservableCollection<string> StyleNames { get; private set; }
-        public int Cps
-        {
-            get => _cps;
-            set { _cps = value; OnPropertyChanged(nameof(Cps)); Write(); }
-        }
-
-
-        /// <summary>
-        /// Add a new DepCtl repository
-        /// </summary>
-        /// <param name="repoUrl"></param>
-        public void AddRepository(string repoUrl)
-        {
-            Repositories.Add(repoUrl);
-            Write();
-        }
-
-        /// <summary>
-        /// Remove a DepCtl repository
-        /// </summary>
-        /// <param name="repoUrl"></param>
-        /// <returns>True if it was removed</returns>
-        public bool RemoveRepository(string repoUrl)
-        {
-            var removed = Repositories.Remove(repoUrl);
-            if (removed) Write();
-            return removed;
-        }
-
-        /// <summary>
-        /// Override a script's submenu
-        /// </summary>
-        /// <param name="qualifiedName">Script's qualified name</param>
-        /// <param name="value">Submenu name</param>
-        public void SetSubmenuOverride(string qualifiedName, string value)
-        {
-            SubmenuOverrides[qualifiedName] = value;
-            Write();
-        }
-
-        /// <summary>
-        /// Remove a script's submenu override
-        /// </summary>
-        /// <param name="qualifiedName">Script's qualified name</param>
-        /// <returns>True if it was removed</returns>
-        public bool RemoveSubmenuOverride(string qualifiedName)
-        {
-            var removed =  SubmenuOverrides.Remove(qualifiedName);
-            if (removed) Write();
-            return removed;
-        }
-
-        /// <summary>
-        /// Get a list of repositories
-        /// </summary>
-        /// <returns>List of repositories</returns>
-        public List<string> GetRepositories()
-        {
-            return Repositories.ToList();
-        }
-
-        /// <summary>
-        /// Get a list of submenu overrides
-        /// </summary>
-        /// <returns>List of Tuples containing the submenu overrides</returns>
-        public List<Tuple<string, string>> GetSubmenuOverrides()
-        {
-            return SubmenuOverrides.Select(k => new Tuple<string, string>(k.Key, k.Value)).ToList();
-        }
-
-        public Dictionary<string, string> SubmenuOverridesMap => new Dictionary<string, string>(SubmenuOverrides);
 
         /// <summary>
         /// Add a style
@@ -152,13 +78,7 @@ namespace Holo
                 {
                     GlobalsVersion = 1.0,
                     Styles = this.Styles.Select(s => s.AsAss()).ToList(),
-                    Colors = this.Colors.Select(c => c.AsAss()).ToList(),
-                    Cps = this.Cps,
-                    DepCtl =
-                    new DepCtlGlobalsModel {
-                        Repositories = this.Repositories?.ToList(),
-                        SubmenuOverrides = this.SubmenuOverrides
-                    }
+                    Colors = this.Colors.Select(c => c.AsAss()).ToList()
                 };
 
                 using var writer = new StreamWriter(_globalsFilePath, false);
@@ -193,10 +113,7 @@ namespace Holo
 
                 Styles = new ObservableCollection<Style>(input.Styles.Select(s => new Style(NextStyleId, s)));
                 Colors = new ObservableCollection<Color>(input.Colors.Select(c => new Color(c)));
-                Cps = input.Cps ?? 0;
                 StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
-                Repositories = new ObservableCollection<string>(input.DepCtl?.Repositories);
-                SubmenuOverrides = new Dictionary<string, string>(input.DepCtl?.SubmenuOverrides);
             }
             catch { throw new IOException($"An error occured while loading global file {_globalsFilePath}"); }
         }
@@ -207,10 +124,7 @@ namespace Holo
             Styles = new ObservableCollection<Style>();
             Colors = new ObservableCollection<Color>();
             StyleNames = new ObservableCollection<string>();
-            Repositories = new ObservableCollection<string>();
-            SubmenuOverrides = new Dictionary<string, string>();
             _styleId = 0;
-            _cps = 0;
             Read();
         }
 
@@ -228,26 +142,6 @@ namespace Holo
             /// List of colors
             /// </summary>
             public List<string>? Colors;
-            /// <summary>
-            /// Globals CPS
-            /// </summary>
-            public int? Cps;
-            /// <summary>
-            /// Depencency Control model
-            /// </summary>
-            public DepCtlGlobalsModel? DepCtl;
-        }
-
-        private class DepCtlGlobalsModel
-        {
-            /// <summary>
-            /// List of DependencyControl repositories
-            /// </summary>
-            public List<string>? Repositories;
-            /// <summary>
-            /// Mapping of user-specified submenu overrides
-            /// </summary>
-            public Dictionary<string, string>? SubmenuOverrides;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

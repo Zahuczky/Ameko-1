@@ -15,6 +15,7 @@ namespace Ameko.Services
     {
         private DispatcherTimer timer;
         private string autosaveDir;
+        private bool isRunning = false;
 
         private void Tick(object? sender, EventArgs e)
         {
@@ -40,17 +41,16 @@ namespace Ameko.Services
 
         public void Start()
         {
+            if (isRunning) return;
             timer.Start();
+            isRunning = true;
         }
 
         public void Stop()
         {
+            if (!isRunning) return;
             timer.Stop();
-        }
-
-        public void SetInterval(TimeSpan interval)
-        {
-            timer.Interval = interval;
+            isRunning = false;
         }
 
         public AutosaveService()
@@ -64,6 +64,26 @@ namespace Ameko.Services
 
             timer = new DispatcherTimer();
             timer.Tick += Tick;
+            timer.Interval = new TimeSpan(0, 0, HoloContext.Instance.ConfigurationManager.AutosaveInterval);
+            if (HoloContext.Instance.ConfigurationManager.Autosave) Start();
+
+            HoloContext.Instance.ConfigurationManager.PropertyChanged += ConfigurationManager_PropertyChanged;
+        }
+
+        private void ConfigurationManager_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var cm = sender as ConfigurationManager;
+            switch (e.PropertyName)
+            {
+                case nameof(ConfigurationManager.Autosave):
+                    if (cm != null && cm.Autosave) Start();
+                    else Stop();
+                    break;
+                case nameof(ConfigurationManager.AutosaveInterval):
+                    if (cm != null)
+                        timer.Interval = new TimeSpan(0, 0, HoloContext.Instance.ConfigurationManager.AutosaveInterval);
+                    break;
+            }
         }
     }
 }

@@ -7,10 +7,12 @@ using Avalonia.ReactiveUI;
 using Holo;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Ameko.Views;
 
@@ -146,12 +148,41 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
     
-    private async void DoShowGlobalsManagerAsync(InteractionContext<GlobalsWindowViewModel, Unit> interaction)
+    private async void DoShowConfigWindowAsync(InteractionContext<ConfigWindowViewModel, Unit> interaction)
     {
         interaction.SetOutput(Unit.Default);
-        var manager = new GlobalsWindow();
+        var manager = new ConfigWindow();
         manager.DataContext = interaction.Input;
         await manager.ShowDialog(this);
+    }
+
+    private async void DoShowKeybindsWindowAsync(InteractionContext<KeybindsWindowViewModel, Unit> interaction)
+    {
+        interaction.SetOutput(Unit.Default);
+        var manager = new KeybindsWindow();
+        manager.DataContext = interaction.Input;
+        await manager.ShowDialog(this);
+    }
+
+    private void SetKeybinds()
+    {
+        if (ViewModel == null) return;
+        this.KeyBindings.Clear();
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.new", ViewModel.NewFileCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.open", ViewModel.ShowOpenFileDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.save", ViewModel.ShowSaveFileDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.saveas", ViewModel.ShowSaveAsFileDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.search", ViewModel.ShowSearchDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.quit", ViewModel.QuitCommand);
+
+        // Assign global script keybinds
+        foreach (var pair in HoloContext.Instance.ConfigurationManager.KeybindsRegistry.GlobalBinds)
+        {
+            if (pair.Key.StartsWith("ameko")) continue; // Skip builtins
+            KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, pair.Key, ViewModel.ActivateScriptCommand, pair.Key);
+        }
     }
 
     public MainWindow()
@@ -159,8 +190,6 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         InitializeComponent();
 
         var autosave = new AutosaveService();
-        autosave.SetInterval(new TimeSpan(0, 5, 0)); // TODO: config
-        autosave.Start();
 
         _searchWindow = new SearchWindow();
         // _searchWindow.Unloaded += (o, e) => _isSearching = false;
@@ -169,6 +198,16 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
             ((SearchWindow)o).Hide();
             _isSearching = false;
             e.Cancel = true; 
+        };
+
+        HoloContext.Instance.ConfigurationManager.PropertyChanged += (o, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsRegistry):
+                    SetKeybinds();
+                    break;
+            }
         };
 
         AddHandler(DragDrop.DropEvent, (s, e) =>
@@ -205,6 +244,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         {
             if (ViewModel != null)
             {
+                if (this.KeyBindings.Count == 0) SetKeybinds();
+
                 ViewModel.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
                 ViewModel.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
                 ViewModel.ShowSaveAsFileDialog.RegisterHandler(DoShowSaveAsFileDialogAsync);
@@ -215,7 +256,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialog);
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
-                ViewModel.ShowGlobalsWindow.RegisterHandler(DoShowGlobalsManagerAsync);
+                ViewModel.ShowConfigWindow.RegisterHandler(DoShowConfigWindowAsync);
+                ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindowAsync);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

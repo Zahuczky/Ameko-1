@@ -13,33 +13,41 @@ using System.Windows.Input;
 
 namespace Ameko.ViewModels
 {
-    public class GlobalsWindowViewModel : ViewModelBase
+    public class ConfigWindowViewModel : ViewModelBase
     {
-        private bool cpsButtonEnabled;
         private int cps;
+        private bool autosaveEnabled;
+        private int autosaveInterval;
 
         public List<SubmenuOverrideLink> SelectedScripts { get; set; }
         public string OverrideTextBoxText { get; set; }
-
         public ObservableCollection<SubmenuOverrideLink> OverrideLinks { get; private set; }
+
         public int Cps
         {
             get => cps;
-            set { this.RaiseAndSetIfChanged(ref cps, value); CpsButtonEnabled = true; }
+            set => this.RaiseAndSetIfChanged(ref cps, value);
         }
-        public bool CpsButtonEnabled
+
+        public bool AutosaveEnabled
         {
-            get => cpsButtonEnabled;
-            set => this.RaiseAndSetIfChanged(ref cpsButtonEnabled, value);
+            get => autosaveEnabled;
+            set => this.RaiseAndSetIfChanged(ref autosaveEnabled, value);
+        }
+
+        public int AutosaveInterval
+        {
+            get => autosaveInterval;
+            set => this.RaiseAndSetIfChanged(ref autosaveInterval, value);
         }
 
         public ICommand SetOverrideCommand { get; }
         public ICommand RemoveOverrideCommand { get; }
-        public ICommand SetCpsCommand { get; }
+        public ICommand SaveConfigCommand { get; }
 
         private void GenerateOverrideLinks()
         {
-            var currentOverrides = HoloContext.Instance.GlobalsManager.GetSubmenuOverrides();
+            var currentOverrides = HoloContext.Instance.ConfigurationManager.GetSubmenuOverrides();
 
             OverrideLinks.Clear();
             foreach (var script in ScriptService.Instance.LoadedScripts)
@@ -58,22 +66,23 @@ namespace Ameko.ViewModels
             }
         }
 
-        public GlobalsWindowViewModel()
+        public ConfigWindowViewModel()
         {
             OverrideLinks = new ObservableCollection<SubmenuOverrideLink>();
             GenerateOverrideLinks();
             
             SelectedScripts = new List<SubmenuOverrideLink>();
             OverrideTextBoxText = string.Empty;
-            Cps = HoloContext.Instance.GlobalsManager.Cps;
-            cpsButtonEnabled = false;
+            Cps = HoloContext.Instance.ConfigurationManager.Cps;
+            AutosaveEnabled = HoloContext.Instance.ConfigurationManager.Autosave;
+            AutosaveInterval = HoloContext.Instance.ConfigurationManager.AutosaveInterval;
 
             SetOverrideCommand = ReactiveCommand.Create(() =>
             {
                 if (OverrideTextBoxText.Trim().Equals(string.Empty)) return;
                 foreach (var script in SelectedScripts)
                 {
-                    HoloContext.Instance.GlobalsManager.SetSubmenuOverride(script.QualifiedName, OverrideTextBoxText.Trim());
+                    HoloContext.Instance.ConfigurationManager.SetSubmenuOverride(script.QualifiedName, OverrideTextBoxText.Trim());
                 }
                 GenerateOverrideLinks();
             });
@@ -82,15 +91,16 @@ namespace Ameko.ViewModels
             {
                 foreach (var script in SelectedScripts)
                 {
-                    HoloContext.Instance.GlobalsManager.RemoveSubmenuOverride(script.QualifiedName);
+                    HoloContext.Instance.ConfigurationManager.RemoveSubmenuOverride(script.QualifiedName);
                 }
                 GenerateOverrideLinks();
             });
 
-            SetCpsCommand = ReactiveCommand.Create(() =>
+            SaveConfigCommand = ReactiveCommand.Create(() =>
             {
-                HoloContext.Instance.GlobalsManager.Cps = Cps;
-                CpsButtonEnabled = false;
+                HoloContext.Instance.ConfigurationManager.Cps = Cps;
+                HoloContext.Instance.ConfigurationManager.Autosave = AutosaveEnabled;
+                HoloContext.Instance.ConfigurationManager.AutosaveInterval = AutosaveInterval;
             });
         }
     }

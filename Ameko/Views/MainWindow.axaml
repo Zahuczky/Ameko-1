@@ -10,16 +10,5 @@
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}"
 		Name="root">
-	<Window.KeyBindings>
-		<KeyBinding Gesture="Ctrl+N" Command="{Binding NewFileCommand}" />
-        <KeyBinding Gesture="Ctrl+O" Command="{Binding ShowOpenFileDialogCommand}" />
-        <KeyBinding Gesture="Ctrl+S" Command="{Binding ShowSaveFileDialogCommand}" />
-        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding ShowSaveAsFileDialogCommand}" />
-        <KeyBinding Gesture="Ctrl+F" Command="{Binding ShowSearchDialogCommand}" />
-        <KeyBinding Gesture="Ctrl+I" Command="{Binding ShowShiftTimesDialogCommand}" />
-        <KeyBinding Gesture="Shift+F1" Command="{Binding ShowAboutDialogCommand}" />
-        <KeyBinding Gesture="Ctrl+Q" Command="{Binding QuitCommand}" />
-	</Window.KeyBindings>
-	
 	<views:MainView DragDrop.AllowDrop="True" />
 </Window>

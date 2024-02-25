@@ -95,6 +95,32 @@ namespace Ameko.Views
             interaction.SetOutput(Unit.Default);
         }
 
+        private void SetKeybinds()
+        {
+            if (ViewModel == null) return;
+            // GRID
+            eventsGrid.KeyBindings.Clear();
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.duplicate", ViewModel.DuplicateSelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.copy", ViewModel.CopySelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.cut", ViewModel.CutSelectedEventsCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.paste", ViewModel.PasteCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.pasteover", ViewModel.PasteOverCommand);
+            KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, "ameko.event.delete", ViewModel.DeleteSelectedCommand);
+            foreach (var pair in HoloContext.Instance.ConfigurationManager.KeybindsRegistry.GridBinds)
+            {
+                if (pair.Key.StartsWith("ameko")) continue; // Skip builtins
+                KeybindService.TrySetKeybind(eventsGrid, KeybindContext.GRID, pair.Key, ViewModel.ActivateScriptCommand, pair.Key);
+            }
+
+            //EDIT
+            editorPanel.KeyBindings.Clear();
+            foreach (var pair in HoloContext.Instance.ConfigurationManager.KeybindsRegistry.EditBinds)
+            {
+                if (pair.Key.StartsWith("ameko")) continue; // Skip builtins
+                KeybindService.TrySetKeybind(editorPanel, KeybindContext.EDIT, pair.Key, ViewModel.ActivateScriptCommand, pair.Key);
+            }
+        }
+
         public TabView()
         {
             InitializeComponent();
@@ -105,9 +131,11 @@ namespace Ameko.Views
                 this.GetObservable(ViewModelProperty).WhereNotNull()
                 .Subscribe(vm =>
                 {
+                    // Every time
                     DiscordRPCService.Instance.Set($"{vm.Title}.ass", HoloContext.Instance.Workspace.Name);
+                    SetKeybinds();
 
-                    // Skip registration if already subscribed
+                    // Skip the rest if already subscribed
                     if (previousVMs.Contains(vm)) return;
                     previousVMs.Add(vm);
 
@@ -121,9 +149,21 @@ namespace Ameko.Views
                     endBox.AddHandler(InputElement.KeyDownEvent, Helpers.TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 
                     eventsGrid.SelectionChanged += EventsGrid_SelectionChanged;
+
+                    HoloContext.Instance.ConfigurationManager.PropertyChanged += ConfigurationManager_PropertyChanged;
                 })
                 .DisposeWith(disposables);
             });
+        }
+
+        private void ConfigurationManager_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(HoloContext.Instance.ConfigurationManager.KeybindsRegistry):
+                    SetKeybinds();
+                    break;
+            }
         }
 
         private void EventsGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
