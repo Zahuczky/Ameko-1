@@ -290,10 +290,10 @@ namespace Holo
             this._submenuOverrides = new Dictionary<string, string>(model.DependencyControl?.SubmenuOverrides);
         }
 
-        public ConfigurationManager()
+        public ConfigurationManager(string baseDirectory)
         {
-            _configFilePath = Path.Join(HoloContext.HoloDirectory, "config.toml");
-            _keybindsFilePath = Path.Join(HoloContext.HoloDirectory, "keybinds.json");
+            _configFilePath = Path.Join(baseDirectory, "config.toml");
+            _keybindsFilePath = Path.Join(baseDirectory, "keybinds.json");
             _audioProvider = string.Empty;
             _videoProvider = string.Empty;
             _cps = 0;

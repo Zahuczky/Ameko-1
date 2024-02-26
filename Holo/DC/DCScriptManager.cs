@@ -13,7 +13,7 @@ namespace Holo.DC
     /// </summary>
     public class DCScriptManager
     {
-        private static readonly string scriptRoot = Path.Combine(HoloContext.HoloDirectory, "scripts");
+        private static readonly string scriptRoot = Path.Combine(HoloContext.Directories.HoloDataHome, "scripts");
 
         /// <summary>
         /// Install a script

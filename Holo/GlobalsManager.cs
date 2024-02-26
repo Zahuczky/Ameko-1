@@ -118,9 +118,9 @@ namespace Holo
             catch { throw new IOException($"An error occured while loading global file {_globalsFilePath}"); }
         }
 
-        public GlobalsManager()
+        public GlobalsManager(string baseDirectory)
         {
-            _globalsFilePath = Path.Join(HoloContext.HoloDirectory, "globals.toml");
+            _globalsFilePath = Path.Join(baseDirectory, "globals.toml");
             Styles = new ObservableCollection<Style>();
             Colors = new ObservableCollection<Color>();
             StyleNames = new ObservableCollection<string>();

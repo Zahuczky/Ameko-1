@@ -110,7 +110,7 @@ namespace Ameko.Services
 
         private ScriptService()
         {
-            scriptRoot = Path.Combine(HoloContext.HoloDirectory, "scripts");
+            scriptRoot = Path.Combine(HoloContext.Directories.HoloDataHome, "scripts");
             LoadedScripts = new ObservableCollection<Tuple<string, string>>();
             scripts = new Dictionary<string, HoloScript>();
             functions = new Dictionary<string, string[]>();

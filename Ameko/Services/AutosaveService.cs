@@ -55,7 +55,7 @@ namespace Ameko.Services
 
         public AutosaveService()
         {
-            autosaveDir = Path.Combine(HoloContext.AmekoDirectory, "autosave");
+            autosaveDir = Path.Combine(HoloContext.Directories.AmekoDataHome, "autosave");
 
             if (!Directory.Exists(autosaveDir))
             {

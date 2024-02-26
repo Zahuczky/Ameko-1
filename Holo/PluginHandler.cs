@@ -80,9 +80,9 @@ namespace Holo
         public List<IVideoSourcePlugin> VideoSourcePlugins => videoPlugins.Values.ToList();
         public List<ISubtitlePlugin> SubtitlePlugins => subtitlePlugins.Values.ToList();
 
-        public PluginHandler(string pluginDir)
+        public PluginHandler(string baseDirectory)
         {
-            pluginRoot = pluginDir;
+            pluginRoot = Path.Combine(baseDirectory, "plugins");
             audioRoot = Path.Combine(pluginRoot, "a");
             videoRoot = Path.Combine(pluginRoot, "v");
             subtitleRoot = Path.Combine(pluginRoot, "s");
