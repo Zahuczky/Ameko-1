@@ -17,6 +17,14 @@ namespace Ameko.Views
             await manager.ShowDialog(this);
         }
 
+        private async void DoShowImportExportAsync(InteractionContext<DependencyControlWindowViewModel, Unit> interaction)
+        {
+            interaction.SetOutput(Unit.Default);
+            var impexp = new DependencyControlImportExportWindow();
+            impexp.DataContext = interaction.Input;
+            await impexp.ShowDialog(this);
+        }
+
         public DependencyControlWindow()
         {
             InitializeComponent();
@@ -26,6 +34,7 @@ namespace Ameko.Views
                 if (ViewModel != null)
                 {
                     ViewModel.DisplayRepoManager.RegisterHandler(DoShowRepoManagerAsync);
+                    ViewModel.DisplayImportExport.RegisterHandler(DoShowImportExportAsync);
                 }
             });
         }

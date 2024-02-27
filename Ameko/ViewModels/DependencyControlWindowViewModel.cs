@@ -34,6 +34,7 @@ namespace Ameko.ViewModels
         }
 
         public Interaction<DependencyControlWindowViewModel, Unit> DisplayRepoManager { get; }
+        public Interaction<DependencyControlWindowViewModel, Unit> DisplayImportExport { get; }
 
         public ICommand InstallScriptCommand { get; }
         public ICommand UninstallScriptCommand { get; }
@@ -43,6 +44,7 @@ namespace Ameko.ViewModels
         public ICommand AddRepositoryCommand { get; }
         public ICommand RemoveRepositoryCommand { get; }
         public ICommand DisplayRepoManagerCommand { get; }
+        public ICommand DisplayImportExportCommand { get; }
 
         private void PopulateInstalledScriptsList()
         {
@@ -100,6 +102,7 @@ namespace Ameko.ViewModels
         {
             _repoTextBoxText = string.Empty;
             DisplayRepoManager = new Interaction<DependencyControlWindowViewModel, Unit>();
+            DisplayImportExport = new Interaction<DependencyControlWindowViewModel, Unit>();
 
             SelectedRepoScripts = new List<ScriptEntity>();
             SelectedInstalledScripts = new List<ScriptEntity>();
@@ -187,6 +190,10 @@ namespace Ameko.ViewModels
 
             DisplayRepoManagerCommand = ReactiveCommand.Create(async () => {
                 await DisplayRepoManager.Handle(this);
+            });
+
+            DisplayImportExportCommand = ReactiveCommand.Create(async () => {
+                await DisplayImportExport.Handle(this);
             });
         }
     }

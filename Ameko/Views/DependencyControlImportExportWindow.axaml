@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:Ameko.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="55"
+        x:Class="Ameko.Views.DependencyControlImportExportWindow"
+		x:DataType="vm:DependencyControlWindowViewModel"
+		Topmost="True"
+		CanResize="False"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		Width="300"
+		Height="55"
+		WindowStartupLocation="CenterOwner"
+        Title="Import/Export">
+	<Grid ColumnDefinitions="*, auto, auto" RowDefinitions="auto, auto">
+		<TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="2">Import or Export repositories and scripts</TextBlock>
+		<TextBox Grid.Column="0" Grid.Row="1" Margin="2" Watermark="JSON" />
+		<Button Grid.Column="1" Grid.Row="1" Margin="2">
+			<Svg Path="avares://Ameko/Assets/B5/box-arrow-in-down.svg" />
+		</Button>
+		<Button Grid.Column="2" Grid.Row="1" Margin="2">
+			<Svg Path="avares://Ameko/Assets/B5/box-arrow-up.svg" />
+		</Button>
+	</Grid>
+</Window>
