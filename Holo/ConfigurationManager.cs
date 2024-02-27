@@ -23,6 +23,7 @@ namespace Holo
         private int _autosaveInterval;
         private ObservableCollection<string> _repositories;
         private Dictionary<string, string> _submenuOverrides;
+        private Dictionary<string, List<string>> _installedScripts;
         private KeybindsRegistry _keybindsRegistry;
 
         /// <summary>
@@ -60,6 +61,58 @@ namespace Holo
         {
             _repositories.Add(repoUrl);
             WriteConfig();
+        }
+
+        /// <summary>
+        /// Add a script to the list of installed scripts
+        /// </summary>
+        /// <param name="repoUrl">Repository URL</param>
+        /// <param name="qname">Qualified name of the script</param>
+        public void AddScript(string repoUrl, string qname, bool write = true)
+        {
+            if (!_installedScripts.ContainsKey(repoUrl))
+                _installedScripts[repoUrl] = new List<string>();
+            if (!_installedScripts[repoUrl].Contains(qname))
+                _installedScripts[repoUrl].Add(qname);
+            if (write)
+                WriteConfig();
+        }
+
+        /// <summary>
+        /// Import a list of installed scripts
+        /// </summary>
+        /// <param name="scripts"></param>
+        public void ImportScriptList(Dictionary<string, List<string>> scripts)
+        {
+            foreach (var pair in scripts)
+            {
+                foreach (var script in pair.Value)
+                {
+                    AddScript(pair.Key, script, false);
+                }
+            }
+            WriteConfig();
+        }
+
+        /// <summary>
+        /// Remove a script from the list of installed scripts
+        /// </summary>
+        /// <param name="qname">Qualified name of the script</param>
+        /// <returns>True if the script was removed</returns>
+        public bool RemoveScript(string qname)
+        {
+            foreach (var pair in _installedScripts)
+            {
+                if (pair.Value.Contains(qname))
+                {
+                    var res = pair.Value.Remove(qname);
+                    if (pair.Value.Count == 0)
+                        _installedScripts.Remove(pair.Key);
+                    WriteConfig();
+                    return res;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -198,6 +251,7 @@ namespace Holo
         }
 
         public Dictionary<string, string> SubmenuOverridesMap => new Dictionary<string, string>(_submenuOverrides);
+        public Dictionary<string, List<string>> InstalledScriptsMap => new Dictionary<string, List<string>>(_installedScripts);
         public KeybindsRegistry KeybindsRegistry => _keybindsRegistry;
 
         public void ReadConfig()
@@ -274,7 +328,8 @@ namespace Holo
                 DependencyControl = new DCConfigModel
                 {
                     Repositories = this._repositories.ToList(),
-                    SubmenuOverrides = this._submenuOverrides
+                    SubmenuOverrides = this._submenuOverrides,
+                    InstalledScripts = this._installedScripts
                 }
             };
         }
@@ -288,6 +343,7 @@ namespace Holo
             this._autosaveInterval = model.General?.AutosaveInterval ?? 300; // 5 minutes
             this._repositories = new ObservableCollection<string>(model.DependencyControl?.Repositories);
             this._submenuOverrides = new Dictionary<string, string>(model.DependencyControl?.SubmenuOverrides);
+            this._installedScripts = new Dictionary<string, List<string>>(model.DependencyControl?.InstalledScripts);
         }
 
         public ConfigurationManager(string baseDirectory)
@@ -301,6 +357,7 @@ namespace Holo
             _autosaveInterval = 300; // 5 minutes
             _repositories = new ObservableCollection<string>();
             _submenuOverrides = new Dictionary<string, string>();
+            _installedScripts = new Dictionary<string, List<string>>();
             _keybindsRegistry = KeybindsRegistry.Default();
             ReadConfig();
             ReadKeybinds();
@@ -332,6 +389,7 @@ namespace Holo
         {
             public List<string>? Repositories;
             public Dictionary<string, string>? SubmenuOverrides;
+            public Dictionary<string, List<string>>? InstalledScripts;
         }
         #endregion Models
 

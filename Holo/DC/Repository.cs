@@ -55,5 +55,6 @@ namespace Holo.DC
         public double CurrentVersion { get; set; }
         public List<string>? Dependencies { get; set; }
         public string? Url { get; set; }
+        public string? Repository { get; set; }
     }
 }

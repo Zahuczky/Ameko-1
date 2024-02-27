@@ -18,13 +18,15 @@ namespace Holo.DC
         /// <summary>
         /// Install a script
         /// </summary>
-        /// <param name="qualifiedName">Name of the script</param>
-        /// <param name="updateUrl">Location of the script file on the Internet</param>
+        /// <param name="entity">Script entity</param>
         /// <returns>True if installation was successful</returns>
-        public static async Task<bool> InstallDCScript(string qualifiedName, string updateUrl)
+        public static async Task<bool> InstallDCScript(ScriptEntity entity)
         {
-            if (IsDCScriptInstalled(qualifiedName)) return false;
+            var qualifiedName = entity.QualifiedName ?? string.Empty;
+            var updateUrl = entity.Url ?? string.Empty;
+            var repo = entity.Repository ?? string.Empty;
 
+            if (IsDCScriptInstalled(qualifiedName!)) return false;
             using (var client = new HttpClient())
             {
                 try
@@ -36,6 +38,7 @@ namespace Holo.DC
                             await stream.CopyToAsync(fs);
                         }
                     }
+                    HoloContext.Instance.ConfigurationManager.AddScript(repo, qualifiedName);
                     return true;
                 }
                 catch
@@ -49,14 +52,16 @@ namespace Holo.DC
         /// <summary>
         /// Uninstall a script
         /// </summary>
-        /// <param name="qualifiedName">Name of the script</param>
+        /// <param name="entity">Script entity</param>
         /// <returns>True if the script was removed successfully</returns>
-        public static bool UninstallDCScript(string qualifiedName)
+        public static bool UninstallDCScript(ScriptEntity entity)
         {
+            var qualifiedName = entity.QualifiedName ?? string.Empty;
             if (IsDCScriptInstalled(qualifiedName))
                 try
                 {
                     File.Delete(ScriptPath(qualifiedName));
+                    HoloContext.Instance.ConfigurationManager.RemoveScript(qualifiedName);
                     return true;
                 }
                 catch
@@ -70,13 +75,12 @@ namespace Holo.DC
         /// <summary>
         /// Update a script
         /// </summary>
-        /// <param name="qualifiedName">Name of the script</param>
-        /// <param name="updateUrl">Location of the script file on the Internet</param>
+        /// <param name="entity">Script entity</param>
         /// <returns></returns>
-        public static async Task<bool> UpdateDCScript(string qualifiedName, string updateUrl)
+        public static async Task<bool> UpdateDCScript(ScriptEntity entity)
         {
-            if (UninstallDCScript(qualifiedName))
-                return await InstallDCScript(qualifiedName, updateUrl);
+            if (UninstallDCScript(entity))
+                return await InstallDCScript(entity);
             return false;
         }
 

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -33,6 +34,13 @@ namespace Ameko.ViewModels
             set => this.RaiseAndSetIfChanged(ref _repoTextBoxText, value);
         }
 
+        private string _impExpTextBoxText;
+        public string ImpExptextBoxText
+        {
+            get => _impExpTextBoxText;
+            set => this.RaiseAndSetIfChanged(ref _impExpTextBoxText, value);
+        }
+
         public Interaction<DependencyControlWindowViewModel, Unit> DisplayRepoManager { get; }
         public Interaction<DependencyControlWindowViewModel, Unit> DisplayImportExport { get; }
 
@@ -40,6 +48,8 @@ namespace Ameko.ViewModels
         public ICommand UninstallScriptCommand { get; }
         public ICommand UpdateScriptCommand { get; }
         public ICommand UpdateAllCommand { get; }
+        public ICommand ExportScriptsCommand { get; }
+        public ICommand ImportScriptsCommand { get; }
 
         public ICommand AddRepositoryCommand { get; }
         public ICommand RemoveRepositoryCommand { get; }
@@ -93,7 +103,7 @@ namespace Ameko.ViewModels
             {
                 var serverScript = candidates.First();
                 if (serverScript.Url == null) return false;
-                return await DCScriptManager.UpdateDCScript(script.QualifiedName,serverScript.Url);
+                return await DCScriptManager.UpdateDCScript(script);
             }
             return false;
         }
@@ -120,7 +130,7 @@ namespace Ameko.ViewModels
                 foreach (var script in SelectedRepoScripts)
                 {
                     if (script.QualifiedName != null && script.Url != null)
-                        await DCScriptManager.InstallDCScript(script.QualifiedName, script.Url);
+                        await DCScriptManager.InstallDCScript(script);
                 }
                 ScriptService.Instance.Reload(false);
                 PopulateInstalledScriptsList();
@@ -131,7 +141,7 @@ namespace Ameko.ViewModels
                 foreach (var script in SelectedInstalledScripts)
                 {
                     if (script.QualifiedName != null)
-                        DCScriptManager.UninstallDCScript(script.QualifiedName);
+                        DCScriptManager.UninstallDCScript(script);
                 }
                 ScriptService.Instance.Reload(false);
                 PopulateInstalledScriptsList();
@@ -195,6 +205,47 @@ namespace Ameko.ViewModels
             DisplayImportExportCommand = ReactiveCommand.Create(async () => {
                 await DisplayImportExport.Handle(this);
             });
+
+            ExportScriptsCommand = ReactiveCommand.Create(() =>
+            {
+                ImpExptextBoxText = JsonSerializer.Serialize(HoloContext.Instance.ConfigurationManager.InstalledScriptsMap);
+            });
+
+            ImportScriptsCommand = ReactiveCommand.Create(async () =>
+            {
+                try
+                {
+                    var map = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(ImpExptextBoxText);
+                    if (map == null) return;
+                    HoloContext.Instance.ConfigurationManager.ImportScriptList(map);
+                    foreach (var pair in map)
+                    {
+                        var repo = await Repository.Build(pair.Key);
+                        if (repo == null) continue;
+                        HoloContext.Instance.RepositoryManager.GatherRepositories(repo);
+                        HoloContext.Instance.RepositoryManager.GatherRepoScripts();
+                        
+                        foreach (var scriptQname in pair.Value)
+                        {
+                            var scripts = HoloContext.Instance.RepositoryManager.RepoScripts.Where(s => s.QualifiedName == scriptQname);
+                            if (!scripts.Any()) continue;
+                            var script = scripts.First();
+                            await DCScriptManager.InstallDCScript(script);
+                        }
+                    }
+                }
+                catch { } // TODO
+                finally
+                {
+                    Repositories.Clear();
+                    Repositories.AddRange(HoloContext.Instance.RepositoryManager.Repositories);
+                    PopulateRepoScriptsList();
+                    PopulateInstalledScriptsList();
+                    ScriptService.Instance.Reload(false);
+                    ImpExptextBoxText = string.Empty;
+                }
+            });
+
         }
     }
 }

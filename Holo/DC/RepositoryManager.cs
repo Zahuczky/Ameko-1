@@ -45,7 +45,10 @@ namespace Holo.DC
             foreach (var repo in RepositoryMap.Values)
                 if (repo.Scripts != null)
                     foreach (var script in repo.Scripts)
+                    {
+                        script.Repository = repo.Url;
                         RepoScripts.Add(script);
+                    }
         }
 
         public async void LoadUrlList(List<string> urlList)
@@ -61,7 +64,7 @@ namespace Holo.DC
 
         private async void SetUpBaseRepository()
         {
-            BaseRepository = await Repository.Build("https://gist.githubusercontent.com/9vult/f48f3d03f6b0b913299f27eb0b3a122c/raw/17711621416adda920429ca9d038748fe37b19cd/ameko-base-depctl.json");
+            BaseRepository = await Repository.Build("https://gist.githubusercontent.com/9vult/f48f3d03f6b0b913299f27eb0b3a122c/raw/fed2f42e33822212d93d8757e653cba38e9656a4/ameko-base-depctl.json");
             if (BaseRepository == null) return;
             GatherRepositories(BaseRepository);
             GatherRepoScripts();
