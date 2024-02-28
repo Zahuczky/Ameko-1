@@ -134,7 +134,7 @@ namespace Ameko.ViewModels
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {
-                await ScriptService.Instance.ExecuteScriptOrFunction(scriptName);
+                await ScriptService.Instance.Execute(scriptName);
             });
 
             // TODO: Maybe not do this this way

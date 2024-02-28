@@ -41,6 +41,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
     public Interaction<ConfigWindowViewModel, Unit> ShowConfigWindow { get; }
     public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
+    public Interaction<FreeformWindowViewModel, Unit> ShowFreeformPlayground { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
     public ICommand NewFileCommand { get; }
@@ -59,6 +60,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowDependencyControlWindowCommand { get; }
     public ICommand ShowConfigWindowCommand { get; }
     public ICommand ShowKeybindsWindowCommand { get; }
+    public ICommand ShowFreeformPlaygroundCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
@@ -107,11 +109,18 @@ public class MainViewModel : ViewModelBase
     {
         ScriptMenuItems.Clear();
         var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg")) { Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath };
+        var freeSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/cone-striped.svg")) { Path = new Uri("avares://Ameko/Assets/B5/cone-striped.svg").LocalPath };
         var dcSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/globe.svg")) { Path = new Uri("avares://Ameko/Assets/B5/globe.svg").LocalPath };
 
         ScriptMenuItems.AddRange(ScriptMenuService.GenerateScriptMenuItemSource(ActivateScriptCommand));
 
         ScriptMenuItems.Add(new Separator());
+        ScriptMenuItems.Add(new MenuItem
+        {
+            Header = "_Freeform Playground",
+            Command = ShowFreeformPlaygroundCommand,
+            Icon = freeSvg
+        });
         ScriptMenuItems.Add(new MenuItem
         {
             Header = "_Reload Scripts",
@@ -140,6 +149,7 @@ public class MainViewModel : ViewModelBase
         ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
         ShowConfigWindow = new Interaction<ConfigWindowViewModel, Unit>();
         ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
+        ShowFreeformPlayground = new Interaction<FreeformWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
         ShowStylesManagerCommand = ReactiveCommand.Create(() => IOCommandService.DisplayStylesManager(ShowStylesManager, this));
@@ -202,12 +212,18 @@ public class MainViewModel : ViewModelBase
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
         {
-            await ScriptService.Instance.ExecuteScriptOrFunction(scriptName);
+            await ScriptService.Instance.Execute(scriptName);
         });
 
         ReloadScriptsCommand = ReactiveCommand.Create(() =>
         {
             ScriptService.Instance.Reload(true);
+        });
+
+        ShowFreeformPlaygroundCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new FreeformWindowViewModel();
+            await ShowFreeformPlayground.Handle(vm);
         });
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));

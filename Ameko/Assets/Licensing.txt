@@ -7,14 +7,18 @@ Assets:
 - Ameko logo, copyright © 2024 Zahuczky.
 - Bootstrap icons used under license.
 - Migu 2M used under the IPA Font License (IPAフォントライセンス) v1.0
+- Monoid is licensed under the SIL Open Font License
 
 The following libraries are property of their respective owners and may be licensed differently:
 - Avalonia
+- Avalonia.AvaloniaEdit
+- AvaloniaEdit.TextMate
 - CS-Script
 - GitInfo
 - Lachee/DiscordRichPresence
 - MessageBox.Avalonia
 - Svg.Skia
+- TextMateSharp.Grammars
 - Tomlet
 - Xdg.Directories
 

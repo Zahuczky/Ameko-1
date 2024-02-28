@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:Ameko.ViewModels"
+		xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        mc:Ignorable="d" d:DesignWidth="625" d:DesignHeight="450"
+        x:Class="Ameko.Views.FreeformWindow"
+		x:DataType="vm:FreeformWindowViewModel"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		Width="625"
+		Height="450"
+		WindowStartupLocation="CenterScreen"
+        Title="Ameko Freeform Scripting Playground">
+	<DockPanel>
+		<Grid DockPanel.Dock="Bottom" ColumnDefinitions="auto, *, auto">
+			<TextBlock Grid.Column="0" Text="{Binding Status}" VerticalAlignment="Bottom" TextWrapping="Wrap" />
+			<Button Grid.Column="2" Margin="2" Command="{Binding ExecuteCommand}" Content="Execute" />
+		</Grid>
+		<AvaloniaEdit:TextEditor Name="Editor"
+								 Document="{Binding Document}"
+								 FontFamily="{StaticResource MonoidRegular}"
+								 FontSize="12"
+								 ShowLineNumbers="True"/>
+	</DockPanel>
+</Window>

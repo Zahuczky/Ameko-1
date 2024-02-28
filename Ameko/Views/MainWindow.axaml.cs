@@ -164,6 +164,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         await manager.ShowDialog(this);
     }
 
+    private void DoShowFreeformPlayground(InteractionContext<FreeformWindowViewModel, Unit> interaction)
+    {
+        interaction.SetOutput(Unit.Default);
+        var playground = new FreeformWindow();
+        playground.DataContext = interaction.Input;
+        playground.Show();
+    }
+
     private void SetKeybinds()
     {
         if (ViewModel == null) return;
@@ -258,6 +266,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
                 ViewModel.ShowConfigWindow.RegisterHandler(DoShowConfigWindowAsync);
                 ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindowAsync);
+                ViewModel.ShowFreeformPlayground.RegisterHandler(DoShowFreeformPlayground);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

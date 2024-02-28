@@ -8,6 +8,7 @@
         <SimpleTheme />
 		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml"/>
 		<StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Simple/Simple.xaml" />
+		<StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml" />
 		
 		<Style Selector="Svg">
 			<Setter Property="(Svg.Css)" Value="path { fill: #FFFFFF; }" />
@@ -15,5 +16,6 @@
     </Application.Styles>
 	<Application.Resources>
 		<FontFamily x:Key="Migu2MRegular">avares://Ameko/Assets/Fonts/migu-2m-regular.ttf#Migu 2M</FontFamily>
+		<FontFamily x:Key="MonoidRegular">avares://Ameko/Assets/Fonts/Monoid-Regular.ttf#Monoid</FontFamily>
 	</Application.Resources>
 </Application>

@@ -49,7 +49,7 @@ namespace Ameko.Services
         /// </remarks>
         /// <param name="qname">Qualified name of the script or function</param>
         /// <returns>Execution result of the script or function</returns>
-        public async Task<ExecutionResult> ExecuteScriptOrFunction(string qname)
+        public async Task<ExecutionResult> Execute(string qname)
         {
             // Try running as a script
             if (scripts.TryGetValue(qname, out HoloScript? script))
@@ -62,6 +62,24 @@ namespace Ameko.Services
 
             // Neither of these worked, fail
             return new ExecutionResult { Status = ExecutionStatus.Failure, Message = $"The script or function {qname} could not be found." };
+        }
+
+        /// <summary>
+        /// Execute a freeform script
+        /// </summary>
+        /// <param name="data">Script data</param>
+        /// <returns>Success or the error message</returns>
+        public string ExecuteFreeform(string data)
+        {
+            try
+            {
+                _ = CSScript.Evaluator.Eval(data);
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         /// <summary>

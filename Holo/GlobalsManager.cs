@@ -16,9 +16,19 @@ namespace Holo
         public int NextStyleId => _styleId++;
         private string _globalsFilePath;
 
+        private static readonly string FreeformDocumentTemplate = "// Welcome to the Ameko Freeform Scripting Playground!\n// Here, you can write a \"freeform\" script to automate tasks.\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing Ameko;\nusing Holo;\nusing AssCS;\n\n// Some commonly-used variables to get you started:\nFileWrapper file = HoloContext.Instance.Workspace.WorkingFile;\nEvent? selectedEvent = file.SelectedEvent;\nList<Event>? selectedEvents = file.SelectedEvents;\n\n// Write your script here!\n";
+        private string _freeformDocument { get; set; }
+
         private ObservableCollection<Style> Styles { get; set; }
         private ObservableCollection<Color> Colors { get; set; }
         public ObservableCollection<string> StyleNames { get; private set; }
+        
+        public string FreeformDocument
+        {
+            get => _freeformDocument;
+            set { _freeformDocument = value; OnPropertyChanged(nameof(FreeformDocument)); Write(); }
+        }
+
 
         /// <summary>
         /// Add a style
@@ -78,7 +88,8 @@ namespace Holo
                 {
                     GlobalsVersion = 1.0,
                     Styles = this.Styles.Select(s => s.AsAss()).ToList(),
-                    Colors = this.Colors.Select(c => c.AsAss()).ToList()
+                    Colors = this.Colors.Select(c => c.AsAss()).ToList(),
+                    FreeformDocument = AssCS.Utilities.Base64Encode(FreeformDocument)
                 };
 
                 using var writer = new StreamWriter(_globalsFilePath, false);
@@ -114,6 +125,9 @@ namespace Holo
                 Styles = new ObservableCollection<Style>(input.Styles.Select(s => new Style(NextStyleId, s)));
                 Colors = new ObservableCollection<Color>(input.Colors.Select(c => new Color(c)));
                 StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
+                if (input.FreeformDocument != null)
+                    _freeformDocument = AssCS.Utilities.Base64Decode(input.FreeformDocument);
+                else _freeformDocument = FreeformDocumentTemplate;
             }
             catch { throw new IOException($"An error occured while loading global file {_globalsFilePath}"); }
         }
@@ -124,6 +138,7 @@ namespace Holo
             Styles = new ObservableCollection<Style>();
             Colors = new ObservableCollection<Color>();
             StyleNames = new ObservableCollection<string>();
+            _freeformDocument = FreeformDocumentTemplate;
             _styleId = 0;
             Read();
         }
@@ -142,6 +157,10 @@ namespace Holo
             /// List of colors
             /// </summary>
             public List<string>? Colors;
+            /// <summary>
+            /// Freeform document contents
+            /// </summary>
+            public string? FreeformDocument;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
