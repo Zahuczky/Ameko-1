@@ -90,9 +90,9 @@ namespace Ameko.Views
         private void DoScrollIntoView(InteractionContext<Event, Unit> interaction)
         {
             if (interaction == null) return;
+            interaction.SetOutput(Unit.Default);
             eventsGrid.SelectedItem = interaction.Input;
             eventsGrid.ScrollIntoView(interaction.Input, null);
-            interaction.SetOutput(Unit.Default);
         }
 
         private void SetKeybinds()

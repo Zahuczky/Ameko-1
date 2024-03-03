@@ -39,16 +39,20 @@
 						Margin="2">
 					<Svg Path="avares://Ameko/Assets/B5/pencil-square.svg" />
 				</Button>
-				<TextBox Grid.Column="3"
-						 AcceptsReturn="False"
-						 Text="{Binding SelectedEvent.Actor}"
-						 Watermark="Actor"
-						 Margin="2"/>
-				<TextBox Grid.Column="4"
-						 AcceptsReturn="False"
-						 Text="{Binding SelectedEvent.Effect}"
-						 Watermark="Effect"
-						 Margin="2"/>
+				<AutoCompleteBox Grid.Column="3"
+								 Text="{Binding SelectedEvent.Actor}"
+								 ItemsSource="{Binding Actors}"
+								 Watermark="Actor"
+								 FilterMode="Contains"
+								 Margin="2"
+								 Name="actorACBox"/>
+				<AutoCompleteBox Grid.Column="4"
+								 Text="{Binding SelectedEvent.Effect}"
+								 ItemsSource="{Binding Effects}"
+								 Watermark="Effect"
+								 FilterMode="Contains"
+								 Margin="2"
+								 Name="effectACBox"/>
 
 				<TextBox Grid.Column="5"
 						 AcceptsReturn="False"
@@ -146,6 +150,8 @@
 				</DataGridTemplateColumn>
 
 				<DataGridTextColumn Header="Style" Binding="{Binding Style}" />
+				<DataGridTextColumn Header="Actor" IsVisible="{Binding DisplayActorsColumn}" Binding="{Binding Actor}" />
+				<DataGridTextColumn Header="Effect" IsVisible="{Binding DisplayEffectsColumn}" Binding="{Binding Effect}" />
 				<DataGridTextColumn Header="Content" Binding="{Binding Text}" />
 			</DataGrid.Columns>
 			<DataGrid.Styles>

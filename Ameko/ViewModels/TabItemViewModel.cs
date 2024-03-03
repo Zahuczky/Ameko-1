@@ -25,6 +25,17 @@ namespace Ameko.ViewModels
         private Event? _selectedEvent;
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
+        public ObservableCollection<string> Actors { get; private set; }
+        public ObservableCollection<string> Effects { get; private set; }
+        public bool DisplayActorsColumn
+        {
+            get => Actors.Count > 0;
+        }
+        public bool DisplayEffectsColumn
+        {
+            get => Effects.Count > 0;
+        }
+
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
         public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
         public Interaction<TabItemViewModel, string[]?> Paste { get; }
@@ -79,6 +90,12 @@ namespace Ameko.ViewModels
         public void UpdateEventSelection(List<Event> selectedEvents, Event selectedEvent)
         {
             Wrapper.Select(selectedEvents, selectedEvent);
+            Actors.Clear();
+            Actors.AddRange(Wrapper.File.EventManager.Actors);
+            Effects.Clear();
+            Effects.AddRange(Wrapper.File.EventManager.Effects);
+            this.RaisePropertyChanged(nameof(DisplayActorsColumn));
+            this.RaisePropertyChanged(nameof(DisplayEffectsColumn));
         }
 
         private void UpdateEventsCallback(object? sender, EventArgs e)
@@ -105,6 +122,9 @@ namespace Ameko.ViewModels
             Events = new ObservableCollection<Event>(Wrapper.File.EventManager.Ordered);
             Wrapper.File.EventManager.CurrentEvents.CollectionChanged += UpdateEventsCallback;
             Wrapper.PropertyChanged += UpdateSelectionsCallback;
+
+            Actors = new ObservableCollection<string>(Wrapper.File.EventManager.Actors);
+            Effects = new ObservableCollection<string>(Wrapper.File.EventManager.Effects);
 
             CopySelectedEvents = new Interaction<TabItemViewModel, string?>();
             CutSelectedEvents = new Interaction<TabItemViewModel, string?>();
