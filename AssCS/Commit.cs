@@ -11,14 +11,24 @@ namespace AssCS
     public class Commit<T> where T : ICommitable
     {
         public Guid Id { get; }
-        public List<T> Snapshot { get; }
-        public Action Action { get; }
+        public List<Snapshot<T>> Snapshots { get; }
 
-        public Commit(List<T> snapshot, Action action)
+        public Commit(List<Snapshot<T>> snapshots)
         {
             Id = Guid.NewGuid();
-            Snapshot = snapshot;
-            Action = action;
+            Snapshots = snapshots;
+        }
+    }
+
+    public class Snapshot<T> where T : ICommitable
+    {
+        public readonly List<T> snapshot;
+        public readonly Action action;
+
+        public Snapshot(List<T> snapshot, Action action)
+        {
+            this.snapshot = snapshot;
+            this.action = action;
         }
     }
 

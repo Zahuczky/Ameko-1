@@ -56,7 +56,7 @@ namespace Holo
         {
             if (SelectedEvents == null && selectedEvent != null)
             {
-                file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.EDIT));
+                // TODO: file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.EDIT));
                 SelectedEvents = selectedEvents;
                 SelectedEvent = selectedEvent;
                 selectedEventCopy = new Event(selectedEvent.Id, selectedEvent);
@@ -79,7 +79,7 @@ namespace Holo
             else
             {
                 // Change happened, commit the lot
-                file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.EDIT));
+                // TODO: file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.EDIT));
                 SelectedEvents = selectedEvents;
                 SelectedEvent = selectedEvent;
                 selectedEventCopy = new Event(selectedEvent!.Id, selectedEvent);
@@ -100,7 +100,7 @@ namespace Holo
             }
             // Commit the list, remove the final one, and select an adjacent event
             var want = SelectAdjOrDefault(selectedEvent);
-            file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.DELETE));
+            // TODO: file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.DELETE));
             file.EventManager.Remove(selectedEvent.Id);
             SelectedEvents = new List<Event> { want };
             SelectedEvent = want;
@@ -109,7 +109,7 @@ namespace Holo
 
         public void Add(List<Event> selectedEvents, Event selectedEvent, bool select)
         {
-            file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.INSERT));
+            // TODO: file.HistoryManager.Commit(new Commit<Event>(selectedEvents, AssCS.Action.INSERT));
             if (select)
             {
                 SelectedEvent = selectedEvent;
