@@ -35,7 +35,7 @@ namespace AssCS
             return result;
         }
 
-        public void CommitEvent(Commit<Event> commit)
+        public void Commit(Commit<Event> commit)
         {
             _eventHistory.Push(commit);
             _eventFuture.Clear();

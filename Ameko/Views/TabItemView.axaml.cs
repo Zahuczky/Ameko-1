@@ -27,7 +27,7 @@ namespace Ameko.Views
         private async Task DoCopySelectedEventAsync(InteractionContext<TabItemViewModel, string?> interaction)
         {
             var window = TopLevel.GetTopLevel(this);
-            var selected = interaction.Input.Wrapper.SelectedEvents;
+            var selected = interaction.Input.Wrapper.SelectedEventCollection;
             if (window == null || selected == null)
             {
                 interaction.SetOutput("");
@@ -41,7 +41,7 @@ namespace Ameko.Views
         private async Task DoCutSelectedEventAsync(InteractionContext<TabItemViewModel, string?> interaction)
         {
             var window = TopLevel.GetTopLevel(this);
-            var selectedEvents = interaction.Input.Wrapper.SelectedEvents;
+            var selectedEvents = interaction.Input.Wrapper.SelectedEventCollection;
             var selectedEvent = interaction.Input.Wrapper.SelectedEvent;
             if (window == null || selectedEvents == null || selectedEvent == null)
             {

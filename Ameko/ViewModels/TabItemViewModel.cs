@@ -115,8 +115,8 @@ namespace Ameko.ViewModels
             DeleteSelectedCommand = ReactiveCommand.Create(() =>
             {
                 // TODO: Add checking!
-                if (Wrapper.SelectedEvent == null || Wrapper.SelectedEvents == null) return;
-                Wrapper.Remove(Wrapper.SelectedEvents, Wrapper.SelectedEvent);
+                if (Wrapper.SelectedEvent == null || Wrapper.SelectedEventCollection == null) return;
+                Wrapper.Remove(Wrapper.SelectedEventCollection, Wrapper.SelectedEvent);
             });
 
             CopySelectedEventsCommand = ReactiveCommand.Create(async () => { 

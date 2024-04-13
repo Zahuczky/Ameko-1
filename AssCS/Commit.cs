@@ -18,17 +18,34 @@ namespace AssCS
             Id = Guid.NewGuid();
             Snapshots = snapshots;
         }
+
+        public Commit(Snapshot<T> snapshot)
+        {
+            Id = Guid.NewGuid();
+            Snapshots = new List<Snapshot<T>> { snapshot };
+        }
     }
 
     public class Snapshot<T> where T : ICommitable
     {
-        public readonly List<T> snapshot;
+        public readonly List<SnapPosition<T>> snapshot;
         public readonly Action action;
 
-        public Snapshot(List<T> snapshot, Action action)
+        public Snapshot(List<SnapPosition<T>> snapshot, Action action)
         {
             this.snapshot = snapshot;
             this.action = action;
+        }
+    }
+
+    public class SnapPosition<T> where T : ICommitable
+    {
+        public T Target { get; }
+        public int? Parent { get; }
+        public SnapPosition(T target, int? parent)
+        {
+            Target = target;
+            Parent = parent;
         }
     }
 
