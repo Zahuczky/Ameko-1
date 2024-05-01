@@ -170,9 +170,12 @@ namespace Ameko.Views
         {
             List<Event> list = eventsGrid.SelectedItems.Cast<Event>().ToList();
             Event recent = (Event)eventsGrid.SelectedItem;
-            ViewModel?.UpdateEventSelection(list, recent);
-            eventsGrid.ScrollIntoView(eventsGrid.SelectedItem, null);
-            editBox.Focus();
+            if (ViewModel?.Events?.Count > 0)
+            {
+                ViewModel?.UpdateEventSelection(list, recent);
+                eventsGrid.ScrollIntoView(eventsGrid.SelectedItem, null);
+                editBox.Focus();
+            }
         }
 
         private void TextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)

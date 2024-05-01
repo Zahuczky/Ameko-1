@@ -275,7 +275,8 @@ namespace Holo
                     End = new Time(SelectedEvent.End + Time.FromSeconds(5))
                 };
                 File.EventManager.AddLast(next);
-                Select(new List<Event>() { next }, next);
+                var list = new List<Event>() { next };
+                Add(list, next, true);
             }
         }
 
