@@ -161,10 +161,13 @@ namespace Holo
         public void DuplicateSelected()
         {
             if (SelectedEventCollection == null) return;
+            var dupes = new List<Event>();
             foreach (var evnt in SelectedEventCollection)
             {
-                File.EventManager.Duplicate(evnt);
+                dupes.Add(File.EventManager.Duplicate(evnt));
             }
+            if (dupes.Count > 0)
+                Add(dupes, dupes[0], false);
         }
 
         /// <summary>
@@ -173,7 +176,8 @@ namespace Holo
         public void InsertBeforeSelected()
         {
             if (SelectedEvent == null) return;
-            File.EventManager.InsertBefore(SelectedEvent);
+            var evnt = File.EventManager.InsertBefore(SelectedEvent);
+            Add(new List<Event>() { evnt }, evnt, false);
         }
 
         /// <summary>
@@ -182,7 +186,8 @@ namespace Holo
         public void InsertAfterSelected()
         {
             if (SelectedEvent == null) return;
-            File.EventManager.InsertAfter(SelectedEvent);
+            var evnt = File.EventManager.InsertAfter(SelectedEvent);
+            Add(new List<Event>() { evnt }, evnt, false);
         }
 
         /// <summary>
@@ -197,19 +202,25 @@ namespace Holo
 
             var rollingTime = original.Start;
             var goalTime = original.End;
+
+            Event prevEvent = original;
+            Event newEvent;
+            var newEvents = new List<Event>();
             foreach (var segment in segments)
             {
-                var newEvent = new Event(File.EventManager.NextId, original);
+                newEvent = new Event(File.EventManager.NextId, original);
                 var ratio = segment.Length / (double)original.Text.Replace("\\N", string.Empty).Length;
                 newEvent.Text = segment;
                 newEvent.Start = Time.FromTime(rollingTime);
                 newEvent.End = rollingTime + Time.FromMillis(Convert.ToInt64((goalTime.TotalMilliseconds - original.Start.TotalMilliseconds) * ratio));
                 if (newEvent.End > goalTime) newEvent.End = goalTime;
 
-                File.EventManager.AddAfter(SelectedEvent?.Id ?? original.Id, newEvent);
-                Select(new List<Event>() { newEvent }, newEvent);
+                File.EventManager.AddAfter(prevEvent?.Id ?? 0, newEvent);
+                newEvents.Add(newEvent);
+                prevEvent = newEvent;
                 rollingTime = newEvent.End;
             }
+            Add(newEvents, newEvents[0], true); // TODO: Merge into one commit
             Remove(new List<Event>() { original }, original);
         }
 
@@ -237,6 +248,7 @@ namespace Holo
                 SelectedEvent = result;
                 SelectedEventCollection.Clear();
                 SelectedEventCollection.Add(result);
+                Add(new List<Event>() { result }, result, true); // TODO: Merge into one commit
             }
             else if (beforeOne != null && beforeOne.Equals(two))
             {
@@ -251,6 +263,7 @@ namespace Holo
                 SelectedEvent = result;
                 SelectedEventCollection.Clear();
                 SelectedEventCollection.Add(result);
+                Add(new List<Event>() { result }, result, false); // TODO: Merge into one commit
             }
             else return;
         }
