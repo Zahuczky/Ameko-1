@@ -64,6 +64,7 @@ namespace Holo
                 SelectedEventCollection = new List<Event>(newSelectedEvents);
                 SelectedEvent = newSelectedEvent;
                 selectedEventCopy = new Event(newSelectedEvent.Id, newSelectedEvent);
+                System.Diagnostics.Debug.WriteLine("NULL SAVE");
                 return;
             }
 
@@ -78,6 +79,7 @@ namespace Holo
                 SelectedEventCollection = new List<Event>(newSelectedEvents);
                 SelectedEvent = newSelectedEvent;
                 selectedEventCopy = new Event(newSelectedEvent!.Id, newSelectedEvent);
+                System.Diagnostics.Debug.WriteLine("NO CHANGE");
                 return;
             }
             else
@@ -92,6 +94,7 @@ namespace Holo
                 SelectedEvent = newSelectedEvent;
                 selectedEventCopy = new Event(newSelectedEvent!.Id, newSelectedEvent);
                 UpToDate = false;
+                System.Diagnostics.Debug.WriteLine("COMMITTING CHANGES");
                 return;
             }
         }

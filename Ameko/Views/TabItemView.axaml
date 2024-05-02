@@ -112,6 +112,7 @@
 					 KeyDown="TextBox_KeyDown"
 					 FontSize="16"
 					 FontFamily="{StaticResource Migu2MRegular}"
+					 IsUndoEnabled="False"
 					 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
 			</TextBox>
 		</Grid>
