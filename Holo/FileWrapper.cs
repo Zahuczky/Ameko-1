@@ -133,7 +133,71 @@ namespace Holo
             }
         }
 
-        // TODO: Undo and redo!
+        public void Undo()
+        {
+            // TODO: Save current state?
+            if (!file.HistoryManager.EventCanGoBack) return;
+            var commit = file.HistoryManager.EventGoBack();
+            if (commit == null) return;
+            foreach (var snap in commit.Snapshots)
+            {
+                switch (snap.action)
+                {
+                    case AssCS.Action.EDIT:
+                        foreach (var pos in snap.snapshot)
+                        {
+                            file.EventManager.Replace(pos.Target.Id, pos.Target);
+                        }
+                        break;
+                    case AssCS.Action.DELETE:
+                        foreach (var pos in snap.snapshot)
+                        {
+                            if (pos.Parent == null) file.EventManager.AddFirst(pos.Target);
+                            else file.EventManager.AddAfter((int)pos.Parent, pos.Target);
+                        }
+                        break;
+                    case AssCS.Action.INSERT:
+                        foreach (var pos in snap.snapshot)
+                        {
+                            file.EventManager.Remove(pos.Target.Id);
+                        }
+                        break;
+                }
+            }
+        }
+
+        public void Redo()
+        {
+            // TODO: Save current state?
+            if (!file.HistoryManager.EventCanGoForward) return;
+            var commit = file.HistoryManager.EventGoForward();
+            if (commit == null) return;
+            foreach (var snap in commit.Snapshots)
+            {
+                switch (snap.action)
+                {
+                    case AssCS.Action.EDIT:
+                        foreach (var pos in snap.snapshot)
+                        {
+                            file.EventManager.Replace(pos.Target.Id, pos.Target);
+                        }
+                        break;
+                    case AssCS.Action.INSERT:
+                        foreach (var pos in snap.snapshot)
+                        {
+                            if (pos.Parent == null) file.EventManager.AddFirst(pos.Target);
+                            else file.EventManager.AddAfter((int)pos.Parent, pos.Target);
+                        }
+                        break;
+                    case AssCS.Action.DELETE:
+                        foreach (var pos in snap.snapshot)
+                        {
+                            file.EventManager.Remove(pos.Target.Id);
+                        }
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Select the next, or previous, or new event

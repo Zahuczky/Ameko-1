@@ -51,6 +51,16 @@
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="_Edit">
+				<MenuItem Header="_Undo" Command="{Binding UndoCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/arrow-counterclockwise.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<MenuItem Header="_Redo" Command="{Binding RedoCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/arrow-clockwise.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
 				<MenuItem Header="_Search" Command="{Binding ShowSearchDialogCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/search.svg" />

@@ -182,6 +182,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.saveas", ViewModel.ShowSaveAsFileDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.search", ViewModel.ShowSearchDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.undo", ViewModel.UndoCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.redo", ViewModel.RedoCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.quit", ViewModel.QuitCommand);
 
