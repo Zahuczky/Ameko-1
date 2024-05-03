@@ -102,7 +102,11 @@ namespace Holo
                 // Change happened, commit the Previously Selected lines
                 System.Diagnostics.Debug.WriteLine("SELECT→ Committing changes");
                 var snapshot = new Snapshot<Event>(
-                    previouslySelectedEvents.Select(e => new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
+                    previouslySelectedEvents.Select(e => 
+                        new SnapPosition<Event>(
+                            file.EventManager.Get(e.Id).Clone(), 
+                            file.EventManager.GetBefore(e.Id)?.Id)
+                        ).ToList(),
                     AssCS.Action.EDIT);
                 if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
                 previouslySelectedEvent = newSelectedEvent.Clone();
@@ -114,7 +118,7 @@ namespace Holo
             }
         }
 
-        public void Remove(List<Event> selectedEvents, Event selectedEvent)
+        public Snapshot<Event> Remove(List<Event> selectedEvents, Event selectedEvent, bool commit = true)
         {
             if (selectedEvents.Count > 1)
             {
@@ -130,14 +134,14 @@ namespace Holo
                 selectedEvents.Select(e =>
                     new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
                 AssCS.Action.DELETE);
-            file.HistoryManager.Commit(new Commit<Event>(snapshot));
+            if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
             file.EventManager.Remove(selectedEvent.Id);
             SelectedEventCollection = new List<Event> { want };
             SelectedEvent = want;
-            return;
+            return snapshot;
         }
 
-        public void Add(List<Event> selectedEvents, Event selectedEvent, bool select)
+        public Snapshot<Event> Add(List<Event> selectedEvents, Event selectedEvent, bool select, bool commit = true)
         {
             var snapshots = new List<Snapshot<Event>>();
 
@@ -153,12 +157,13 @@ namespace Holo
                 if (selectSnapshot != null) snapshots.Add(selectSnapshot);
             }
 
-            file.HistoryManager.Commit(new Commit<Event>(snapshots));
+            if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshots));
             if (select)
             {
                 SelectedEvent = selectedEvent;
                 SelectedEventCollection = selectedEvents;
             }
+            return snapshot;
         }
 
         public void Undo()
@@ -287,6 +292,9 @@ namespace Holo
         /// </summary>
         public void SplitSelected()
         {
+            if (SelectedEvent == null || SelectedEventCollection == null) return;
+            Select(SelectedEventCollection, SelectedEvent);
+
             var original = SelectedEvent;
             if (original == null) return;
             var segments = original.Text.Split("\\N");
@@ -312,14 +320,18 @@ namespace Holo
                 prevEvent = newEvent;
                 rollingTime = newEvent.End;
             }
-            Add(newEvents, newEvents[0], true); // TODO: Merge into one commit
-            Remove(new List<Event>() { original }, original);
+            var addSnap = Add(newEvents, newEvents[0], true, false);
+            var remSnap = Remove(new List<Event>() { original }, original, false);
+            var snaps = new List<Snapshot<Event>>() { addSnap, remSnap };
+            File.HistoryManager.Commit(new Commit<Event>(snaps));
         }
 
         public void MergeSelectedAdj()
         {
             if (SelectedEvent == null || SelectedEventCollection == null) return;
             if (SelectedEventCollection.Count != 2) return;
+
+            Select(SelectedEventCollection, SelectedEvent);
 
             var one = SelectedEventCollection[0];
             var two = SelectedEventCollection[1];
@@ -336,11 +348,13 @@ namespace Holo
                     Text = $"{one.Text}\\N{two.Text}"
                 };
                 File.EventManager.AddAfter(two.Id, result);
-                Remove(SelectedEventCollection, SelectedEvent);
+                var remSnap = Remove(SelectedEventCollection, SelectedEvent, false);
                 SelectedEvent = result;
                 SelectedEventCollection.Clear();
                 SelectedEventCollection.Add(result);
-                Add(new List<Event>() { result }, result, true); // TODO: Merge into one commit
+                var addSnap = Add(new List<Event>() { result }, result, true, false);
+                var snaps = new List<Snapshot<Event>>() { addSnap, remSnap };
+                File.HistoryManager.Commit(new Commit<Event>(snaps));
             }
             else if (beforeOne != null && beforeOne.Equals(two))
             {
@@ -351,11 +365,13 @@ namespace Holo
                     Text = $"{two.Text}\\N{one.Text}"
                 };
                 File.EventManager.AddAfter(one.Id, result);
-                Remove(SelectedEventCollection, SelectedEvent);
+                var remSnap = Remove(SelectedEventCollection, SelectedEvent, false);
                 SelectedEvent = result;
                 SelectedEventCollection.Clear();
                 SelectedEventCollection.Add(result);
-                Add(new List<Event>() { result }, result, false); // TODO: Merge into one commit
+                var addSnap = Add(new List<Event>() { result }, result, false, false);
+                var snaps = new List<Snapshot<Event>>() { addSnap, remSnap };
+                File.HistoryManager.Commit(new Commit<Event>(snaps));
             }
             else return;
         }
