@@ -34,6 +34,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<StylesManagerViewModel, StylesManagerViewModel?> ShowStylesManager { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenFileDialog { get; }
     public Interaction<FileWrapper, Uri?> ShowSaveAsFileDialog { get; }
+    public Interaction<FileWrapper, Uri?> ShowExportFileDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
@@ -48,6 +49,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowOpenFileDialogCommand { get; }
     public ICommand ShowSaveFileDialogCommand { get; }
     public ICommand ShowSaveAsFileDialogCommand { get; }
+    public ICommand ShowExportFileDialogCommand { get; }
     public ICommand ShowOpenWorkspaceDialogCommand { get; }
     public ICommand ShowSaveWorkspaceDialogCommand { get; }
     public ICommand CloseTabCommand { get; }
@@ -142,6 +144,7 @@ public class MainViewModel : ViewModelBase
         ShowStylesManager = new Interaction<StylesManagerViewModel, StylesManagerViewModel?>();
         ShowOpenFileDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsFileDialog = new Interaction<FileWrapper, Uri?>();
+        ShowExportFileDialog = new Interaction<FileWrapper, Uri?>();
         ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
@@ -156,6 +159,7 @@ public class MainViewModel : ViewModelBase
         ShowOpenFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayOpenSubtitleFileDialog(ShowOpenFileDialog, this));
         ShowSaveFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.SaveOrDisplaySaveAsDialog(ShowSaveAsFileDialog));
         ShowSaveAsFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplaySaveAsDialog(ShowSaveAsFileDialog));
+        ShowExportFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayExportDialog(ShowExportFileDialog));
         ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.WorkspaceSaveOrDisplaySaveAsDialog(ShowSaveAsWorkspaceDialog));
         ShowOpenWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayWorkspaceOpenDialog(ShowOpenWorkspaceDialog, this));
 

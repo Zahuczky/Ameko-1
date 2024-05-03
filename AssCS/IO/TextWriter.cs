@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AssCS.IO
 {
-    internal class TextWriter : IFileWriter
+    public class TextWriter : IFileWriter
     {
         private readonly File file;
         private readonly string filepath;
@@ -14,7 +14,7 @@ namespace AssCS.IO
 
         public void Write(bool export)
         {
-            using var ioFile = System.IO.File.Open(filepath, System.IO.FileMode.Open);
+            using var ioFile = System.IO.File.Open(filepath, System.IO.FileMode.OpenOrCreate);
             var writer = new System.IO.StreamWriter(ioFile, encoding);
             writer.WriteLine($"# Exported by {consumer.Name} {consumer.Version} [AssCS]");
 
@@ -22,11 +22,10 @@ namespace AssCS.IO
             {
                 if (line.Comment) continue;
                 var actor = line.Actor.Trim().Equals(string.Empty) ? "" : $"{line.Actor.Trim()}: ";
-                writer.WriteLine($"{actor}{line.GetStrippedText()}");
-
-                writer.Close();
-                ioFile.Close();
+                writer.WriteLine($"{actor}{line.GetStrippedText().Replace("\\N", " ").Replace("\\n", " ")}");
             }
+            writer.Close();
+            ioFile.Close();
 
         }
 

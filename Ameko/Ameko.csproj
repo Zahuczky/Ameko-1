@@ -26,6 +26,7 @@
     <None Remove="Assets\B5\arrows-collapse.svg" />
     <None Remove="Assets\B5\arrows-expand.svg" />
     <None Remove="Assets\B5\box-arrow-in-down.svg" />
+    <None Remove="Assets\B5\box-arrow-right.svg" />
     <None Remove="Assets\B5\box-arrow-up.svg" />
     <None Remove="Assets\B5\braces.svg" />
     <None Remove="Assets\B5\brush.svg" />

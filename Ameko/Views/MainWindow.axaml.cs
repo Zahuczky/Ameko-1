@@ -101,6 +101,27 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowExportSaveAsFileDialogAsync(InteractionContext<FileWrapper, Uri?> interaction)
+    {
+        if (interaction.Input == null) return;
+
+        var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save Subtitle File As...",
+            FileTypeChoices = new[]
+            {
+                new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } }
+            },
+            SuggestedFileName = $"{interaction.Input.Title}"
+        });
+        if (file != null)
+        {
+            interaction.SetOutput(file.Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private async Task DoShowSaveAsWorkspaceDialogAsync(InteractionContext<Workspace, Uri?> interaction)
     {
         if (interaction.Input == null) return;
@@ -257,6 +278,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowAboutDialog.RegisterHandler(DoShowAboutDialogAsync);
                 ViewModel.ShowOpenFileDialog.RegisterHandler(DoShowOpenFileDialogAsync);
                 ViewModel.ShowSaveAsFileDialog.RegisterHandler(DoShowSaveAsFileDialogAsync);
+                ViewModel.ShowExportFileDialog.RegisterHandler(DoShowExportSaveAsFileDialogAsync);
                 ViewModel.ShowSaveAsWorkspaceDialog.RegisterHandler(DoShowSaveAsWorkspaceDialogAsync);
                 ViewModel.ShowOpenWorkspaceDialog.RegisterHandler(DoShowOpenWorkspaceDialogAsync);
                 
