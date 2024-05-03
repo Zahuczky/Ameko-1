@@ -13,11 +13,13 @@ namespace Holo
     {
         private readonly File file;
         private Event? selectedEvent;
-        private Event? selectedEventCopy;
         private List<Event>? selectedEvents;
         private Uri? filePath;
         private bool upToDate;
         private string title;
+
+        private Event? previouslySelectedEvent;
+        private List<Event>? previouslySelectedEvents;
 
         public File File => file;
         public int ID { get; }
@@ -51,51 +53,64 @@ namespace Holo
             get => title;
             set { title = value; OnPropertyChanged(nameof(Title)); }
         }
-        
-        public void Select(List<Event> newSelectedEvents, Event newSelectedEvent)
+
+        private bool selecting = false; // TODO: There MUST be a better way to do this but I can't think of it right now
+        public Snapshot<Event>? Select(List<Event> newSelectedEvents, Event newSelectedEvent, bool commit = true)
         {
-            if (SelectedEventCollection == null && newSelectedEvent != null)
+            if (selecting) return null; // Prevent `SelectedEvent = newSelectedEvent;` from triggering another select event (pain-peko!!!)
+            selecting = true;
+
+            if (previouslySelectedEvent == null || previouslySelectedEvents == null)
             {
+                // Don't check, just commit
+                System.Diagnostics.Debug.WriteLine("SELECT→ Null Save");
+                previouslySelectedEvent = newSelectedEvent.Clone();
+                previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
                 var snapshot = new Snapshot<Event>(
-                    newSelectedEvents.Select(e => 
-                        new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
+                    newSelectedEvents.Select(e => new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
                     AssCS.Action.EDIT);
-                file.HistoryManager.Commit(new Commit<Event>(snapshot));
-                SelectedEventCollection = new List<Event>(newSelectedEvents);
+                if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
                 SelectedEvent = newSelectedEvent;
-                selectedEventCopy = new Event(newSelectedEvent.Id, newSelectedEvent);
-                System.Diagnostics.Debug.WriteLine("NULL SAVE");
-                return;
+                SelectedEventCollection = new List<Event>(newSelectedEvents);
+                selecting = false;
+                return snapshot;
             }
 
-            if (newSelectedEvents.Count == 0) return;
-            
-            if ((SelectedEvent != null && selectedEventCopy != null
-                && file.EventManager.Has(selectedEventCopy.Id)
-                && selectedEventCopy.Equals(file.EventManager.Get(selectedEventCopy.Id)))
-                || SelectedEvent == null)
+            if (newSelectedEvents.Count == 0)
+            {
+                // Skip
+                System.Diagnostics.Debug.WriteLine("SELECT→ Empty (skipping)");
+                selecting = false;
+                return null;
+            }
+
+            if (previouslySelectedEvent != null && 
+                ((file.EventManager.Has(previouslySelectedEvent.Id) && previouslySelectedEvent.Equals(file.EventManager.Get(previouslySelectedEvent.Id))) 
+                || !file.EventManager.Has(previouslySelectedEvent.Id)))
             {
                 // No change, continue
-                SelectedEventCollection = new List<Event>(newSelectedEvents);
+                System.Diagnostics.Debug.WriteLine("SELECT→ No change");
+                previouslySelectedEvent = newSelectedEvent.Clone();
+                previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
                 SelectedEvent = newSelectedEvent;
-                selectedEventCopy = new Event(newSelectedEvent!.Id, newSelectedEvent);
-                System.Diagnostics.Debug.WriteLine("NO CHANGE");
-                return;
+                SelectedEventCollection = new List<Event>(newSelectedEvents);
+                selecting = false;
+                return null;
             }
             else
             {
-                // Change happened, commit the lot
+                // Change happened, commit the Previously Selected lines
+                System.Diagnostics.Debug.WriteLine("SELECT→ Committing changes");
                 var snapshot = new Snapshot<Event>(
-                    SelectedEventCollection.Select(e =>
-                        new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
+                    previouslySelectedEvents.Select(e => new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
                     AssCS.Action.EDIT);
-                file.HistoryManager.Commit(new Commit<Event>(snapshot));
-                SelectedEventCollection = new List<Event>(newSelectedEvents);
+                if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
+                previouslySelectedEvent = newSelectedEvent.Clone();
+                previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
                 SelectedEvent = newSelectedEvent;
-                selectedEventCopy = new Event(newSelectedEvent!.Id, newSelectedEvent);
-                UpToDate = false;
-                System.Diagnostics.Debug.WriteLine("COMMITTING CHANGES");
-                return;
+                SelectedEventCollection = new List<Event>(newSelectedEvents);
+                selecting = false;
+                return snapshot;
             }
         }
 
@@ -124,11 +139,21 @@ namespace Holo
 
         public void Add(List<Event> selectedEvents, Event selectedEvent, bool select)
         {
+            var snapshots = new List<Snapshot<Event>>();
+
             var snapshot = new Snapshot<Event>(
                 selectedEvents.Select(e =>
                     new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
                 AssCS.Action.INSERT);
-            file.HistoryManager.Commit(new Commit<Event>(snapshot));
+            snapshots.Add(snapshot);
+
+            if (select)
+            {
+                var selectSnapshot = Select(selectedEvents, selectedEvent, false);
+                if (selectSnapshot != null) snapshots.Add(selectSnapshot);
+            }
+
+            file.HistoryManager.Commit(new Commit<Event>(snapshots));
             if (select)
             {
                 SelectedEvent = selectedEvent;
