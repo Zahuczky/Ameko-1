@@ -106,7 +106,30 @@
 							   Margin="2"/>
 				<StackPanel Orientation="Horizontal"
 							Grid.Column="7">
-					<Label Content="Text editing buttons coming soon!" HorizontalAlignment="Center" VerticalAlignment="Center" />
+					<Button Margin="2">
+						<ToolTip.Tip>Toggle Bold \b at cursor position</ToolTip.Tip>
+						<Svg Path="avares://Ameko/Assets/B5/type-bold.svg" />
+					</Button>
+					<Button Margin="2">
+						<ToolTip.Tip>Toggle Italics \i at cursor position</ToolTip.Tip>
+						<Svg Path="avares://Ameko/Assets/B5/type-italic.svg" />
+					</Button>
+					<Button Margin="2">
+						<ToolTip.Tip>Toggle Underline \u at cursor position</ToolTip.Tip>
+						<Svg Path="avares://Ameko/Assets/B5/type-underline.svg" />
+					</Button>
+					<Button Margin="2">
+						<ToolTip.Tip>Toggle Strikethrough \s at cursor position</ToolTip.Tip>
+						<Svg Path="avares://Ameko/Assets/B5/type-strikethrough.svg" />
+					</Button>
+					<Button Margin="2">
+						<ToolTip.Tip>Set Font \fn at cursor position</ToolTip.Tip>
+						<Svg Path="avares://Ameko/Assets/B5/fonts.svg" />
+					</Button>
+					<Button Margin="2">
+						<ToolTip.Tip>Commit changes and move to the next line</ToolTip.Tip>
+						<Svg Path="avares://Ameko/Assets/B5/arrow-return-left.svg" />
+					</Button>
 				</StackPanel>
 			</Grid>
 			<TextBox Name="editBox"
