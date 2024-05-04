@@ -97,6 +97,22 @@ namespace Ameko.Services
         }
 
         /// <summary>
+        /// Display the Export Save As dialog
+        /// </summary>
+        /// <param name="interaction"></param>
+        public static async void DisplayExportDialog(Interaction<FileWrapper, Uri?> interaction)
+        {
+            var workingFile = HoloContext.Instance.Workspace.WorkingFile;
+            if (workingFile == null) return;
+
+            var uri = await interaction.Handle(workingFile);
+            if (uri == null) return;
+
+            var writer = new TextWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
+            writer.Write(false);
+        }
+
+        /// <summary>
         /// Display the Open File dialog for Workspaces
         /// </summary>
         /// <param name="interaction"></param>

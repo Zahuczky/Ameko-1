@@ -28,6 +28,7 @@ namespace Holo
         private int _workingIndex = -1;
 
         private int _cps;
+        private bool? _useSoftLinebreaks;
 
         private static readonly FileWrapper FALLBACK_WRAPPER = new FileWrapper(new AssCS.File(), -1, null);
 
@@ -48,6 +49,15 @@ namespace Holo
         {
             get => _cps;
             set { _cps = value; OnPropertyChanged(nameof(Cps)); }
+        }
+
+        /// <summary>
+        /// Workspace setting for soft line breaks (\n)
+        /// </summary>
+        public bool? UseSoftLinebreaks
+        {
+            get => _useSoftLinebreaks;
+            set { _useSoftLinebreaks = value; OnPropertyChanged(nameof(UseSoftLinebreaks)); }
         }
 
         /// <summary>
@@ -203,7 +213,8 @@ namespace Holo
                     // Relative the paths going in
                     ReferencedFiles = this.ReferencedFiles.Where(f => !f.Path.Equals(string.Empty)).Select(f => Path.GetRelativePath(dir, f.Path)).ToList(),
                     Styles = this.Styles.Select(s => s.AsAss()).ToList(),
-                    Cps = this.Cps
+                    Cps = this.Cps,
+                    UseSoftLinebreaks = this.UseSoftLinebreaks
                 };
 
                 using var writer = new StreamWriter(fp, false);
@@ -252,6 +263,7 @@ namespace Holo
                 Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(NextStyleId, s)));
                 StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
                 Cps = space.Cps;
+                UseSoftLinebreaks = space.UseSoftLinebreaks;
                 loadedFiles = new Dictionary<int, FileWrapper>();
                 WorkingIndex = 0;
                 FilePath = filePath;
@@ -309,6 +321,7 @@ namespace Holo
             Styles = new ObservableCollection<Style>();
             StyleNames = new ObservableCollection<string>();
             Cps = 0;
+            UseSoftLinebreaks = null; // Yield to user preferences
             AddFileToWorkspace();
             WorkingIndex = 0;
             Name = "Default Workspace";
@@ -341,6 +354,10 @@ namespace Holo
             /// CPS threshold for this workspace
             /// </summary>
             public int Cps;
+            /// <summary>
+            /// Whether to use soft linebreaks (\n)
+            /// </summary>
+            public bool? UseSoftLinebreaks;
         }
 
         /// <summary>

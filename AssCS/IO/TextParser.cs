@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace AssCS.IO
 {
-    internal class TextParser : IFileParser
+    public class TextParser : IFileParser
     {
         private char comment;
         private char actor;

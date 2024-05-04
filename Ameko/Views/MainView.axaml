@@ -33,6 +33,12 @@
 					</MenuItem.Icon>
 				</MenuItem>
 				<Separator />
+				<MenuItem Header="_Export Subtitles..." Command="{Binding ShowExportFileDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/box-arrow-right.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator />
 				<MenuItem Header="Open _Workspace" Command="{Binding ShowOpenWorkspaceDialogCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/collection.svg" />

@@ -90,9 +90,9 @@ namespace Ameko.Views
         private void DoScrollIntoView(InteractionContext<Event, Unit> interaction)
         {
             if (interaction == null) return;
+            interaction.SetOutput(Unit.Default);
             eventsGrid.SelectedItem = interaction.Input;
             eventsGrid.ScrollIntoView(interaction.Input, null);
-            interaction.SetOutput(Unit.Default);
         }
 
         private void SetKeybinds()
@@ -178,6 +178,19 @@ namespace Ameko.Views
             }
         }
 
+        /// <summary>
+        /// Check the workspace and the configuration to determine whether to use soft or hard linebreaks
+        /// </summary>
+        private static bool UseSoftLinebreaks
+        {
+            get
+            {
+                if (HoloContext.Instance.Workspace.UseSoftLinebreaks != null)
+                    return HoloContext.Instance.Workspace.UseSoftLinebreaks ?? false;
+                return HoloContext.Instance.ConfigurationManager?.UseSoftLinebreaks ?? false;
+            }
+        }
+
         private void TextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
         {
             if (e.Key == Avalonia.Input.Key.Enter)
@@ -185,7 +198,7 @@ namespace Ameko.Views
                 if (e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Shift))
                 {
                     int idx = editBox.CaretIndex;
-                    editBox.Text = editBox.Text?.Insert(idx, "\\N");
+                    editBox.Text = editBox.Text?.Insert(idx, UseSoftLinebreaks ? "\\n" : "\\N");
                     editBox.CaretIndex += 2;
                 } else
                 {

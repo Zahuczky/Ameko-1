@@ -36,6 +36,14 @@ namespace AssCS
         /// Observable collection of the current event IDs
         /// </summary>
         public ObservableCollection<int> CurrentEvents => current;
+        /// <summary>
+        /// Set containing currently-used actors
+        /// </summary>
+        public HashSet<string> Actors => events.Values.Select(el => el.Event.Actor).Where(a => !a.Equals(string.Empty)).ToHashSet();
+        /// <summary>
+        /// Set containing currently-used effects
+        /// </summary>
+        public HashSet<string> Effects => events.Values.Select(el => el.Event.Effect).Where(e => !e.Equals(string.Empty)).ToHashSet();
 
         /// <summary>
         /// Add an event after another event

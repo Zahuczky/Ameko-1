@@ -297,7 +297,8 @@ namespace Holo
 
             var original = SelectedEvent;
             if (original == null) return;
-            var segments = original.Text.Split("\\N");
+            string[] delims = { "\\N", "\\n" };
+            var segments = original.Text.Split(delims, StringSplitOptions.None);
             if (segments.Length == 0) return;
 
             var rollingTime = original.Start;
@@ -309,7 +310,7 @@ namespace Holo
             foreach (var segment in segments)
             {
                 newEvent = new Event(File.EventManager.NextId, original);
-                var ratio = segment.Length / (double)original.Text.Replace("\\N", string.Empty).Length;
+                var ratio = segment.Length / (double)original.Text.Replace("\\N", string.Empty).Replace("\\n", string.Empty).Length;
                 newEvent.Text = segment;
                 newEvent.Start = Time.FromTime(rollingTime);
                 newEvent.End = rollingTime + Time.FromMillis(Convert.ToInt64((goalTime.TotalMilliseconds - original.Start.TotalMilliseconds) * ratio));
@@ -345,7 +346,7 @@ namespace Holo
                 {
                     Start = one.Start,
                     End = two.End,
-                    Text = $"{one.Text}\\N{two.Text}"
+                    Text = $"{one.Text}{(UseSoftLinebreaks ? "\\n" : "\\N")}{two.Text}"
                 };
                 File.EventManager.AddAfter(two.Id, result);
                 var remSnap = Remove(SelectedEventCollection, SelectedEvent, false);
@@ -362,7 +363,7 @@ namespace Holo
                 {
                     Start = two.Start,
                     End = one.End,
-                    Text = $"{two.Text}\\N{one.Text}"
+                    Text = $"{two.Text}{(UseSoftLinebreaks ? "\\n" : "\\N")}{one.Text}"
                 };
                 File.EventManager.AddAfter(one.Id, result);
                 var remSnap = Remove(SelectedEventCollection, SelectedEvent, false);
@@ -402,6 +403,16 @@ namespace Holo
         }
 
         #endregion
+
+        private static bool UseSoftLinebreaks
+        {
+            get
+            {
+                if (HoloContext.Instance.Workspace.UseSoftLinebreaks != null)
+                    return HoloContext.Instance.Workspace.UseSoftLinebreaks ?? false;
+                return HoloContext.Instance.ConfigurationManager?.UseSoftLinebreaks ?? false;
+            }
+        }
 
         public FileWrapper(File file, int id, Uri? filePath)
         {

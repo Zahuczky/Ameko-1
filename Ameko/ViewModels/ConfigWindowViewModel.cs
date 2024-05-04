@@ -18,6 +18,7 @@ namespace Ameko.ViewModels
         private int cps;
         private bool autosaveEnabled;
         private int autosaveInterval;
+        private bool useSoftLinebreaks;
 
         public List<SubmenuOverrideLink> SelectedScripts { get; set; }
         public string OverrideTextBoxText { get; set; }
@@ -39,6 +40,12 @@ namespace Ameko.ViewModels
         {
             get => autosaveInterval;
             set => this.RaiseAndSetIfChanged(ref autosaveInterval, value);
+        }
+
+        public bool UseSoftLinebreaks
+        {
+            get => useSoftLinebreaks;
+            set => this.RaiseAndSetIfChanged(ref useSoftLinebreaks, value);
         }
 
         public ICommand SetOverrideCommand { get; }
@@ -76,6 +83,7 @@ namespace Ameko.ViewModels
             Cps = HoloContext.Instance.ConfigurationManager.Cps;
             AutosaveEnabled = HoloContext.Instance.ConfigurationManager.Autosave;
             AutosaveInterval = HoloContext.Instance.ConfigurationManager.AutosaveInterval;
+            UseSoftLinebreaks = HoloContext.Instance.ConfigurationManager.UseSoftLinebreaks;
 
             SetOverrideCommand = ReactiveCommand.Create(() =>
             {
@@ -101,6 +109,7 @@ namespace Ameko.ViewModels
                 HoloContext.Instance.ConfigurationManager.Cps = Cps;
                 HoloContext.Instance.ConfigurationManager.Autosave = AutosaveEnabled;
                 HoloContext.Instance.ConfigurationManager.AutosaveInterval = AutosaveInterval;
+                HoloContext.Instance.ConfigurationManager.UseSoftLinebreaks = UseSoftLinebreaks;
             });
         }
     }

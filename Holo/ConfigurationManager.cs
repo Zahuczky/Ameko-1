@@ -21,6 +21,7 @@ namespace Holo
         private int _cps;
         private bool _autosave;
         private int _autosaveInterval;
+        private bool _useSoftLinebreaks;
         private ObservableCollection<string> _repositories;
         private Dictionary<string, string> _submenuOverrides;
         private Dictionary<string, List<string>> _installedScripts;
@@ -51,6 +52,16 @@ namespace Holo
         {
             get => _autosaveInterval;
             set { _autosaveInterval = value; OnPropertyChanged(nameof(AutosaveInterval)); WriteConfig(); }
+        }
+
+        /// <summary>
+        /// Choose whether to use soft line breaks (\n) instead
+        /// of hard line breaks (\N) default
+        /// </summary>
+        public bool UseSoftLinebreaks
+        {
+            get => _useSoftLinebreaks;
+            set { _useSoftLinebreaks = value; OnPropertyChanged(nameof(UseSoftLinebreaks)); WriteConfig(); }
         }
 
         /// <summary>
@@ -323,7 +334,8 @@ namespace Holo
                 {
                     Cps = this.Cps,
                     Autosave = this._autosave,
-                    AutosaveInterval = this._autosaveInterval
+                    AutosaveInterval = this._autosaveInterval,
+                    UseSoftLinebreaks = this._useSoftLinebreaks
                 },
                 DependencyControl = new DCConfigModel
                 {
@@ -341,6 +353,7 @@ namespace Holo
             this.Cps = model.General?.Cps ?? 0;
             this._autosave = model.General?.Autosave ?? true;
             this._autosaveInterval = model.General?.AutosaveInterval ?? 300; // 5 minutes
+            this._useSoftLinebreaks = model.General?.UseSoftLinebreaks ?? false;
             this._repositories = new ObservableCollection<string>(model.DependencyControl?.Repositories);
             this._submenuOverrides = new Dictionary<string, string>(model.DependencyControl?.SubmenuOverrides);
             this._installedScripts = new Dictionary<string, List<string>>(model.DependencyControl?.InstalledScripts);
@@ -383,6 +396,7 @@ namespace Holo
             public int? Cps;
             public bool? Autosave;
             public int? AutosaveInterval;
+            public bool? UseSoftLinebreaks;
         }
 
         private class DCConfigModel
