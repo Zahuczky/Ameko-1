@@ -61,6 +61,7 @@
 						<Svg Path="avares://Ameko/Assets/B5/arrow-clockwise.svg" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<Separator />
 				<MenuItem Header="_Search" Command="{Binding ShowSearchDialogCommand}">
 					<MenuItem.Icon>
 						<Svg Path="avares://Ameko/Assets/B5/search.svg" />
