@@ -27,7 +27,7 @@ namespace Ameko.ViewModels
         {
             List<Event> events;
             if (ShiftTimesFilter == ShiftTimesFilter.ALL_ROWS) events = HoloContext.Instance.Workspace.WorkingFile.File.EventManager.Ordered;
-            else events = HoloContext.Instance.Workspace.WorkingFile.SelectedEvents ?? new List<Event>();
+            else events = HoloContext.Instance.Workspace.WorkingFile.SelectedEventCollection ?? new List<Event>();
 
             switch (ShiftTimesType)
             {

@@ -16,7 +16,7 @@ namespace Holo
         public int NextStyleId => _styleId++;
         private string _globalsFilePath;
 
-        private static readonly string FreeformDocumentTemplate = "// Welcome to the Ameko Freeform Scripting Playground!\n// Here, you can write a \"freeform\" script to automate tasks.\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing Ameko;\nusing Holo;\nusing AssCS;\n\n// Some commonly-used variables to get you started:\nFileWrapper file = HoloContext.Instance.Workspace.WorkingFile;\nEvent? selectedEvent = file.SelectedEvent;\nList<Event>? selectedEvents = file.SelectedEvents;\n\n// Write your script here!\n";
+        private static readonly string FreeformDocumentTemplate = "// Welcome to the Ameko Freeform Scripting Playground!\n// Here, you can write a \"freeform\" script to automate tasks.\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing Ameko;\nusing Holo;\nusing AssCS;\n\n// Some commonly-used variables to get you started:\nFileWrapper file = HoloContext.Instance.Workspace.WorkingFile;\nEvent? selectedEvent = file.SelectedEvent;\nList<Event>? selectedEvents = file.SelectedEventCollection;\n\n// Write your script here!\n";
         private string _freeformDocument { get; set; }
 
         private ObservableCollection<Style> Styles { get; set; }

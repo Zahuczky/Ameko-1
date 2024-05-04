@@ -365,6 +365,11 @@ namespace AssCS
             return hash.ToHashCode();
         }
 
+        public Event Clone()
+        {
+            return new Event(Id, this);
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

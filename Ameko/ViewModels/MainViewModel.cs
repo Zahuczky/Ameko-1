@@ -57,6 +57,8 @@ public class MainViewModel : ViewModelBase
     public ICommand ActivateScriptCommand { get; }
     public ICommand ReloadScriptsCommand { get; }
     public ICommand QuitCommand { get; }
+    public ICommand UndoCommand { get; }
+    public ICommand RedoCommand { get; }
     public ICommand ShowSearchDialogCommand { get; }
     public ICommand ShowShiftTimesDialogCommand { get; }
     public ICommand ShowDependencyControlWindowCommand { get; }
@@ -162,6 +164,9 @@ public class MainViewModel : ViewModelBase
         ShowExportFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayExportDialog(ShowExportFileDialog));
         ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.WorkspaceSaveOrDisplaySaveAsDialog(ShowSaveAsWorkspaceDialog));
         ShowOpenWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayWorkspaceOpenDialog(ShowOpenWorkspaceDialog, this));
+
+        UndoCommand = ReactiveCommand.Create(HoloContext.Instance.Workspace.WorkingFile.Undo);
+        RedoCommand = ReactiveCommand.Create(HoloContext.Instance.Workspace.WorkingFile.Redo);
 
         NewFileCommand = ReactiveCommand.Create(() =>
         {

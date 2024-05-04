@@ -226,10 +226,11 @@ namespace AssCS
         /// Duplicate an event
         /// </summary>
         /// <param name="target">Event to duplicate</param>
-        public void Duplicate(Event target)
+        public Event Duplicate(Event target)
         {
             var newEvnt = new Event(NextId, target);
             AddAfter(target.Id, newEvnt);
+            return newEvnt;
         }
 
         /// <summary>
@@ -237,7 +238,7 @@ namespace AssCS
         /// The new event's length will be limited if there is a prior event.
         /// </summary>
         /// <param name="target">Target event</param>
-        public void InsertBefore(Event target)
+        public Event InsertBefore(Event target)
         {
             var newEvnt = new Event(NextId);
             var before = GetBefore(target.Id);
@@ -252,6 +253,7 @@ namespace AssCS
             newEvnt.Style = target.Style;
 
             AddBefore(target.Id, newEvnt);
+            return newEvnt;
         }
 
         /// <summary>
@@ -259,7 +261,7 @@ namespace AssCS
         /// The new event's length will be limited if there is a subsequent event.
         /// </summary>
         /// <param name="target">Target event</param>
-        public void InsertAfter(Event target)
+        public Event InsertAfter(Event target)
         {
             var newEvnt = new Event(NextId);
             var after = GetAfter(target.Id);
@@ -273,7 +275,8 @@ namespace AssCS
             newEvnt.Start = target.End;
             newEvnt.Style = target.Style;
 
-           AddAfter(target.Id, newEvnt);
+            AddAfter(target.Id, newEvnt);
+            return newEvnt;
         }
 
         #endregion Commands
