@@ -126,8 +126,9 @@
 						<ToolTip.Tip>Set Font \fn at cursor position</ToolTip.Tip>
 						<Svg Path="avares://Ameko/Assets/B5/fonts.svg" />
 					</Button>
-					<Button Margin="2">
-						<ToolTip.Tip>Commit changes and move to the next line</ToolTip.Tip>
+					<Button Margin="2"
+							Command="{Binding NextOrAddEventCommand}">
+						<ToolTip.Tip>Move to the next line, creating a new one if needed</ToolTip.Tip>
 						<Svg Path="avares://Ameko/Assets/B5/arrow-return-left.svg" />
 					</Button>
 				</StackPanel>
