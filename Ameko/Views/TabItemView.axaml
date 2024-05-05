@@ -132,6 +132,7 @@
 						<Svg Path="avares://Ameko/Assets/B5/type-strikethrough.svg" />
 					</Button>
 					<Button Margin="2"
+							IsEnabled="False"
 							ToolTip.Tip="Set Font \fn at cursor position">
 						<Svg Path="avares://Ameko/Assets/B5/fonts.svg" />
 					</Button>
