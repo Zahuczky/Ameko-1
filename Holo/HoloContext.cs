@@ -12,6 +12,7 @@ namespace Holo
         
         public static HoloContext Instance => _instance.Value;
         
+        public Logger Logger { get; }
         public PluginHandler PluginHandler { get; }
         public ConfigurationManager ConfigurationManager { get; }
         public GlobalsManager GlobalsManager { get; }
@@ -22,6 +23,7 @@ namespace Holo
         {
             Directories.Create();
 
+            Logger = Logger.Instance;
             ConfigurationManager = new ConfigurationManager(Directories.HoloConfigHome);
             GlobalsManager = new GlobalsManager(Directories.HoloDataHome);
             PluginHandler = new PluginHandler(Directories.HoloDataHome);
@@ -30,6 +32,12 @@ namespace Holo
             RepositoryManager.LoadUrlList(ConfigurationManager.GetRepositories());
 
             Workspace = new Workspace();
+            Logger.Warn("cheese");
+            Logger.Info("balls", "yomama");
+            foreach (Log l in Logger.Logs)
+            {
+                Debug.WriteLine(l);
+            }
         }
 
         public class Directories
