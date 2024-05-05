@@ -384,6 +384,9 @@ namespace Holo
         public void NextOrAdd()
         {
             if (SelectedEvent == null) return;
+            if (SelectedEvent.Text.IndexOf(Environment.NewLine) >= 0)
+                SelectedEvent.Text = SelectedEvent.Text.Replace(Environment.NewLine, (UseSoftLinebreaks ? "\\n" : "\\N"));
+
             var next = File.EventManager.GetAfter(SelectedEvent.Id);
             if (next != null)
             {
