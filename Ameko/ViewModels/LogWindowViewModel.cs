@@ -26,15 +26,15 @@ namespace Ameko.ViewModels
 
         public LogWindowViewModel()
         {
-            _logs = new List<Log>(HoloContext.Instance.Logger.Logs);
+            _logs = new List<Log>(HoloContext.Logger.Logs);
             _logs.Reverse();
 
-            HoloContext.Instance.Logger.PropertyChanged += Logger_LogAdded;
+            HoloContext.Logger.PropertyChanged += Logger_LogAdded;
         }
 
         private void Logger_LogAdded(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Logs = new List<Log>(HoloContext.Instance.Logger.Logs);
+            Logs = new List<Log>(HoloContext.Logger.Logs);
             Logs.Reverse();
         }
     }

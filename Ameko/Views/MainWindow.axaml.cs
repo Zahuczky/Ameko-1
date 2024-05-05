@@ -185,7 +185,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         await manager.ShowDialog(this);
     }
 
-    private async void DoShowLogsWindowAsync(InteractionContext<LogWindowViewModel, Unit> interaction)
+    private void DoShowLogsWindow(InteractionContext<LogWindowViewModel, Unit> interaction)
     {
         interaction.SetOutput(Unit.Default);
         var manager = new LogWindow();
@@ -298,7 +298,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
                 ViewModel.ShowConfigWindow.RegisterHandler(DoShowConfigWindowAsync);
                 ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindowAsync);
-                ViewModel.ShowLogsWindow.RegisterHandler(DoShowLogsWindowAsync);
+                ViewModel.ShowLogsWindow.RegisterHandler(DoShowLogsWindow);
                 ViewModel.ShowFreeformPlayground.RegisterHandler(DoShowFreeformPlayground);
             }
 

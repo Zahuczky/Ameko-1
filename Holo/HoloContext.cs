@@ -11,8 +11,8 @@ namespace Holo
         private static readonly Lazy<HoloContext> _instance = new Lazy<HoloContext>(() => new HoloContext());
         
         public static HoloContext Instance => _instance.Value;
-        
-        public Logger Logger { get; }
+
+        public static Logger Logger { get; } = Logger.Instance;
         public PluginHandler PluginHandler { get; }
         public ConfigurationManager ConfigurationManager { get; }
         public GlobalsManager GlobalsManager { get; }
@@ -22,8 +22,6 @@ namespace Holo
         private HoloContext()
         {
             Directories.Create();
-
-            Logger = Logger.Instance;
             ConfigurationManager = new ConfigurationManager(Directories.HoloConfigHome);
             GlobalsManager = new GlobalsManager(Directories.HoloDataHome);
             PluginHandler = new PluginHandler(Directories.HoloDataHome);

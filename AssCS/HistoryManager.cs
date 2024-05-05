@@ -40,7 +40,6 @@ namespace AssCS
             _eventHistory.Push(commit);
             _eventFuture.Clear();
             Notify();
-            System.Diagnostics.Debug.WriteLine("[COMMIT]");
         }
 
 

@@ -115,7 +115,7 @@ namespace Ameko.Services
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e.Message);
+                    HoloContext.Logger.Error(e.Message.Trim(), "Script Service");
                     continue;
                 }
             }

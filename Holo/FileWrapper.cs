@@ -22,6 +22,8 @@ namespace Holo
         private Event? previouslySelectedEvent;
         private List<Event>? previouslySelectedEvents;
 
+        private Logger logger;
+
         public File File => file;
         public int ID { get; }
 
@@ -64,7 +66,7 @@ namespace Holo
             if (previouslySelectedEvent == null || previouslySelectedEvents == null)
             {
                 // Don't check, just commit
-                System.Diagnostics.Debug.WriteLine("SELECT→ Null Save");
+                logger.Debug("SELECT→ Null Save", "FileWrapper");
                 previouslySelectedEvent = newSelectedEvent.Clone();
                 previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
                 var snapshot = new Snapshot<Event>(
@@ -80,7 +82,7 @@ namespace Holo
             if (newSelectedEvents.Count == 0)
             {
                 // Skip
-                System.Diagnostics.Debug.WriteLine("SELECT→ Empty (skipping)");
+                logger.Debug("SELECT→ Empty (skipping)", "FileWrapper");
                 selecting = false;
                 return null;
             }
@@ -90,7 +92,7 @@ namespace Holo
                 || !file.EventManager.Has(previouslySelectedEvent.Id)))
             {
                 // No change, continue
-                System.Diagnostics.Debug.WriteLine("SELECT→ No change");
+                logger.Debug("SELECT→ No change", "FileWrapper");
                 previouslySelectedEvent = newSelectedEvent.Clone();
                 previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
                 SelectedEvent = newSelectedEvent;
@@ -101,7 +103,7 @@ namespace Holo
             else
             {
                 // Change happened, commit the Previously Selected lines
-                System.Diagnostics.Debug.WriteLine("SELECT→ Committing changes");
+                logger.Debug("SELECT→ Committing changes", "FileWrapper");
                 var snapshot = new Snapshot<Event>(
                     previouslySelectedEvents.Select(e => 
                         new SnapPosition<Event>(
@@ -408,7 +410,7 @@ namespace Holo
 
         public (int, int) ToggleTag(string tag, int start, int end)
         {
-            System.Diagnostics.Debug.WriteLine($"start {start}, end {end}");
+            logger.Debug($"TOGGLE TAG start {start}, end {end}", "FileWrapper");
             if (SelectedEvent == null || SelectedEventCollection == null) return (start, end);
             Style? style = file.StyleManager.Get(SelectedEvent.Style);
 
@@ -442,6 +444,7 @@ namespace Holo
             FilePath = filePath;
             if (filePath != null) title = System.IO.Path.GetFileNameWithoutExtension(filePath.LocalPath);
             else title = $"New {id}";
+            logger = HoloContext.Logger;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
