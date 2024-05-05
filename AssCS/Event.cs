@@ -137,6 +137,8 @@ namespace AssCS
 
         }
 
+        #region tags
+
         /// <summary>
         /// Parse this event's override tags
         /// </summary>
@@ -245,8 +247,45 @@ namespace AssCS
         public string GetStrippedText()
         {
             var blocks = ParseTags();
-            return string.Join("", blocks.Where(b => b.Type == BlockType.PLAIN).Select(b => b.Text));
+            return string.Join("", blocks.OfType<PlainBlock>().Select(b => b.Text));
         }
+
+        /// <summary>
+        /// Toggle a tag
+        /// </summary>
+        /// <param name="tag">Tag to toggle</param>
+        /// <param name="style">Style of the line</param>
+        /// <param name="selStart">Selection start</param>
+        /// <param name="selEnd">Selection end</param>
+        /// <returns></returns>
+        public int ToggleTag(string tag, Style? style, int selStart, int selEnd)
+        {
+            if (selStart > selEnd)
+                (selStart, selEnd) = (selEnd, selStart);
+
+            int normSelStart = NormalizePos(selStart);
+            int normSelEnd = NormalizePos(selEnd);
+            // TIL you can put switch statements inside ternary operators (I love this so much)
+            bool state = style != null ? tag switch
+            {
+                "\\b" => style.Bold,
+                "\\i" => style.Italic,
+                "\\u" => style.Underline,
+                "\\s" => style.Strikeout,
+                _ => false
+            } : false;
+
+            ParsedEvent parsed = new ParsedEvent(this);
+            int blockn = parsed.BlockAt(normSelStart);
+            state = parsed.FindTag(blockn, tag, "")?.Parameters[0].GetBool() ?? state;
+
+            int shift = parsed.SetTag(tag, state ? "0" : "1", normSelStart, selStart);
+            if (selStart != selEnd)
+                parsed.SetTag(tag, state ? "1" : "0", normSelEnd, selEnd + shift);
+            return shift;
+        }
+
+        #endregion tags
 
         /// <summary>
         /// Check if this event collides with another event.
@@ -270,6 +309,7 @@ namespace AssCS
             if (blocks.Count == 0) return;
             Text = string.Join("", blocks.Select(b => b.Text));
         }
+
 
         public string AsAss()
         {
@@ -374,6 +414,168 @@ namespace AssCS
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Normalize positions inside the text
+        /// </summary>
+        /// <param name="pos">Original position</param>
+        /// <returns>Normalized position</returns>
+        private int NormalizePos(int pos)
+        {
+            int plainLength = 0;
+            bool inside = false;
+            for (int i = 0, max = Text.Length - 1; i < pos && i <= max; i++)
+            {
+                if (Text[i] == '{') inside = true;
+                if (!inside) plainLength++;
+                if (Text[i] == '}' && inside) inside = false;
+            }
+            return plainLength;
+        }
+
+        private class ParsedEvent
+        {
+            Event Line;
+            List<Block> Blocks;
+
+            public ParsedEvent(Event line)
+            {
+                this.Line = line;
+                this.Blocks = Line.ParseTags();
+            }
+
+            /// <summary>
+            /// Find the tag with the given name
+            /// </summary>
+            /// <param name="blockn">Block number to check</param>
+            /// <param name="tagName">Name of the tag</param>
+            /// <param name="alt">Alternate name for the tag</param>
+            /// <returns>The tag, or null if not found</returns>
+            public OverrideTag? FindTag(int blockn, string tagName, string alt)
+            {
+                foreach (var ovr in Blocks.GetRange(0, blockn + 1).AsEnumerable().Reverse().OfType<OverrideBlock>())
+                {
+                    foreach (var tag in ovr.Tags.AsEnumerable().Reverse())
+                    {
+                        if (tag.Name == tagName || tag.Name == alt)
+                        return tag;
+                    }
+                }
+                return null;
+            }
+
+            /// <summary>
+            /// Get the block number for the text at the index
+            /// </summary>
+            /// <param name="index">Index in the text to look up</param>
+            /// <returns>Block number</returns>
+            public int BlockAt(int index)
+            {
+                int n = 0;
+                bool inside = false;
+                for (var i = 0; i <= Line.Text.Length - 1; i++)
+                {
+                    if (Line.Text[i] == '{')
+                    {
+                        if (!inside && i > 0 && index >= 0)
+                            n++;
+                        inside = true;
+                    }
+                    else if (Line.Text[i] == '}' && inside)
+                    {
+                        inside = false;
+                        if (index > 0 && (i + 1 == Line.Text.Length - 1 || Line.Text[i + 1] != '{'))
+                            n++;
+                    }
+                    else if (!inside)
+                    {
+                        if (--index == 0)
+                            return n + ((i < Line.Text.Length - 1 && Line.Text[i + 1] == '{') ? 1 : 0);
+                    }
+                }
+                return n - (inside ? 1 : 0);
+            }
+
+            /// <summary>
+            /// Set the value of a tag
+            /// </summary>
+            /// <param name="tag">Tag to set</param>
+            /// <param name="value">New value</param>
+            /// <param name="normPos">Normalized position</param>
+            /// <param name="originPos">Original position</param>
+            /// <returns></returns>
+            public int SetTag(string tag, string value, int normPos, int originPos)
+            {
+                int blockn = BlockAt(normPos);
+                PlainBlock? plain = null;
+                OverrideBlock? ovr = null;
+                while (blockn >= 0 && plain == null && ovr == null)
+                {
+                    Block block = Blocks[blockn];
+                    switch (block.Type)
+                    {
+                        case BlockType.PLAIN:
+                            plain = (PlainBlock)block;
+                            break;
+                        case BlockType.DRAWING:
+                            --blockn;
+                            break;
+                        case BlockType.COMMENT:
+                            --blockn;
+                            originPos = Line.Text.IndexOf('{', originPos);
+                            break;
+                        case BlockType.OVERRIDE:
+                            ovr = (OverrideBlock)block;
+                            break;
+                    }
+                }
+
+                // If there is no suitable block, place it at the beginning of the line
+                if (blockn < 0) originPos = 0;
+
+                string insert = tag + value;
+                int shift = insert.Length;
+
+                if (plain != null || blockn < 0)
+                {
+                    Line.Text = Line.Text.Substring(0, originPos) + $"{{{insert}}}" + Line.Text.Substring(originPos);
+                    shift += 2;
+                    Blocks = Line.ParseTags();
+                }
+                else if (ovr != null)
+                {
+                    string alt = string.Empty;
+                    if (tag == "\\c") alt = "\\1c";
+                    bool found = false;
+                    for (var i = 0; i < ovr.Tags.Count; i++)
+                    {
+                        var name = ovr.Tags[i].Name;
+                        if (tag == name || alt == name)
+                        {
+                            shift -= (ovr.Tags[i].ToString()).Length;
+                            if (found)
+                            {
+                                ovr.Tags.RemoveAt(i);
+                                i--;
+                            }
+                            else
+                            {
+                                ovr.Tags[i].Parameters[0].Set(value);
+                                found = true;
+                            }
+                        }
+                    }
+                    if (!found) ovr.AddTag(insert);
+
+                    Line.UpdateText(Blocks);
+                }
+                else
+                {
+                    // ?
+                }
+                return shift;
+            }
         }
     }
 }

@@ -5,6 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
 			 xmlns:converters="using:Ameko.Converters"
 			 xmlns:vm="using:Ameko.ViewModels"
+			 xmlns:ac="using:Ameko.Controls"
 			 xmlns:asscs="using:AssCS"
 			 x:DataType="vm:TabItemViewModel"
              x:Class="Ameko.Views.TabView">
@@ -106,19 +107,55 @@
 							   Margin="2"/>
 				<StackPanel Orientation="Horizontal"
 							Grid.Column="7">
-					<Label Content="Text editing buttons coming soon!" HorizontalAlignment="Center" VerticalAlignment="Center" />
+					<Button Margin="2"
+							ToolTip.Tip="Toggle Bold \b at cursor position"
+							Command="{Binding ToggleTagCommand}"
+							CommandParameter="\b">
+						<Svg Path="avares://Ameko/Assets/B5/type-bold.svg" />
+					</Button>
+					<Button Margin="2"
+							ToolTip.Tip="Toggle Italics \i at cursor position"
+							Command="{Binding ToggleTagCommand}"
+							CommandParameter="\i">
+						<Svg Path="avares://Ameko/Assets/B5/type-italic.svg" />
+					</Button>
+					<Button Margin="2"
+							ToolTip.Tip="Toggle Underline \u at cursor position"
+							Command="{Binding ToggleTagCommand}"
+							CommandParameter="\u">
+						<Svg Path="avares://Ameko/Assets/B5/type-underline.svg" />
+					</Button>
+					<Button Margin="2"
+							ToolTip.Tip="Toggle Strikethrough \s at cursor position"
+							Command="{Binding ToggleTagCommand}"
+							CommandParameter="\s">
+						<Svg Path="avares://Ameko/Assets/B5/type-strikethrough.svg" />
+					</Button>
+					<Button Margin="2"
+							IsEnabled="False"
+							ToolTip.Tip="Set Font \fn at cursor position">
+						<Svg Path="avares://Ameko/Assets/B5/fonts.svg" />
+					</Button>
+					<Button Margin="2"
+							ToolTip.Tip="Move to the next line, creating a new one if needed"
+							Command="{Binding NextOrAddEventCommand}">
+						<Svg Path="avares://Ameko/Assets/B5/arrow-return-left.svg" />
+					</Button>
 				</StackPanel>
 			</Grid>
-			<TextBox Name="editBox"
-					 Grid.Row="2"
-					 Margin="2 1"
-					 TextWrapping="Wrap"
-					 KeyDown="TextBox_KeyDown"
-					 FontSize="16"
-					 FontFamily="{StaticResource Migu2MRegular}"
-					 IsUndoEnabled="False"
-					 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
-			</TextBox>
+			<ac:AmekoTextBox Name="editBox"
+							 Grid.Row="2"
+							 Margin="2 1"
+							 TextWrapping="Wrap"
+							 KeyDown="TextBox_KeyDown"
+							 LostFocus="TextBox_LostFocus"
+							 FontSize="16"
+							 FontFamily="{StaticResource Migu2MRegular}"
+							 IsUndoEnabled="False"
+							 SelectionStart="{Binding SelectionStart, Mode=TwoWay}"
+							 SelectionEnd="{Binding SelectionEnd, Mode=TwoWay}"
+							 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
+			</ac:AmekoTextBox>
 		</Grid>
 		<!-- Splitters -->
 		<GridSplitter Grid.Row="1" Grid.Column="2" ResizeDirection="Rows" Background="Black" />

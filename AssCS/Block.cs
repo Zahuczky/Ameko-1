@@ -10,21 +10,26 @@ namespace AssCS
     /// </summary>
     public abstract class Block : IAssComponent
     {
-        public string Text { get; }
+        protected string _text;
         public BlockType Type { get; }
         public Block(string data)
         {
-            Text = data;
+            _text = data;
         }
 
         protected Block(string data, BlockType type)
         {
-            Text = data;
+            _text = data;
             Type = type;
         }
 
-        public string AsAss() => Text;
-        public string? AsOverride() => Text;
+        public virtual string Text
+        {
+            get => _text;
+        }
+
+        public string AsAss() => _text;
+        public string? AsOverride() => _text;
     }
 
     /// <summary>
@@ -92,21 +97,21 @@ namespace AssCS
             Tags.Clear();
             var depth = 0;
             var start = 0;
-            for (int i = 1; i < Text.Length; ++i)
+            for (int i = 1; i < _text.Length; ++i)
             {
                 if (depth > 0)
                 {
-                    if (Text[i] == ')') --depth;
+                    if (_text[i] == ')') --depth;
 
                 }
-                else if (Text[i] == '\\')
+                else if (_text[i] == '\\')
                 {
-                    Tags.Add(new OverrideTag(Text.Substring(start, i - start)));
+                    Tags.Add(new OverrideTag(_text.Substring(start, i - start)));
                     start = i;
                 }
-                else if (Text[i] == '(') ++depth;
+                else if (_text[i] == '(') ++depth;
             }
-            if (Text.Length > 0) Tags.Add(new OverrideTag(Text[start..]));
+            if (_text.Length > 0) Tags.Add(new OverrideTag(_text[start..]));
         }
 
         public void AddTag(string tag)
@@ -114,9 +119,13 @@ namespace AssCS
             Tags.Add(new OverrideTag(tag));
         }
 
-        public string GetText()
+        public override string Text
         {
-            return $"{{{string.Join("", Tags.Select(t => t.ToString()))}}}";
+            get
+            {
+                _text = $"{{{string.Join("", Tags.Select(t => t.ToString()))}}}"; ;
+                return _text;
+            }
         }
     }
 

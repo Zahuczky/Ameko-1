@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -400,6 +401,22 @@ namespace Holo
                 var list = new List<Event>() { next };
                 Add(list, next, true);
             }
+        }
+
+        public (int, int) ToggleTag(string tag, int start, int end)
+        {
+            System.Diagnostics.Debug.WriteLine($"start {start}, end {end}");
+            if (SelectedEvent == null || SelectedEventCollection == null) return (start, end);
+            Style? style = file.StyleManager.Get(SelectedEvent.Style);
+
+            // Commit previous to history
+            var sp = new SnapPosition<Event>(SelectedEvent, file.EventManager.GetBefore(SelectedEvent.Id)?.Id);
+            var s = new Snapshot<Event>(sp, AssCS.Action.EDIT);
+            file.HistoryManager.Commit(new Commit<Event>(s));
+            Select(SelectedEventCollection, SelectedEvent);
+
+            var shift = SelectedEvent.ToggleTag(tag, style, start, end);
+            return (start + shift, end + shift);
         }
 
         #endregion
