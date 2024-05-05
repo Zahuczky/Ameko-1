@@ -174,7 +174,13 @@ namespace Ameko.ViewModels
             SplitEventCommand = ReactiveCommand.Create(Wrapper.SplitSelected);
             MergeEventsCommand = ReactiveCommand.Create(Wrapper.MergeSelectedAdj);
             NextOrAddEventCommand = ReactiveCommand.Create(Wrapper.NextOrAdd);
-            ToggleTagCommand = ReactiveCommand.Create((string tag) => Wrapper.ToggleTag(tag, SelectionStart, FocusLostSelectionEnd));
+            ToggleTagCommand = ReactiveCommand.Create(
+                (string tag) =>
+                {
+                    (SelectionStart, SelectionEnd) = Wrapper.ToggleTag(tag, SelectionStart, FocusLostSelectionEnd);
+                    FocusLostSelectionEnd = SelectionEnd;
+                }
+            );
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {
