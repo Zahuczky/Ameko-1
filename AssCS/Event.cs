@@ -247,7 +247,7 @@ namespace AssCS
         public string GetStrippedText()
         {
             var blocks = ParseTags();
-            return string.Join("", blocks.Where(b => b.Type == BlockType.PLAIN).Select(b => b.Text));
+            return string.Join("", blocks.OfType<PlainBlock>().Select(b => b.Text));
         }
 
         /// <summary>
