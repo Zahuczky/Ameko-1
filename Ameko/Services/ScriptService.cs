@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using CSScriptLib;
 using Holo;
 using MsBox.Avalonia;
@@ -88,6 +89,7 @@ namespace Ameko.Services
         /// <param name="manual">Was the reload manually triggered</param>
         public async void Reload(bool manual)
         {
+            HoloContext.Logger.Info($"Reloading scripts", "ScriptService");
             if (!Directory.Exists(scriptRoot))
             {
                 Directory.CreateDirectory(scriptRoot);
@@ -101,7 +103,8 @@ namespace Ameko.Services
             {
                 try
                 {
-                    if (!Path.GetExtension(path).Equals(".cs")) continue;
+                    if (!System.IO.Path.GetExtension(path).Equals(".cs")) continue;
+                    HoloContext.Logger.Info($"Loading script {path}", "ScriptService");
                     HoloScript script = CSScript.Evaluator.LoadFile<HoloScript>(path);
                     if (script == null) continue;
 
@@ -115,20 +118,22 @@ namespace Ameko.Services
                 }
                 catch (Exception e)
                 {
-                    HoloContext.Logger.Error(e.Message.Trim(), "Script Service");
+                    HoloContext.Logger.Error(e.Message.Trim(), "ScriptService");
                     continue;
                 }
             }
             if (manual)
             {
+                HoloContext.Logger.Debug("Displaying Dialog Box", "ScriptService");
                 var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", "Scripts have been reloaded.", ButtonEnum.Ok);
                 await box.ShowAsync();
             }
+            HoloContext.Logger.Info($"Reloading scripts complete", "ScriptService");
         }
 
         private ScriptService()
         {
-            scriptRoot = Path.Combine(HoloContext.Directories.HoloDataHome, "scripts");
+            scriptRoot = System.IO.Path.Combine(HoloContext.Directories.HoloDataHome, "scripts");
             LoadedScripts = new ObservableCollection<Tuple<string, string>>();
             scripts = new Dictionary<string, HoloScript>();
             functions = new Dictionary<string, string[]>();

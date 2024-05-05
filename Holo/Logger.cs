@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -12,8 +13,8 @@ namespace Holo
     public class Logger : INotifyPropertyChanged
     {
         internal static readonly Logger Instance = new Logger();
-
         private readonly List<Log> _logs = new List<Log>();
+        private readonly string logsRoot;
 
         /// <summary>
         /// List of logs
@@ -22,25 +23,33 @@ namespace Holo
 
         public void Info(string message, string source = "")
         {
-            _logs.Add(new Log(message, source, LogLevel.INFO));
+            Log log = new Log(message, source, LogLevel.INFO);
+            _logs.Add(log);
+            WriteLogToFile(log);
             OnPropertyChanged(nameof(Logs));
         }
 
         public void Debug(string message, string source = "")
         {
-            _logs.Add(new Log(message, source, LogLevel.DEBUG));
+            Log log = new Log(message, source, LogLevel.DEBUG);
+            _logs.Add(log);
+            WriteLogToFile(log);
             OnPropertyChanged(nameof(Logs));
         }
 
         public void Warn(string message, string source = "")
         {
-            _logs.Add(new Log(message, source, LogLevel.WARN));
+            Log log = new Log(message, source, LogLevel.WARN);
+            _logs.Add(log);
+            WriteLogToFile(log);
             OnPropertyChanged(nameof(Logs));
         }
 
         public void Error(string message, string source = "")
         {
-            _logs.Add(new Log(message, source, LogLevel.ERROR));
+            Log log = new Log(message, source, LogLevel.ERROR);
+            _logs.Add(log);
+            WriteLogToFile(log);
             OnPropertyChanged(nameof(Logs));
         }
 
@@ -50,7 +59,21 @@ namespace Holo
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private Logger() { }
+        private void WriteLogToFile(Log log)
+        {
+            var filename = Path.Combine(logsRoot, $"log_{log.Timestamp:yyyy-MM-dd}.txt");
+            using (StreamWriter writer = File.AppendText(filename))
+            {
+                writer.WriteLine(log);
+            }
+        }
+
+        private Logger()
+        {
+            logsRoot = Path.Combine(HoloContext.Directories.HoloStateHome, "logs");
+            if (!Directory.Exists(logsRoot))
+                Directory.CreateDirectory(logsRoot);
+        }
     }
 
     public class Log

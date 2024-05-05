@@ -37,18 +37,22 @@ namespace Holo
             public static string HoloDataHome => Path.Combine(BaseDirectory.DataHome, "Ameko", "Holo");
             public static string HoloConfigHome => Path.Combine(BaseDirectory.ConfigHome, "Ameko", "Holo");
             public static string HoloCacheHome => Path.Combine(BaseDirectory.CacheHome, "Ameko", "Holo");
+            public static string HoloStateHome => Path.Combine(BaseDirectory.StateHome, "Ameko", "Holo");
             public static string AmekoDataHome => Path.Combine(BaseDirectory.DataHome, "Ameko");
             public static string AmekoConfigHome => Path.Combine(BaseDirectory.ConfigHome, "Ameko");
             public static string AmekoCacheHome => Path.Combine(BaseDirectory.CacheHome, "Ameko");
+            public static string AmekoStateHome => Path.Combine(BaseDirectory.StateHome, "Ameko");
 
             public static void Create()
             {
                 if (!Directory.Exists(AmekoDataHome)) Directory.CreateDirectory(AmekoDataHome);
                 if (!Directory.Exists(AmekoConfigHome)) Directory.CreateDirectory(AmekoConfigHome);
                 if (!Directory.Exists(AmekoCacheHome)) Directory.CreateDirectory(AmekoCacheHome);
+                if (!Directory.Exists(AmekoStateHome)) Directory.CreateDirectory(AmekoStateHome);
                 if (!Directory.Exists(HoloDataHome)) Directory.CreateDirectory(HoloDataHome);
                 if (!Directory.Exists(HoloConfigHome)) Directory.CreateDirectory(HoloConfigHome);
                 if (!Directory.Exists(HoloCacheHome)) Directory.CreateDirectory(HoloCacheHome);
+                if (!Directory.Exists(HoloStateHome)) Directory.CreateDirectory(HoloStateHome);
             }
         }
     }
