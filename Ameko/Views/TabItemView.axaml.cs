@@ -5,6 +5,7 @@ using AssCS;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.Remote.Protocol.Input;
 using DynamicData;
@@ -13,6 +14,7 @@ using Holo;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -206,6 +208,12 @@ namespace Ameko.Views
                     editBox.Focus();
                 }
             }
+        }
+
+        private void TextBox_LostFocus(object? sender, RoutedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            ViewModel.FocusLostSelectionEnd = editBox.FocusLostSelectionEnd;
         }
     }
 }

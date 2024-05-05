@@ -36,6 +36,12 @@ namespace AssCS
             this.snapshot = snapshot;
             this.action = action;
         }
+
+        public Snapshot(SnapPosition<T> snapshot, Action action)
+        {
+            this.snapshot = new List<SnapPosition<T>>() { snapshot };
+            this.action = action;
+        }
     }
 
     public class SnapPosition<T> where T : ICommitable

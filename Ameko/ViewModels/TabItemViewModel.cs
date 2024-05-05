@@ -23,6 +23,10 @@ namespace Ameko.ViewModels
         private FileWrapper _wrapper;
         private readonly int _id;
         private Event? _selectedEvent;
+        private int _selectionStart;
+        private int _selectionEnd;
+        private int _focusLostSelectionEnd;
+
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
         public ObservableCollection<string> Actors { get; private set; }
@@ -55,6 +59,7 @@ namespace Ameko.ViewModels
         public ICommand SplitEventCommand { get; }
         public ICommand MergeEventsCommand { get; }
         public ICommand ActivateScriptCommand { get; }
+        public ICommand ToggleTagCommand { get; }
 
         public string Title
         {
@@ -71,6 +76,24 @@ namespace Ameko.ViewModels
         public string Display
         {
             get => $"{Title}{(!Wrapper.UpToDate ? "*" : "")}";
+        }
+
+        public int SelectionStart
+        {
+            get => _selectionStart;
+            set => this.RaiseAndSetIfChanged(ref _selectionStart, value);
+        }
+
+        public int SelectionEnd
+        {
+            get => _selectionEnd;
+            set => this.RaiseAndSetIfChanged(ref _selectionEnd, value);
+        }
+
+        public int FocusLostSelectionEnd
+        {
+            get => _focusLostSelectionEnd;
+            set => this.RaiseAndSetIfChanged(ref _focusLostSelectionEnd, value);
         }
 
         public int ID => _id;
@@ -151,6 +174,7 @@ namespace Ameko.ViewModels
             SplitEventCommand = ReactiveCommand.Create(Wrapper.SplitSelected);
             MergeEventsCommand = ReactiveCommand.Create(Wrapper.MergeSelectedAdj);
             NextOrAddEventCommand = ReactiveCommand.Create(Wrapper.NextOrAdd);
+            ToggleTagCommand = ReactiveCommand.Create((string tag) => Wrapper.ToggleTag(tag, SelectionStart, FocusLostSelectionEnd));
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {

@@ -260,6 +260,9 @@ namespace AssCS
         /// <returns></returns>
         public int ToggleTag(string tag, Style? style, int selStart, int selEnd)
         {
+            if (selStart > selEnd)
+                (selStart, selEnd) = (selEnd, selStart);
+
             int normSelStart = NormalizePos(selStart);
             int normSelEnd = NormalizePos(selEnd);
             // TIL you can put switch statements inside ternary operators (I love this so much)

@@ -402,6 +402,21 @@ namespace Holo
             }
         }
 
+        public void ToggleTag(string tag, int start, int end)
+        {
+            System.Diagnostics.Debug.WriteLine($"start {start}, end {end}");
+            if (SelectedEvent == null || SelectedEventCollection == null) return;
+            Style? style = file.StyleManager.Get(SelectedEvent.Style);
+
+            // Commit previous to history
+            var sp = new SnapPosition<Event>(SelectedEvent, file.EventManager.GetBefore(SelectedEvent.Id)?.Id);
+            var s = new Snapshot<Event>(sp, AssCS.Action.EDIT);
+            file.HistoryManager.Commit(new Commit<Event>(s));
+            Select(SelectedEventCollection, SelectedEvent);
+
+            SelectedEvent.ToggleTag(tag, style, start, end);
+        }
+
         #endregion
 
         private static bool UseSoftLinebreaks
