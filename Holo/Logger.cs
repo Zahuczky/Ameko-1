@@ -23,21 +23,25 @@ namespace Holo
         public void Info(string message, string source = "")
         {
             _logs.Add(new Log(message, source, LogLevel.INFO));
+            OnPropertyChanged(nameof(Logs));
         }
 
         public void Debug(string message, string source = "")
         {
             _logs.Add(new Log(message, source, LogLevel.DEBUG));
+            OnPropertyChanged(nameof(Logs));
         }
 
         public void Warn(string message, string source = "")
         {
             _logs.Add(new Log(message, source, LogLevel.WARN));
+            OnPropertyChanged(nameof(Logs));
         }
 
         public void Error(string message, string source = "")
         {
             _logs.Add(new Log(message, source, LogLevel.ERROR));
+            OnPropertyChanged(nameof(Logs));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -51,22 +55,29 @@ namespace Holo
 
     public class Log
     {
-        public readonly LogLevel LogLevel;
-        public readonly string Message;
-        public readonly string Source;
-        public readonly DateTime Timestamp;
+        private readonly LogLevel _logLevel;
+        private readonly string _message;
+        private readonly string _source;
+        private readonly DateTime _timestamp;
 
         public Log(string message, string source, LogLevel logLevel)
         {
-            Source = source;
-            Message = message;
-            LogLevel = logLevel;
-            Timestamp = DateTime.Now;
+            _source = source;
+            _message = message;
+            _logLevel = logLevel;
+            _timestamp = DateTime.Now;
         }
+
+        public string Message => _message;
+        public string Source => _source;
+        public LogLevel LogLevel => _logLevel;
+        public string LogLevelString => _logLevel.ToString();
+        public DateTime Timestamp => _timestamp;
+        public string TimeString => _timestamp.ToString("yyyy-MM-ddTHH:mm:ss");
 
         public override string ToString()
         {
-            return $"{Timestamp:yyyy-MM-ddTHH:mm:ss} [{LogLevel}] {(Source != string.Empty ? $"({Source}) " : "")}→ {Message}";
+            return $"{_timestamp:yyyy-MM-ddTHH:mm:ss} [{_logLevel}] {(_source != string.Empty ? $"({_source}) " : "")}→ {_message}";
         }
     }
 

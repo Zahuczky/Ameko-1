@@ -32,12 +32,6 @@ namespace Holo
             RepositoryManager.LoadUrlList(ConfigurationManager.GetRepositories());
 
             Workspace = new Workspace();
-            Logger.Warn("cheese");
-            Logger.Info("balls", "yomama");
-            foreach (Log l in Logger.Logs)
-            {
-                Debug.WriteLine(l);
-            }
         }
 
         public class Directories

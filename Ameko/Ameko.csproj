@@ -52,6 +52,7 @@
     <None Remove="Assets\B5\globe.svg" />
     <None Remove="Assets\B5\hammer.svg" />
     <None Remove="Assets\B5\link.svg" />
+    <None Remove="Assets\B5\list-columns-reverse.svg" />
     <None Remove="Assets\B5\palette.svg" />
     <None Remove="Assets\B5\pencil-square.svg" />
     <None Remove="Assets\B5\save.svg" />

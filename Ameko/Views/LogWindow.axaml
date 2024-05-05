@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+		xmlns:converters="using:Ameko.Converters"
+		xmlns:vm="using:Ameko.ViewModels"
+        x:Class="Ameko.Views.LogWindow"
+		x:DataType="vm:LogWindowViewModel"
+        Width="600"
+		Height="400"
+		Topmost="True"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="Ameko Logs">
+	<Window.Resources>
+		<converters:LogGridErrorConverter x:Key="ErrorConverter" />
+	</Window.Resources>
+	<Grid RowDefinitions="*">
+		<DataGrid Name="logGrid"
+				  Grid.Row="0"
+				  Margin="2"
+				  IsReadOnly="True"
+				  SelectionMode="Extended"
+				  VerticalScrollBarVisibility="Auto"
+				  ItemsSource="{Binding Logs}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Timestamp" Binding="{Binding TimeString}" />
+				<DataGridTextColumn Header="Level" Binding="{Binding LogLevelString}" />
+				<DataGridTextColumn Header="Source" Binding="{Binding Source}" />
+				<DataGridTextColumn Header="Message" Binding="{Binding Message}" />
+			</DataGrid.Columns>
+			<DataGrid.Styles>
+				<Style Selector="DataGridRow">
+					<Setter Property="Background" Value="Transparent" />
+					<Setter Property="Foreground" Value="{Binding LogLevel, Converter={StaticResource ErrorConverter}}" />
+				</Style>
+				<Style Selector="ScrollBar">
+					<Setter Property="Background" Value="Gray" />
+				</Style>
+			</DataGrid.Styles>
+		</DataGrid>
+	</Grid>
+</Window>

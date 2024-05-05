@@ -42,6 +42,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
     public Interaction<ConfigWindowViewModel, Unit> ShowConfigWindow { get; }
     public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
+    public Interaction<LogWindowViewModel, Unit> ShowLogsWindow { get; }
     public Interaction<FreeformWindowViewModel, Unit> ShowFreeformPlayground { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
@@ -64,6 +65,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowDependencyControlWindowCommand { get; }
     public ICommand ShowConfigWindowCommand { get; }
     public ICommand ShowKeybindsWindowCommand { get; }
+    public ICommand ShowLogsWindowCommand { get; }
     public ICommand ShowFreeformPlaygroundCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
@@ -154,6 +156,7 @@ public class MainViewModel : ViewModelBase
         ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
         ShowConfigWindow = new Interaction<ConfigWindowViewModel, Unit>();
         ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
+        ShowLogsWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowFreeformPlayground = new Interaction<FreeformWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
@@ -217,6 +220,12 @@ public class MainViewModel : ViewModelBase
         {
             var vm = new KeybindsWindowViewModel();
             await ShowKeybindsWindow.Handle(vm);
+        });
+
+        ShowLogsWindowCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new LogWindowViewModel();
+            await ShowLogsWindow.Handle(vm);
         });
 
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>

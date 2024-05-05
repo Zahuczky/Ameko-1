@@ -100,6 +100,13 @@
 						<Svg Path="avares://Ameko/Assets/B5/link.svg" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<Separator />
+				<MenuItem Header="_Logs" Command="{Binding ShowLogsWindowCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/list-columns-reverse.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator />
 				<MenuItem Header="About _Ameko" Command="{Binding ShowAboutDialogCommand}">
 					<MenuItem.Icon>
 						<Image Width="16" Height="16" Source="avares://Ameko/Assets/Ameko-Simplified-BG-64.ico" />
