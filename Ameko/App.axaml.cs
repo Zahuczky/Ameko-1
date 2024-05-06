@@ -5,6 +5,8 @@ using Ameko.Views;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using System.Globalization;
+using System.Threading;
 
 namespace Ameko;
 
@@ -12,6 +14,12 @@ public partial class App : Application
 {
     public override void Initialize()
     {
+        // Set culture to InvariantCulture globally
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
         AvaloniaXamlLoader.Load(this);
     }
 
